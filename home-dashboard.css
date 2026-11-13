@@ -1,0 +1,27 @@
+.asobi-dashboard { position: fixed; z-index: 1000000; top: calc(14px + env(safe-area-inset-top, 0px)); right: calc(14px + env(safe-area-inset-right, 0px)); font-family: system-ui, -apple-system, sans-serif; color: #edfaff; }
+.asobi-dashboard, .asobi-dashboard * { box-sizing: border-box; }
+.asobi-dashboard-toggle { display: flex; align-items: center; gap: 9px; padding: 11px 15px; border: 1px solid rgba(153, 235, 255, .7); border-radius: 15px; background: rgba(5, 24, 46, .93); color: #ebfaff; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 7px 25px #06152f55; backdrop-filter: blur(14px); }
+.asobi-dashboard-toggle:hover, .asobi-dashboard-toggle[aria-expanded="true"] { background: #17466b; border-color: #91f6ff; }
+.asobi-dashboard-toggle:focus-visible, .asobi-dashboard a:focus-visible, .asobi-dashboard-refresh:focus-visible { outline: 3px solid #93f8ff; outline-offset: 3px; }
+.asobi-dashboard-toggle .icon { font-size: 17px; line-height: 1; color: #7cfae7; }
+.asobi-dashboard-toggle .chevron { transition: transform .2s; opacity: .8; }
+.asobi-dashboard-toggle[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+.asobi-dashboard-panel { position: absolute; right: 0; top: calc(100% + 9px); width: min(350px, calc(100vw - 28px)); max-height: calc(100dvh - 92px); overflow-y: auto; overscroll-behavior: contain; padding: 17px; border: 1px solid #46758a; border-radius: 20px; background: #0b2239; color: #ecf8ff; box-shadow: 0 20px 65px #0009; text-align: left; }
+.asobi-dashboard-panel[hidden] { display: none; }
+.asobi-dashboard-eyebrow { color: #7de5e2; letter-spacing: .13em; font-size: 10px; font-weight: 900; }
+.asobi-dashboard-title { margin: 5px 0 5px; font-size: 22px; font-weight: 900; letter-spacing: -.02em; }
+.asobi-dashboard-sub { margin: 0 0 14px; color: #b4ccda; font-size: 12px; line-height: 1.65; }
+.asobi-dashboard-total { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px; border: 1px solid #387f82; border-radius: 13px; background: linear-gradient(110deg, #174a56, #173452); }
+.asobi-dashboard-total span { font-weight: 750; font-size: 13px; }
+.asobi-dashboard-total strong { font-size: 27px; font-variant-numeric: tabular-nums; color: #adfff1; }
+.asobi-dashboard-heading { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 8px; font-size: 12px; letter-spacing: .04em; color: #a7cfdd; font-weight: 800; }
+.asobi-dashboard-refresh { border: 1px solid #496e84; border-radius: 9px; padding: 5px 9px; background: #122f49; color: #e5faff; cursor: pointer; font-size: 11px; }
+.asobi-dashboard-list { list-style: none; margin: 0; padding: 0; border: 1px solid #274a65; border-radius: 14px; overflow: hidden; }
+.asobi-dashboard-list li + li { border-top: 1px solid #274a65; }
+.asobi-dashboard-list a { display: flex; align-items: center; justify-content: space-between; gap: 9px; min-height: 46px; padding: 10px 12px; color: #eaf7ff; text-decoration: none; }
+.asobi-dashboard-list a:hover { background: #1a3f59; }
+.asobi-dashboard-list .game-name { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; }
+.asobi-dashboard-list [data-count] { font-size: 16px; font-weight: 850; font-variant-numeric: tabular-nums; color: #a7e9fa; }
+.asobi-dashboard-status { min-height: 24px; margin: 11px 0 2px; font-size: 11px; color: #b2c8d5; line-height: 1.5; }
+.asobi-dashboard-note { margin: 5px 0 0; color: #90aebf; font-size: 10px; line-height: 1.6; }
+@media (max-width: 540px) { .asobi-dashboard { top: calc(8px + env(safe-area-inset-top, 0px)); right: 8px; } .asobi-dashboard-toggle { padding: 9px 11px; font-size: 12px; } .asobi-dashboard-panel { width: min(340px, calc(100vw - 16px)); } }
