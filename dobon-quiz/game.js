@@ -51,6 +51,7 @@ function clock(){el('time').textContent=Math.ceil(remaining/1000);el('shade').st
 function tick(){if(!['play','judging','final'].includes(phase))return;remaining=Math.max(0,deadline-performance.now());clock();if(!remaining&&phase!=='final')end('時間切れ！',false,'timeout')}
 function end(message,won,kind){
  if(phase==='end')return;
+ if(won)window.asobiPlayer?.record('dobon-quiz','clear');
  phase='end';el('choices').querySelector('.pending')?.classList.remove('pending');clearInterval(interval);el('choices').querySelectorAll('button').forEach(b=>b.disabled=true);
  const h=document.createElement('h2'),p=document.createElement('p');h.textContent=message;p.textContent='ドボンは「'+bank[index][3]+'」。'+bank[index][4];el('result').replaceChildren(h,p);el('start').hidden=el('home').hidden=false;
  showFinale(kind,audio);
