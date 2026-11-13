@@ -1,0 +1,66 @@
+/* The board takes the space left after the scoreboard and controls are measured. */
+html{height:100%;overscroll-behavior:none}
+body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);display:grid;grid-template-rows:auto minmax(0,1fr)}
+main{width:100%;height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.layout{min-height:0;align-items:stretch}
+.arena{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-width:0;min-height:0}
+.stage{height:auto;min-height:0}
+aside{align-content:start;min-height:0;min-width:0}
+#logOpen{display:none}
+#kitOpen{padding:6px 2px;border:0;background:transparent;color:#536257;font-size:13px}
+.kitTabs,.guideNav{display:flex;align-items:center;gap:8px}.guideNav{justify-content:space-between}
+.kitTabs button{flex:1;font-size:13px;padding:8px}.kitTabs [aria-pressed=true]{background:#263931;color:white}
+.workshop[data-tab="0"]>label,.workshop[data-tab="0"]>p,.workshop[data-tab="1"] .part{display:none}
+dialog{max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);max-width:calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right) - 12px)}
+dialog .record{gap:8px}dialog .record b{text-align:right}button:disabled{opacity:.4;cursor:default}
+/* Portrait phones use a horizontal cricket score sheet under the board. */
+@media(max-width:760px),(max-height:920px),(orientation:portrait){
+ header{height:42px;padding:0 14px}.brand{font-size:18px}.brand svg{width:26px;height:26px}
+ main{padding:8px 12px;grid-template-rows:auto minmax(0,1fr)}
+ footer,.title small,.log,.mode small,.score small,.score .pin,.card>.cap{display:none}
+ .title{margin-bottom:7px}h1{font-size:26px;letter-spacing:-1.5px;margin:0}button#settings{padding:6px 10px}
+ .rail,.foot{padding:6px 10px}.rail #logOpen{display:inline-block;margin:0 8px 0 auto;padding:3px 7px;background:transparent;border-color:#63726b;color:#dae6dd;font-size:11px}
+ .layout{gap:8px}.mode{padding:7px 10px}.mode h2{font-size:20px;margin:0}
+ #scores{display:flex}.score{width:50%;padding:6px 8px;gap:3px}.score b{font-size:12px}.score strong{font-size:23px}
+ #marks:not(:empty){display:grid;grid-template-columns:auto repeat(7,minmax(0,1fr));border-top:1px solid #bac3b9;padding:3px 4px}
+ .legend,.markrow{display:grid;align-items:center;justify-content:center;text-align:center;grid-template-rows:15px 15px 15px;font-size:11px;margin:0;padding:0}
+ .markrow:last-child{margin:0}.markrow span:first-child{color:#a84615}.markrow span:last-child{color:#16648e}
+ .legend b:last-child{grid-row:3}.markrow b{font-size:10px}
+}
+@media(orientation:portrait),(max-width:560px) and (min-height:500px){
+ .layout{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+}
+@media(orientation:landscape) and (max-height:920px){
+ .layout{grid-template-columns:minmax(0,1.8fr) minmax(205px,1fr)}
+}
+@media(max-height:540px){
+ header{height:34px}.title{margin:0 0 4px}h1{font-size:19px}main{padding:4px 9px}
+ .rail,.foot{padding:3px 8px}.swipe{bottom:2px;font-size:10px}.stage svg{height:calc(100% - 14px)}
+ dialog{width:min(94vw,560px);padding:10px 16px}dialog h2{font-size:18px;margin:0 0 5px}dialog p{font-size:12px;line-height:1.4;margin:5px 0}dialog label{margin:5px 0 2px}
+ dialog select,dialog button{padding:5px 8px}.buttons{margin-top:7px}.workshop{margin-top:4px;padding:4px 0}.workshop svg{height:45px;margin:0}
+ .part{margin:2px 0}.part input{height:26px}.part select{padding:3px}.kitTabs button{padding:4px}.workshop label{font-size:12px}
+}
+@media(max-height:420px) and (orientation:landscape){
+ main{grid-template-rows:minmax(0,1fr)}.title{position:absolute;top:env(safe-area-inset-top);right:calc(env(safe-area-inset-right) + 95px);height:34px}.title>div{display:none}
+ .title button#settings{font-size:11px;padding:3px 7px}
+}
+@media(max-height:540px){header button{padding:4px 10px}}
+@media(min-width:900px) and (min-height:640px) and (max-height:920px) and (orientation:landscape){
+ header{height:48px;padding-inline:max(3%,calc((100vw - 1170px)/2))}
+ main{padding:12px 25px}.title{margin-bottom:10px}.title h1{font-size:34px}
+ aside{gap:10px}.log,.card>.cap{display:block}.cap span{float:right}.rail #logOpen{display:none}
+ .cap{padding:7px 12px}.mode{padding:9px 12px}.mode h2{font-size:25px}
+ .score{padding:10px}.score strong{font-size:30px}.logbody{padding:10px 12px}
+ .record{padding:5px 0}.logbody h3{margin:0 0 5px}
+}
+.brand{gap:9px;white-space:nowrap}.brand img{display:block;width:40px;height:40px;border-radius:8px}.brand-type{display:grid;gap:2px}.publisher{font:800 14px/1 Arial,sans-serif;letter-spacing:-.3px;color:#222c46}.publisher span{font:600 10px/1 sans-serif;letter-spacing:0}.brand strong{font:inherit}.brand i{margin-left:0}
+@media(max-width:760px),(max-height:920px),(orientation:portrait){.brand img{width:32px;height:32px;border-radius:6px}.publisher{font-size:12px}.brand-type{gap:1px}}
+@media(max-height:540px){.brand img{width:29px;height:29px}.brand strong{font-size:15px}.publisher{font-size:11px}}
+.chooser{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}.chooser label{min-width:0;margin:0;font-size:12px}.chooser select{margin-top:3px;padding:8px 4px;font-size:13px}.setupLinks{display:flex;align-items:center;gap:12px}.setupLinks button{font-size:12px}#modeInfo{min-height:2.4em}.score:only-child{width:100%}
+@media(max-height:420px){.chooser{gap:4px 8px}.chooser select{padding:4px}.setupLinks button{padding-block:4px}}
+header nav{display:flex;align-items:center;gap:5px}
+#rankList{max-height:min(34dvh,250px);overflow:auto}
+.rankRow{display:grid;grid-template-columns:2em 1fr auto;gap:8px;padding:6px;border-bottom:1px solid #b9c4b8;font-variant-numeric:tabular-nums}.rankRow span:last-child{font-weight:750}
+.chooser input{display:block;width:100%;padding:6px;border:1px solid #a1afa3;border-radius:5px}
+@media(max-width:480px),(max-height:540px){header nav button{font-size:11px;padding:4px 6px}.title{z-index:1}}
+@media(max-height:420px) and (orientation:landscape){.title{right:calc(env(safe-area-inset-right) + 170px)}}
