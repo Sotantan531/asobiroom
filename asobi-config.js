@@ -1,6 +1,5 @@
-// まず backend/ を Cloudflare Workers に公開し、URLをここに入力してください。
-// 例: https://asobiroom-stats.example.workers.dev （末尾の / は不要）
-window.ASOBIROOM_API_BASE = '';
+// そうたさんの Cloudflare Workers API（2026-11-14 接続確認済み）
+window.ASOBIROOM_API_BASE = 'https://asobiroom-stats.aza106302.workers.dev';
 window.asobiApi = function (path) {
   const base = window.ASOBIROOM_API_BASE.replace(/\/$/, '');
   return base ? base + path : path;
