@@ -30,6 +30,7 @@ function render(){
 }
 function mark(p,n){return ['–','／','×','◎'][marks[p][n]||0]}
 function end(w){
+ window.asobiPlayer?.record('darts','clear');
  over=true;arcadeCue(w<0?"draw":"finish");recordResults(w);if(matchPlay()&&w>=0)legs[w]++;render();
  const more=matchPlay()&&Math.max(...legs)<2;
  const title=solo()?'練習終了':w<0?'引き分け':labelFor(w)+(more?' がレッグ獲得':'の勝利！');
