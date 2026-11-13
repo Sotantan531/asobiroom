@@ -39,6 +39,8 @@
 
   function record(kind) {
     if (!ALLOWED.has(kind)) return;
+    // 別ゲームのプレイイベントを共通プロフィールにも反映する。
+    if (kind !== 'visit') window.asobiPlayer?.record(kind, 'start');
     pending.push({ id: crypto.randomUUID(), kind });
     pending = pending.slice(-150);
     persist();
