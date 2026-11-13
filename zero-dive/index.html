@@ -723,6 +723,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
 </dialog>
 <a class="asobi-home-link" href="/" aria-label="asobiroom ホームへ戻る">⌂ ホームへ</a>
 <script src="../asobi-config.js"></script>
+<script src="../asobi-player.js"></script>
 <script>
 // A single IndexedDB transaction imports pre-online history once per browser.
 // New events receive independent IDs so concurrent tabs and retries are additive.
@@ -1611,6 +1612,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
   }
   function startGame(){
     if(playing)return;
+    window.asobiPlayer?.record('zero-dive','start');
     toggleScenic(false);
     round = 0; correct = 0; score = 0; zeroCount = 0; current = null; history = []; playing = true; lock = false;
     currentResultId=crypto.randomUUID();$('#diveRankSubmit').disabled=false;
@@ -1622,6 +1624,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
   }
   function endGame(){
     playing = false;
+    if(correct===10)window.asobiPlayer?.record('zero-dive','clear');
     stats.finished++;if(correct===10)stats.wins++;stats.best=Math.max(stats.best,correct);for(let i=0;i<correct;i++)stats.stageCounts[i]=(stats.stageCounts[i]||0)+1;saveStats();renderHeader();renderStats();
     const scene = sceneData[correct];
     const completed={finished:1,wins:Number(correct===10),best:correct};
