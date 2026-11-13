@@ -73,6 +73,7 @@ function start(){
  try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume().catch(()=>{})}catch{}
  const pool=groups()[level];
  if(!pool.length){el('home').onclick();return}
+ window.asobiActivity?.play('dobon-quiz');
  const alternatives=pool.filter(i=>i!==index);
  const candidates=alternatives.length?alternatives:pool;
  let available=candidates.filter(i=>!seen.has(i));
