@@ -2,12 +2,13 @@
 const $=id=>document.getElementById(id), nums=[20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5], targets=[20,19,18,17,16,15,25];
 const levels=[['C',2,42,1.4],['CC',4,52,1.8],['B',6,62,2.2],['BB',8,72,2.6],['A',10,82,3],['AA',14,105,3.85],['SA',18,132,4.85]];
 let mode='501',level=2,round,player,scores,marks,darts,log,points,startScore,over,timer,gesture,busy;
+let countedDartsMatch=false;
 const is01=()=>!isNaN(Number(mode)), cap=()=>cricket()?20:is01()?(+mode>=701?20:15):8;
 function polar(r,a){return [r*Math.sin(a),-r*Math.cos(a)]}
 const rad=Math.PI/10;
 function wedge(inner,outer,i){let a=(i-.5)*rad,b=a+rad;return 'M'+polar(inner,a)+' L'+polar(outer,a)+' A'+outer+' '+outer+' 0 0 1 '+polar(outer,b)+' L'+polar(inner,b)+' A'+inner+' '+inner+' 0 0 0 '+polar(inner,a)+'Z'}
 function circle(r,fill,stroke='none'){return '<circle r="'+r+'" fill="'+fill+'" stroke="'+stroke+'"/>'}
-function reset(){leg=0;legs=[0,0];first=0;beginLeg()}
+function reset(){countedDartsMatch=false;leg=0;legs=[0,0];first=0;beginLeg()}
 function beginLeg(){
  clearTimeout(timer);cancelAnimationFrame(flightFrame);clearLights();
  rankedThrows=[0,0];
@@ -45,7 +46,7 @@ function advance(){
  arcadeCue('turn');if(complete)round++;player=solo()?0:1-player;startScore=scores[player];darts=[];busy=false;
  $('pins').innerHTML='';$('flash').textContent='';render();if(aiTurn())timer=setTimeout(cpu,450);
 }
-function play(x,y){if(over)return;rankedThrows[player]++;let h=hit(x,y),label=h.label,bust=false,win=false;h.available=(marks[player][h.n]||0)<3||(marks[1-player][h.n]||0)<3;darts.push(h);if(is01()){scores[player]-=pointsOf(h);if(scores[player]<0||(scores[player]===0&&!finishes(h))||(scores[player]===1&&rules.out!=='open')){scores[player]=startScore;bust=true;label+=' · BUST'}else win=scores[player]===0}
+function play(x,y){if(over)return;if(!countedDartsMatch){countedDartsMatch=true;window.asobiActivity?.play('darts')}rankedThrows[player]++;let h=hit(x,y),label=h.label,bust=false,win=false;h.available=(marks[player][h.n]||0)<3||(marks[1-player][h.n]||0)<3;darts.push(h);if(is01()){scores[player]-=pointsOf(h);if(scores[player]<0||(scores[player]===0&&!finishes(h))||(scores[player]===1&&rules.out!=='open')){scores[player]=startScore;bust=true;label+=' · BUST'}else win=scores[player]===0}
  else if(cricket()){if(targets.includes(h.n)){let old=marks[player][h.n]||0;marks[player][h.n]=Math.min(3,old+h.m);if((marks[1-player][h.n]||0)<3)scores[mode==='cut'?1-player:player]+=Math.max(0,old+h.m-3)*h.n;win=targets.every(n=>marks[player][n]===3)&&(mode==='cut'?scores[player]<=scores[1-player]:scores[player]>=scores[1-player])}}
  else {const gain=trainingScore(h,x,y);scores[player]+=gain;label+=' +'+gain}
  lightHit(h);impactSound(h);
