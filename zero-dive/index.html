@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<!-- saved from url=(0052)https://shinkai-zero-dive.adroitcider4.chatgpt.site/ -->
-<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="ja"><head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>深海ゼロダイブ | asobiroom</title>
-<link rel="icon" href="./zero-dive_files/asobiroom.png">
+<link rel="icon" href="asobiroom.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
 :root{
@@ -515,9 +513,9 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
 #answerCard{bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(460px,94vw);padding:14px 18px;background:#092d43;border:2px solid #74ded0;border-radius:18px;box-shadow:0 8px 32px #00192799;text-align:center;box-sizing:border-box}
 #answerCard[data-result="ng"]{border-color:#ffa58d}#answerValue{display:block;font-size:clamp(24px,5vw,34px);line-height:1.3;overflow-wrap:anywhere}#answerNext{margin-top:8px;padding:9px 24px;border-radius:24px;font-size:16px;background:#cbf9ec;color:#113d4c;border:0;font-weight:bold}
 #launchCurtain[hidden],#answerCard[hidden]{display:none}
-</style><div id="launchCurtain" hidden=""><canvas id="launchSea"></canvas><strong id="launchTitle">海上から出発</strong></div>
+</style><div id="launchCurtain" hidden=""><canvas id="launchSea" width="320" height="601"></canvas><strong id="launchTitle">海面付近に到着</strong></div>
 <section id="answerCard" hidden="" aria-live="polite"><b id="answerVerdict"></b><strong id="answerValue"></strong><button id="answerNext">次へ進む</button></section>
-<canvas id="sea" width="922" height="733" style="width: 615px; height: 489px;"></canvas>
+<canvas id="sea" width="412" height="901" style="width: 275px; height: 601px;"></canvas>
 <div class="screenShade"></div>
 <div class="frame">
   <div class="submarine">
@@ -525,7 +523,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
     <div class="inner">
       <div class="topbar">
         <div class="logoPanel panel">
-          <button type="button" class="logoMain archiveTrigger gameMark" aria-label="asobiroom 深海ゼロダイブ"><img src="./zero-dive_files/asobiroom.png" width="32" height="32" alt="" draggable="false"><span>深海ゼロダイブ</span></button>
+          <button type="button" class="logoMain archiveTrigger gameMark" aria-label="asobiroom 深海ゼロダイブ"><img src="asobiroom.png" width="32" height="32" alt="" draggable="false"><span>深海ゼロダイブ</span></button>
           <div class="logoSub">出題された数字に「0」だけを足して、正しい答えを完成させろ！</div>
         </div>
         <div class="centerInfo">
@@ -544,21 +542,21 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
           <div class="questionBox">
             <div class="questionTop">
               <div class="qNo">第 <span id="questionNo">1</span> 問</div>
-              <div class="qCat" id="categoryLabel">地理</div>
+              <div class="qCat" id="categoryLabel">お金</div>
             </div>
-            <div class="questionText" id="questionText">地球の赤道一周の長さは約何km？</div>
-            <div class="questionDifficulty"><span id="difficultyPill" class="difficultyPill medium">難易度：ふつう</span><span id="accuracyLabel">正解率：未集計</span><span class="accuracyTrack"><span id="accuracyFill" class="accuracyFill" style="display:block;width:0%"></span></span></div>
+            <div class="questionText" id="questionText">映画の超大作にかかる製作費は約何ドル？（例：2億ドル規模）</div>
+            <div class="questionDifficulty"><span id="difficultyPill" class="difficultyPill medium">難易度：ふつう（目安）</span><span id="accuracyLabel">正解率：未集計</span><span class="accuracyTrack"><span id="accuracyFill" class="accuracyFill" style="display:block;width:0%"></span></span></div>
           </div>
 
-          <div class="observation" id="observation"><span class="obsLabel">◉  SUBMARINE OBSERVATION WINDOW</span><span class="sceneTitle" id="sceneTitle">海面付近</span><span class="diveText" id="diveText">▼ 潜航中 ▼</span><div class="depthLines"></div><div class="bubbleSpray" id="diveBubbles"></div><div class="collisionFish" id="collisionFish" aria-hidden="true"><svg viewBox="0 0 500 280"><defs><lineargradient id="bodyGrad" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#8fe5f1"></stop><stop offset=".42" stop-color="#1a86a5"></stop><stop offset="1" stop-color="#073853"></stop></lineargradient><radialgradient id="eyeGrad"><stop offset="0" stop-color="#0a0c18"></stop><stop offset=".72" stop-color="#080c14"></stop><stop offset="1" stop-color="#9be9f3"></stop></radialgradient></defs><path d="M125 132 L28 46 Q47 132 28 218 L125 163" fill="#1d718d" stroke="#b6f2f6" stroke-width="6"></path><path d="M160 75 Q205 3 273 53 L309 86" fill="#278ca9" stroke="#96e2ec" stroke-width="5"></path><path d="M143 186 Q220 264 310 192" fill="#146782" stroke="#75c9d6" stroke-width="4"></path><path d="M94 143 C138 29 326 20 424 130 Q450 148 424 162 C304 277 131 235 94 143Z" fill="url(#bodyGrad)" stroke="#b4ebf6" stroke-width="7"></path><path d="M140 160 Q270 202 392 163" stroke="#a8eaf5" stroke-width="11" opacity=".43" fill="none"></path><path d="M213 61 Q244 145 213 222 M268 50 Q305 145 273 222 M320 64 Q354 135 316 205" stroke="#134c72" stroke-width="10" opacity=".34" fill="none"></path><ellipse cx="372" cy="118" rx="26" ry="27" fill="#e6faff"></ellipse><ellipse cx="376" cy="118" rx="16" ry="18" fill="url(#eyeGrad)"></ellipse><circle cx="381" cy="110" r="5" fill="#fff"></circle><path d="M410 162 Q444 177 465 156" stroke="#062d46" stroke-width="10" fill="none" stroke-linecap="round"></path><path d="M121 152 Q146 141 158 139" stroke="#caffff" stroke-width="5" opacity=".5"></path></svg></div><div class="impactFlash"></div><svg class="impactCracks" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true"><g stroke="#d7faff" stroke-width="2" fill="none" opacity=".95"><path d="M305 150 L280 105 L249 91 L219 51 M280 105 L303 68 L295 17 M305 150 L356 130 L393 106 L455 108 M356 130 L380 170 L436 182 L473 220 M305 150 L285 194 L253 218 L227 280 M285 194 L332 220 L354 287 M305 150 L246 149 L195 165 L152 146"></path><circle cx="305" cy="150" r="19"></circle><circle cx="305" cy="150" r="9"></circle></g></svg></div>
+          <div class="observation" id="observation"><span class="obsLabel">◉  SUBMARINE OBSERVATION WINDOW</span><span class="sceneTitle" id="sceneTitle">海面付近</span><span class="diveText" id="diveText">▼ 潜航中 ▼</span><div class="depthLines"></div><div class="bubbleSpray" id="diveBubbles"></div><div class="collisionFish" id="collisionFish" aria-hidden="true"><svg viewBox="0 0 500 280"><defs><linearGradient id="bodyGrad" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#8fe5f1"></stop><stop offset=".42" stop-color="#1a86a5"></stop><stop offset="1" stop-color="#073853"></stop></linearGradient><radialGradient id="eyeGrad"><stop offset="0" stop-color="#0a0c18"></stop><stop offset=".72" stop-color="#080c14"></stop><stop offset="1" stop-color="#9be9f3"></stop></radialGradient></defs><path d="M125 132 L28 46 Q47 132 28 218 L125 163" fill="#1d718d" stroke="#b6f2f6" stroke-width="6"></path><path d="M160 75 Q205 3 273 53 L309 86" fill="#278ca9" stroke="#96e2ec" stroke-width="5"></path><path d="M143 186 Q220 264 310 192" fill="#146782" stroke="#75c9d6" stroke-width="4"></path><path d="M94 143 C138 29 326 20 424 130 Q450 148 424 162 C304 277 131 235 94 143Z" fill="url(#bodyGrad)" stroke="#b4ebf6" stroke-width="7"></path><path d="M140 160 Q270 202 392 163" stroke="#a8eaf5" stroke-width="11" opacity=".43" fill="none"></path><path d="M213 61 Q244 145 213 222 M268 50 Q305 145 273 222 M320 64 Q354 135 316 205" stroke="#134c72" stroke-width="10" opacity=".34" fill="none"></path><ellipse cx="372" cy="118" rx="26" ry="27" fill="#e6faff"></ellipse><ellipse cx="376" cy="118" rx="16" ry="18" fill="url(#eyeGrad)"></ellipse><circle cx="381" cy="110" r="5" fill="#fff"></circle><path d="M410 162 Q444 177 465 156" stroke="#062d46" stroke-width="10" fill="none" stroke-linecap="round"></path><path d="M121 152 Q146 141 158 139" stroke="#caffff" stroke-width="5" opacity=".5"></path></svg></div><div class="impactFlash"></div><svg class="impactCracks" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true"><g stroke="#d7faff" stroke-width="2" fill="none" opacity=".95"><path d="M305 150 L280 105 L249 91 L219 51 M280 105 L303 68 L295 17 M305 150 L356 130 L393 106 L455 108 M356 130 L380 170 L436 182 L473 220 M305 150 L285 194 L253 218 L227 280 M285 194 L332 220 L354 287 M305 150 L246 149 L195 165 L152 146"></path><circle cx="305" cy="150" r="19"></circle><circle cx="305" cy="150" r="9"></circle></g></svg></div>
 
           <div class="displayBox">
             <div class="displayTop"><span>NUMERIC DISPLAY</span><div class="lamps"><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span></div></div>
             <div class="board" id="board">
               <div class="scaleLine"></div><div class="bubbleSpray" id="digitBubbles"></div>
               <div class="digitsArea">
-                <div class="answerDigits" id="answerDigits"></div>
-                <div class="unitLabel" id="unitLabel">km</div>
+                <div class="answerDigits" id="answerDigits" style="--digit-count: 1; font-size: 100px;"><span class="digit ">2</span></div>
+                <div class="unitLabel" id="unitLabel">ドル</div>
               </div>
               <div class="judgeOverlay" id="judgeOverlay"><div class="judgeText">JUDGING...</div></div>
               <div class="resultOverlay" id="resultOverlay"><div class="mark" id="resultMark">○</div></div>
@@ -571,22 +569,22 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
             <button class="circleBtn goBtn" id="goBtn">GO</button>
           </div>
 
-          <div class="message" id="messageBox">スタートすると問題が出題されます。＋と－で0の数を調整し、GOで判定！</div>
+          <div class="message" id="messageBox">＋と－で0の数を調整して、GOを押してください。</div>
         </section>
 
         <aside class="side">
           <div class="sideTitle panel">航海ログ</div>
           <div class="depthBox panel">
             <div class="depthCell"><div class="label">現在地</div><div class="small" id="placeNow">海面付近</div></div>
-            <div class="depthCell"><div class="label">到達深度</div><div class="value" id="deepestDepth">0m</div></div><div class="arrivalRate"><span>現在地の到達率</span><b id="currentArrivalRate">100%</b></div><div class="arrivalExplanation" id="arrivalRateNote">全プレイヤーの過去13回の完走中、13回到達</div>
+            <div class="depthCell"><div class="label">到達深度</div><div class="value" id="deepestDepth">0m</div></div><div class="arrivalRate"><span>現在地の到達率</span><b id="currentArrivalRate">100%</b></div><div class="arrivalExplanation" id="arrivalRateNote">全プレイヤーの過去14回の完走中、14回到達</div>
           </div>
           <div class="statsBox panel">
               <div class="statsTitle">航海データ <span style="font-size:11px;color:#9bd4e4"><span id="statsSource">全プレイヤーの記録</span></span></div>
-              <div class="statsLine"><span>プレイ回数</span><b id="playTotal">37</b></div>
+              <div class="statsLine"><span>プレイ回数</span><b id="playTotal">42</b></div>
               <div class="statsLine"><span>累計正解率</span><b id="overallAccuracy">61%</b></div>
               <div class="statsLine"><span>最高到達ステージ</span><b id="bestStage">10 / 10</b></div>
-              <div class="statsLine"><span>竜宮城到達率</span><b id="castleRate">8%</b></div>
-              <div class="stageTrack" id="stageTrack"><span class="done" title="ステージ1到達率: 100%"></span><span class="done" title="ステージ2到達率: 100%"></span><span class="done" title="ステージ3到達率: 100%"></span><span class="done" title="ステージ4到達率: 92%"></span><span class="done" title="ステージ5到達率: 69%"></span><span class="done" title="ステージ6到達率: 62%"></span><span class="done" title="ステージ7到達率: 46%"></span><span class="done" title="ステージ8到達率: 38%"></span><span class="done" title="ステージ9到達率: 15%"></span><span class="done" title="ステージ10到達率: 8%"></span></div>
+              <div class="statsLine"><span>竜宮城到達率</span><b id="castleRate">7%</b></div>
+              <div class="stageTrack" id="stageTrack"><span class="done" title="ステージ1到達率: 100%"></span><span class="done" title="ステージ2到達率: 100%"></span><span class="done" title="ステージ3到達率: 100%"></span><span class="done" title="ステージ4到達率: 93%"></span><span class="done" title="ステージ5到達率: 71%"></span><span class="done" title="ステージ6到達率: 64%"></span><span class="done" title="ステージ7到達率: 43%"></span><span class="done" title="ステージ8到達率: 36%"></span><span class="done" title="ステージ9到達率: 14%"></span><span class="done" title="ステージ10到達率: 7%"></span></div>
             </div>
             <div class="history" id="history"><div class="historyItem">
         <div class="hNo"><span class="hNoText">01</span></div>
@@ -670,7 +668,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
   </div>
 </div>
 
-<div class="modalWrap" id="startModal">
+<div class="modalWrap hidden" id="startModal">
   <div class="modal">
     <div class="startBrand">asobiroom のゲーム</div>
     <h1 class="modalTitle">深海ゼロダイブ</h1>
@@ -693,7 +691,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
     <div class="modalText" id="finalText"></div>
     <button class="modalBtn" id="scenicBtn" style="background:linear-gradient(180deg,#dffbff,#77d3f0);color:#06354a;box-shadow:0 6px 0 #277292">🌊 到達したエリアの景色を見る</button>
     <button class="modalBtn" id="restartBtn">もう一度潜る</button>
-    <a class="roomLink" href="https://asobiroom.adroitcider4.chatgpt.site/">← asobiroom に戻る</a>
+    <a class="roomLink" href="https://asobiroom.adroitcider4.chatgpt.site">← asobiroom に戻る</a>
   </div>
 </div>
 
@@ -711,8 +709,8 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
   <input type="search" aria-label="問題を検索" placeholder="問題文・ジャンルで検索">
   <small class="archiveCount"></small><ul class="archiveList"></ul>
 </dialog>
-<script src="./zero-dive_files/shared.js.ダウンロード"></script>
-<script src="./zero-dive_files/archive.js.ダウンロード"></script>
+<script src="shared.js"></script>
+<script src="archive.js?v=3"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
@@ -1609,5 +1607,5 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
   renderHistory(); renderHeader(); draw();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a59af66969e93b99',t:'MTc5NDU0MzQwMg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a59af66969e93b99',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; visibility: hidden;" src="./zero-dive_files/saved_resource.html"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a59b21bfaf0f6464',t:'MTc5NDU0NTE3Nw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a59b21bfaf0f6464',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; visibility: hidden;"></iframe>
 </body></html>
