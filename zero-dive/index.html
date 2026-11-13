@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)https://shinkai-zero-dive.adroitcider4.chatgpt.site/ -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>深海ゼロダイブ | asobiroom</title>
+<link rel="icon" href="./zero-dive_files/asobiroom.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+:root{
+  --glass:rgba(10,32,49,.42);
+  --glass-strong:rgba(7,24,37,.56);
+  --line:rgba(220,245,255,.28);
+  --gold:#f0dc9a;
+  --gold-dark:#9c7422;
+  --teal:#73f7e5;
+  --red:#e24e57;
+  --blue:#4e8ff5;
+  --digitStep:48px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#04111d;color:#fff;font-family:'Noto Sans JP',sans-serif;overflow:hidden}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#sea{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.screenShade{position:fixed;inset:0;z-index:1;background:radial-gradient(circle at 50% 45%,rgba(0,0,0,0) 0 35%,rgba(0,0,0,.11) 64%,rgba(0,0,0,.28) 100%)}
+.frame{position:relative;z-index:2;min-height:100dvh;padding:12px}
+.submarine{width:min(1600px,100%);margin:0 auto;min-height:calc(100dvh - 24px);border-radius:34px;background:linear-gradient(180deg,rgba(42,89,124,.78),rgba(17,42,61,.76));backdrop-filter:blur(5px);border:7px solid rgba(195,215,229,.82);box-shadow:inset 0 0 0 2px rgba(255,255,255,.45),inset 0 0 45px rgba(0,0,0,.35),0 18px 60px rgba(0,0,0,.35);overflow:hidden;position:relative}
+.submarine::before{content:'';position:absolute;inset:12px;border-radius:24px;border:2px solid rgba(255,255,255,.18);pointer-events:none}
+.rivet{position:absolute;width:16px;height:16px;border-radius:50%;background:linear-gradient(180deg,#e9eef2,#67798a);border:2px solid #394858;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.r1{top:15px;left:22px}.r2{top:15px;right:22px}.r3{bottom:15px;left:22px}.r4{bottom:15px;right:22px}
+.inner{height:100%;padding:15px 16px 14px;display:grid;grid-template-rows:auto 1fr auto;gap:10px}
+.topbar{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.panel{background:var(--glass);backdrop-filter:blur(7px);border:1px solid var(--line);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);border-radius:16px}
+.logoPanel{padding:11px 14px;min-width:290px}
+.logoMain{font-size:clamp(24px,2.6vw,40px);font-weight:900;line-height:1;color:#fff0af;text-shadow:0 2px 0 #6e5215,0 0 18px rgba(255,236,151,.25)}
+.logoSub{margin-top:4px;font-size:13px;font-weight:700;color:#e3f5ff;letter-spacing:.04em}
+.centerInfo{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.badge{padding:9px 13px;border-radius:999px;background:rgba(0,0,0,.32);border:1px solid rgba(160,215,235,.3);font-weight:800;color:#dff6ff;white-space:nowrap}
+.badge strong{color:#fff4bc;font-family:Rajdhani,monospace;font-size:22px;padding-left:6px}
+.statusPanel{padding:10px 14px;display:flex;gap:16px;align-items:center}
+.statusBlock{text-align:center;min-width:80px}
+.statusLabel{font:700 11px Rajdhani,monospace;color:#a9d4e4;letter-spacing:.12em}
+.statusValue{font:700 28px Rajdhani,monospace;color:#fff}
+.main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+.left{min-height:0;display:grid;grid-template-rows:auto auto auto auto;gap:10px}
+.questionBox{padding:11px 14px 13px;border-radius:20px;background:linear-gradient(180deg,rgba(208,231,247,.72),rgba(125,183,220,.65));border:5px solid var(--gold-dark);box-shadow:0 0 0 3px rgba(244,220,154,.95),inset 0 0 0 2px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.14)}
+.questionTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.qNo{background:#ffe28e;color:#813519;border:2px solid #a26b18;border-radius:999px;padding:4px 10px;font-size:14px;font-weight:900}
+.qCat{background:#daf5ff;color:#104665;border:2px solid #6db9d8;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:900}
+.questionText{font-size:clamp(19px,2.05vw,31px);font-weight:900;color:#0e2133;line-height:1.45;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+.questionNote{font-size:12px;margin-top:5px;color:#173d57;font-weight:700}
+.displayBox{padding:12px 14px;border-radius:20px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--line);position:relative;overflow:hidden}
+.displayTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#d5f4ff;font-size:12px;font-weight:900;letter-spacing:.12em}
+.lamps{display:flex;gap:7px}.lamp{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px rgba(115,247,229,.85);animation:pulse 1.45s infinite}
+.board{background:rgba(0,0,0,.6);border-radius:18px;padding:12px 18px 18px;border:2px solid rgba(132,170,190,.35);position:relative;min-height:150px;overflow:hidden}
+.board::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.05),transparent 44%);pointer-events:none}
+.scaleLine{height:1px;background:linear-gradient(90deg,transparent,rgba(104,152,177,.6),transparent);margin:8px 0 10px}
+.digitsArea{position:relative;display:flex;align-items:flex-end;justify-content:flex-end;min-height:92px;padding:4px 6px 24px 6px}
+.answerDigits{min-width:100%;display:flex;justify-content:flex-end;align-items:flex-end;overflow:hidden;font:700 clamp(58px,7.7vw,114px) Rajdhani,monospace;letter-spacing:.02em;line-height:.95;text-shadow:0 0 14px rgba(255,255,255,.12)}
+.answerDigits .base{color:#fbfbfb}
+.answerDigits .zeros{color:#66ffe5;text-shadow:0 0 18px rgba(102,255,229,.72)}
+.unitLabel{font:700 22px Rajdhani,monospace;color:#d8f5ff;margin-left:12px;padding-bottom:9px}
+.groupMarks{position:absolute;right:18px;left:18px;bottom:6px;height:24px;pointer-events:none;color:#8bb1c5;font-size:16px;font-weight:900}
+.groupMarks span{position:absolute;transform:translateX(50%);bottom:0;text-shadow:none}
+.groupMarks .man{right:calc(var(--digitStep) * 4.25)}
+.groupMarks .oku{right:calc(var(--digitStep) * 8.25)}
+.groupMarks .cho{right:calc(var(--digitStep) * 12.25)}
+.judgeOverlay,.resultOverlay{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .12s ease}
+.judgeOverlay.active{opacity:1;animation:checker .14s steps(2) infinite;background-image:linear-gradient(45deg,rgba(255,255,255,.075) 25%,rgba(0,0,0,.085) 25%,rgba(0,0,0,.085) 50%,rgba(255,255,255,.075) 50%,rgba(255,255,255,.075) 75%,rgba(0,0,0,.085) 75%,rgba(0,0,0,.085) 100%);background-size:36px 36px}
+.judgeOverlay .judgeText{padding:10px 20px;border-radius:999px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.22);font:700 22px Rajdhani,monospace;letter-spacing:.18em;color:#fff}
+.resultOverlay.show{opacity:1}
+.resultOverlay .mark{font-size:clamp(110px,16vw,190px);font-weight:900;line-height:1;text-shadow:0 0 22px rgba(255,255,255,.22),0 8px 18px rgba(0,0,0,.45)}
+.resultOverlay.ok .mark{color:var(--red)}
+.resultOverlay.ng .mark{color:var(--blue)}
+.displayHint{margin-top:8px;font-size:13px;color:#abdae9;font-weight:700}
+.controls{display:flex;justify-content:center;gap:18px;align-items:center;padding:10px 4px 2px}
+.circleBtn{width:min(20vw,120px);height:min(20vw,120px);min-width:78px;min-height:78px;border-radius:50%;border:none;font-weight:900;box-shadow:0 10px 0 rgba(0,0,0,.25),inset 0 2px 0 rgba(255,255,255,.4);transition:transform .08s,filter .18s;display:grid;place-items:center}
+.circleBtn:hover{filter:brightness(1.05)}.circleBtn:active{transform:translateY(6px);box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.circleBtn small{display:block;font-size:13px;line-height:1;margin-top:2px}
+.plusBtn{background:linear-gradient(180deg,#ecfffb,#75ebd8);color:#093845;font-size:48px}
+.minusBtn{background:linear-gradient(180deg,#edf5ff,#8cc3ff);color:#13385d;font-size:48px}
+.goBtn{background:linear-gradient(180deg,#ffefbb,#ffbc47);color:#4d3006;font-size:34px}
+.message{padding:12px 14px;min-height:60px;display:flex;align-items:center;border-radius:16px;background:var(--glass-strong);backdrop-filter:blur(5px);border:1px solid var(--line);font-weight:800;font-size:15px;color:#eaf8ff}
+.message.ok{border-color:rgba(249,154,154,.4);background:rgba(109,18,27,.32)}
+.message.ng{border-color:rgba(151,198,255,.4);background:rgba(16,57,112,.34)}
+.side{display:grid;grid-template-rows:auto auto 1fr;gap:10px;min-height:0}
+.sideTitle{padding:14px 16px;font-size:24px;font-weight:900;color:#fff2bc;text-shadow:0 2px 0 #664d17}
+.depthBox{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.depthCell{background:rgba(5,23,35,.32);border:1px solid rgba(176,215,233,.16);border-radius:14px;padding:9px;text-align:center}
+.depthCell .label{font-size:12px;color:#a8d3e2;font-weight:700}.depthCell .value{font:700 28px Rajdhani,monospace}.depthCell .small{font-size:13px;font-weight:800;color:#e0f5ff}
+.history{min-height:0;overflow:auto;padding:0 2px 2px 2px;display:grid;gap:8px}
+.historyItem{display:grid;grid-template-columns:42px 1fr 60px;gap:10px;align-items:center;padding:9px 10px;background:var(--glass);border:1px solid rgba(176,215,233,.16);backdrop-filter:blur(5px);border-radius:14px}
+.hNo{font:700 22px Rajdhani,monospace;color:#d7f4ff;text-align:center}
+.hMain{font-size:13px;font-weight:800;color:#ecf9ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hSub{margin-top:3px;font-size:11px;color:#9ec7d8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hMark{height:48px;border-radius:14px;display:grid;place-items:center;font-size:34px;font-weight:900;color:#fff;border:2px solid rgba(255,255,255,.15)}
+.hMark.pending{background:rgba(55,76,92,.8);color:#c2d8e5}
+.hMark.ok{background:linear-gradient(180deg,#ef7474,#c82626)}
+.hMark.ng{background:linear-gradient(180deg,#6ba7ff,#2765c2)}
+.footer{padding:0 4px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;color:#d8edf6;font-size:12px;font-weight:700}
+.keyPill{padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.24);border:1px solid rgba(176,215,233,.16);color:#a5cddd}
+.modalWrap{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:rgba(3,12,21,.64);backdrop-filter:blur(8px)}
+.modal{width:min(92vw,620px);padding:24px 24px 22px;text-align:center;background:linear-gradient(180deg,rgba(25,66,95,.94),rgba(11,31,48,.94));border:2px solid rgba(255,255,255,.26);border-radius:28px;box-shadow:0 24px 80px rgba(0,0,0,.42)}
+.modalMark{font-size:66px}.modalTitle{margin:0;font-size:clamp(30px,4.3vw,50px);font-weight:900;color:#fff0b8;text-shadow:0 2px 0 #664d17}.modalSub{margin-top:8px;font-size:20px;font-weight:900}.modalText{margin-top:14px;line-height:1.9;font-size:16px;color:#e1f5ff}.modalBtn{margin-top:18px;width:100%;border:none;border-radius:16px;padding:15px;background:linear-gradient(180deg,#fff0bf,#eebf4b);color:#4d3008;font-size:18px;font-weight:900;box-shadow:0 6px 0 #866116}
+.hidden{display:none!important}
+@keyframes pulse{50%{opacity:.45}}
+@keyframes checker{0%{background-position:0 0}100%{background-position:36px 36px}}
+@media (max-width:1040px){
+  html,body{overflow:auto}
+  .frame{padding:0}
+  .submarine{min-height:100dvh;border-radius:0;border-left:none;border-right:none}
+  .topbar{grid-template-columns:1fr}
+  .logoPanel,.statusPanel{min-width:0}
+  .main{grid-template-columns:1fr}
+  .circleBtn{width:94px;height:94px}
+}
+@media (max-width:700px){
+  .answerDigits{font-size:clamp(48px,13vw,82px)}
+  .board{min-height:132px}
+  .digitsArea{min-height:76px}
+  .groupMarks{font-size:14px}
+  .controls{gap:12px}
+  .circleBtn{width:80px;height:80px;min-width:80px;min-height:80px}
+  .circleBtn small{font-size:11px}
+  .goBtn{font-size:28px}
+}
+
+/* Open observation area: the exterior sea remains unobstructed. */
+.submarine{height:calc(100dvh - 24px);background:linear-gradient(180deg,rgba(22,55,80,.26),rgba(4,22,34,.13));backdrop-filter:none}
+.panel,.displayBox,.message,.historyItem{backdrop-filter:blur(2px);background:rgba(4,23,35,.32)}
+.main{min-height:0}
+.left{grid-template-rows:auto minmax(130px,1fr) auto auto auto;gap:9px}
+.questionBox{background:linear-gradient(180deg,rgba(208,231,247,.87),rgba(137,195,226,.78));padding:9px 13px 11px}
+.questionNote{display:none}
+.observation{position:relative;min-height:130px;border-radius:24px;border:2px solid rgba(210,244,255,.45);background:radial-gradient(ellipse at center,transparent 45%,rgba(0,20,36,.25) 100%);box-shadow:inset 0 0 50px rgba(6,37,58,.28);overflow:hidden;pointer-events:none}
+.observation:before,.observation:after{content:'';position:absolute;width:32px;height:32px;border-color:rgba(234,249,255,.52);border-style:solid}
+.observation:before{top:12px;left:13px;border-width:2px 0 0 2px;border-top-left-radius:9px}
+.observation:after{right:13px;bottom:12px;border-width:0 2px 2px 0;border-bottom-right-radius:9px}
+.obsLabel{position:absolute;top:10px;left:50%;transform:translateX(-50%);white-space:nowrap;letter-spacing:.18em;font:700 12px Rajdhani,monospace;color:rgba(230,252,255,.85);text-shadow:0 2px 8px #002638}
+.sceneTitle{position:absolute;bottom:14px;left:18px;font-weight:900;font-size:19px;letter-spacing:.08em;text-shadow:0 2px 12px #00101c,0 1px 2px #00101c}
+.diveText{position:absolute;top:49%;left:50%;transform:translate(-50%,-50%);font-size:clamp(22px,3vw,42px);font-weight:900;color:#e4fffb;text-shadow:0 4px 20px #00111d,0 0 18px #b0faff;opacity:0;z-index:3;white-space:nowrap}
+.observation.diving .diveText{opacity:1;animation:divesignal .62s ease both}
+.depthLines{opacity:0;position:absolute;inset:-120% 0;background:repeating-linear-gradient(0deg,transparent 0 64px,rgba(211,255,255,.35) 66px 69px,transparent 71px 90px);pointer-events:none}
+.observation.diving .depthLines{opacity:.6;animation:waterspeed .26s linear infinite}
+@keyframes divesignal{0%{opacity:0;transform:translate(-50%,-60%) scale(.8)}15%,76%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-40%) scale(1.08)}}
+@keyframes waterspeed{to{transform:translateY(180px)}}
+.displayBox{padding:8px 10px 10px}
+.displayTop{margin-bottom:5px}
+.board{min-height:125px;padding:8px 12px 11px;background:rgba(0,10,20,.74)}
+.digitsArea{min-height:92px;padding:4px 6px 24px}
+.answerDigits{min-width:0;overflow:visible;font-variant-numeric:tabular-nums}
+.digit{position:relative;display:inline-block;min-width:.58em;text-align:center;flex:0 0 .58em;color:#fff}
+.digit.zero{color:#66ffe5;text-shadow:0 0 18px rgba(102,255,229,.72)}
+.placeLabel{position:absolute;right:-.15em;bottom:-1.25em;font:900 14px 'Noto Sans JP',sans-serif;color:#afd9e7;white-space:nowrap;font-style:normal;text-shadow:0 1px 5px #00111c}
+.groupMarks{display:none}
+.controls{gap:clamp(16px,3vw,36px);padding:2px 4px 7px}
+.circleBtn{width:clamp(112px,10.6vw,152px);height:clamp(112px,10.6vw,152px);min-width:112px;min-height:112px;font-size:clamp(48px,5vw,72px);display:flex;flex-direction:column;justify-content:center;align-items:center;line-height:1}
+.circleBtn small{font-size:13px;margin-top:1px;line-height:1.2}
+.goBtn{font-size:clamp(35px,4vw,52px)}
+.message{min-height:44px;padding:8px 12px;font-size:13px}
+.historyItem{padding:7px 8px}
+.hMark{height:42px}
+.side{gap:8px}
+.sideTitle{padding:10px 12px}
+.depthBox{padding:8px}
+.footer{font-size:11px}
+.soundBtn{border:0;background:none;color:#b8edf4;font-weight:800;cursor:pointer;padding:2px 0 2px 8px}
+/* True two-tone checkboard; black and white trade positions, no diagonal tiles. */
+.judgeOverlay.active{
+  opacity:1;
+  background:repeating-conic-gradient(rgba(255,255,255,.62) 0% 25%,rgba(0,0,0,.74) 0% 50%) 0 0 / 38px 38px;
+  animation:swapTiles .13s steps(1,end) infinite;
+}
+@keyframes swapTiles{0%,49%{background-position:0 0}50%,100%{background-position:19px 0}}
+.judgeOverlay .judgeText{font-size:26px;background:rgba(0,0,0,.75);border:2px solid #eef9ff;text-shadow:0 2px 6px #000}
+.resultOverlay.show{background:rgba(0,0,0,.28);animation:resultPop .72s ease both}
+.resultOverlay .mark{filter:drop-shadow(0 0 14px rgba(0,0,0,.35));-webkit-text-stroke:3px white;text-shadow:0 5px 20px rgba(0,0,0,.6)}
+@keyframes resultPop{0%{opacity:0;transform:scale(.55)}17%{opacity:1;transform:scale(1.16)}36%,85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.03)}}
+@media(max-width:1040px){
+  .submarine{height:auto;min-height:100dvh}
+  .left{grid-template-rows:auto minmax(170px,33vh) auto auto auto}
+  .circleBtn{width:clamp(94px,17vw,138px);height:clamp(94px,17vw,138px);min-width:94px;min-height:94px}
+  .observation{min-height:170px}
+}
+@media(max-width:700px){
+  .left{grid-template-rows:auto minmax(180px,30vh) auto auto auto}
+  .circleBtn{width:clamp(86px,25vw,118px);height:clamp(86px,25vw,118px);min-width:86px;min-height:86px;font-size:51px}
+  .goBtn{font-size:36px}
+  .circleBtn small{font-size:10px}
+  .controls{gap:10px}
+  .board{min-height:110px}
+  .digitsArea{min-height:80px}
+}
+
+/* Quiet, lower-contrast judgement and bubbles on the numeric LCD */
+.judgeOverlay.active{animation:gentleChecker .22s steps(1,end) infinite;background-size:44px 44px;}
+@keyframes gentleChecker{0%,49.99%{background-image:conic-gradient(rgba(242,252,255,.085) 25%,rgba(0,0,0,.09) 0 50%,rgba(242,252,255,.085) 0 75%,rgba(0,0,0,.09) 0)}50%,100%{background-image:conic-gradient(rgba(0,0,0,.09) 25%,rgba(242,252,255,.085) 0 50%,rgba(0,0,0,.09) 0 75%,rgba(242,252,255,.085) 0)}}
+.answerDigits .digit{border-radius:50%;position:relative;transition:filter .14s;text-shadow:0 0 7px rgba(155,249,254,.35)}
+.answerDigits .digit.zero{color:#d8ffff;text-shadow:0 0 7px #53d9e9,1px 2px 0 rgba(43,142,171,.7)}
+.answerDigits .digit.bubble-enter{animation:bubbleIntoPlace .42s cubic-bezier(.2,.9,.3,1.1) both}
+.answerDigits .digit.bubble-leave{animation:bubbleDisappear .3s ease forwards}
+@keyframes bubbleIntoPlace{0%{transform:translateY(56px) scale(.35);opacity:0;filter:blur(2px)}60%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1;filter:blur(0)}}
+@keyframes bubbleDisappear{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-62px) scale(.2);opacity:0;filter:blur(3px)}}
+.bubbleSpray{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:6}
+.bubbleSpray i{position:absolute;bottom:-20px;width:var(--s);height:var(--s);left:var(--x);border:1px solid rgba(225,255,255,.7);border-radius:50%;box-shadow:inset -2px -3px 7px rgba(64,192,220,.37),0 0 9px rgba(161,247,255,.6);animation:riseBubble var(--d) ease-out forwards;}
+@keyframes riseBubble{from{transform:translateY(0) translateX(0) scale(.5);opacity:.9}to{transform:translateY(var(--rise,-250px)) translateX(var(--drift,0px)) scale(1.4);opacity:0}}
+.observation{isolation:isolate}
+.collisionFish{position:absolute;top:48%;left:-20%;font-size:clamp(58px,8vw,110px);filter:drop-shadow(0 4px 9px #001b2c);z-index:8;opacity:0;pointer-events:none}
+.observation.colliding{animation:windowBump .5s ease}
+.observation.colliding .collisionFish{animation:fishCrash .75s ease both}
+.observation.colliding::after{box-shadow:inset 0 0 100px rgba(97,181,255,.6)}
+@keyframes fishCrash{0%{left:-20%;opacity:0;transform:translateY(-50%) rotate(-13deg)}43%{left:42%;opacity:1;transform:translateY(-50%) rotate(5deg) scale(1.3)}68%{left:49%;opacity:1;transform:translateY(-50%) rotate(-15deg) scale(1.1)}100%{left:115%;opacity:0;transform:translateY(-60%) rotate(30deg)}}
+@keyframes windowBump{0%,100%{filter:none}40%{filter:brightness(1.45)}53%{filter:brightness(.9)}70%{filter:brightness(1.2)}}
+.questionDifficulty{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 1px 0;font-size:12px;color:#12384c;font-weight:800}
+.difficultyPill{border-radius:999px;padding:3px 10px;border:1px solid rgba(14,75,104,.25);background:rgba(255,255,255,.6)}
+.difficultyPill.easy{color:#0d5a47}.difficultyPill.medium{color:#6d5409}.difficultyPill.hard{color:#922e36}
+.accuracyTrack{width:94px;height:8px;overflow:hidden;border-radius:999px;background:rgba(33,73,91,.3)}
+.accuracyFill{height:100%;background:linear-gradient(90deg,#39c6a7,#baf6cf);transition:width .4s}
+.statsBox{padding:12px 14px;display:grid;gap:7px;font-size:13px;color:#e0f8ff;font-weight:750}
+.statsTitle{font-weight:900;color:#fff1b5;font-size:16px}
+.statsLine{display:flex;justify-content:space-between;gap:8px}
+.statsLine b{font-family:Rajdhani,monospace;font-size:20px;color:#e5fdff}
+.stageTrack{display:flex;gap:4px;height:10px}.stageTrack span{flex:1;border-radius:6px;background:rgba(125,176,206,.22);border:1px solid rgba(215,252,255,.13)}.stageTrack span.done{background:#5bdcc2;box-shadow:0 0 6px rgba(91,220,194,.3)}
+.side{grid-template-rows:auto auto auto minmax(0,1fr)}
+.history{max-height:calc(100dvh - 350px)}
+@media(max-width:1040px){.history{max-height:none}.side{grid-template-rows:auto auto auto auto}}
+
+/* Version 5: crisp LCD, animated digit shifting and dimensional collision */
+.board{overflow:visible;min-height:142px;padding:12px 16px 18px;border-color:rgba(155,208,233,.46);box-shadow:inset 0 0 19px #010b14aa,0 5px 18px #0005}
+.digitsArea{width:100%;min-width:0;overflow:visible;align-items:center;padding:12px 4px 28px;min-height:108px;gap:8px}
+.answerDigits{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:visible;line-height:1.18;padding:4px 0 15px;align-self:center;justify-content:flex-end}
+.answerDigits .digit{line-height:1.06;flex-shrink:0}
+.unitLabel{flex:0 0 auto;white-space:nowrap;margin-left:0;align-self:center;padding:0 0 9px 0}
+.placeLabel{bottom:-1.08em;font-size:clamp(10px,1.05vw,14px);right:-.1em}
+.displayBox{overflow:visible}
+.digit.zero.bubble-enter{animation:bubbleIntoPlace .4s cubic-bezier(.19,.89,.27,1.1) both}
+.popParticle{position:absolute;pointer-events:none;z-index:19;width:var(--size);height:var(--size);left:var(--px);top:var(--py);border:1.5px solid #d8fcffcc;background:radial-gradient(circle at 26% 22%,#fff9,transparent 35%),radial-gradient(circle at 78% 79%,#44cde544,transparent 60%);box-shadow:inset -2px -3px 5px #10afd744,0 0 12px #70edff88;border-radius:50%;animation:popParticle var(--duration) cubic-bezier(.1,.7,.4,1) both}
+@keyframes popParticle{0%{opacity:1;transform:translate(-50%,-50%) scale(.35)}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--vx)),calc(-50% + var(--vy))) scale(1.15)}}
+.removalGhost{position:absolute;z-index:17;pointer-events:none;display:grid;place-items:center;color:#cfffff;text-shadow:0 0 18px #7bffff;animation:removeGhost .5s ease-out both}
+@keyframes removeGhost{0%{opacity:1;transform:scale(1)}35%{opacity:.94;transform:scale(1.28);filter:brightness(1.8)}100%{opacity:0;transform:scale(.08) translateY(-30px);filter:blur(5px)}}
+.observation{isolation:isolate}
+.collisionFish{font-size:0;top:50%;left:50%;width:min(62%,460px);height:90%;transform:translate(-50%,-50%) translateX(-130%) scale(.4);opacity:0;filter:drop-shadow(0 12px 18px #001423);z-index:8;}
+.collisionFish svg{width:100%;height:100%;display:block;overflow:visible}
+.observation.colliding .collisionFish{animation:cinematicCrash .9s cubic-bezier(.12,.75,.19,1) both}
+@keyframes cinematicCrash{0%{opacity:0;transform:translate(-50%,-50%) translateX(-150%) scale(.35) rotate(-12deg);filter:blur(8px)}39%{opacity:1;transform:translate(-50%,-50%) translateX(-23%) scale(1.07) rotate(3deg);filter:blur(0)}52%{opacity:1;transform:translate(-50%,-50%) translateX(5%) scale(1.6) rotate(-8deg);filter:brightness(1.45)}65%{opacity:1;transform:translate(-50%,-50%) translateX(1%) scale(1.45) rotate(-3deg)}100%{opacity:0;transform:translate(-50%,-50%) translateX(110%) scale(.8) rotate(20deg);filter:blur(5px)}}
+.observation.colliding{animation:impactShake .9s linear both}
+@keyframes impactShake{0%,40%,100%{transform:translate(0,0)}49%{transform:translate(-9px,6px)}53%{transform:translate(11px,-5px)}57%{transform:translate(-7px,4px)}63%{transform:translate(5px,-3px)}70%{transform:translate(-3px,2px)}}
+.impactFlash{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(247,255,255,.72) 0,rgba(133,219,253,.23) 30%,transparent 70%)}
+.observation.colliding .impactFlash{animation:impactLight .9s both}
+@keyframes impactLight{0%,42%,100%{opacity:0}52%{opacity:1}62%{opacity:.13}}
+.impactCracks{position:absolute;inset:0;width:100%;height:100%;z-index:10;pointer-events:none;opacity:0;filter:drop-shadow(0 0 6px #c2faff)}
+.observation.colliding .impactCracks{animation:crackFlicker .9s both}
+@keyframes crackFlicker{0%,47%{opacity:0}52%,70%{opacity:.82}100%{opacity:0}}
+.arrivalRate{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;background:rgba(0,17,33,.35);border-radius:10px;font-size:12px;color:#ceeefa;font-weight:800}
+.arrivalRate b{color:#fff4b8;font:700 23px Rajdhani,monospace}
+.arrivalExplanation{font-size:10px;color:#b4d5e2;line-height:1.45;text-align:center}
+@media(max-width:700px){.board{min-height:132px}.digitsArea{min-height:102px;padding-bottom:26px}.answerDigits{padding-bottom:14px}.placeLabel{font-size:10px}}
+
+/* v6: preserve all controls in small viewports and prioritize the sea window */
+html,body{overflow:auto}
+.submarine{height:auto;min-height:calc(100dvh - 24px)}
+.inner{min-height:calc(100dvh - 48px);grid-template-rows:auto minmax(0,1fr) auto}
+.left{grid-template-rows:auto minmax(205px,1fr) auto auto auto;align-content:stretch}
+.observation{min-height:205px}
+.displayBox{padding:7px 10px 8px}
+.displayTop{margin-bottom:3px}
+.board{min-height:108px;padding:5px 12px 5px}
+.digitsArea{min-height:79px;padding:4px 4px 19px}
+.answerDigits{padding:2px 0 10px;line-height:1.06}
+.answerDigits .digit{line-height:1.05}
+.unitLabel{padding-bottom:3px}
+.scaleLine{margin:3px 0 5px}
+.controls{padding:3px 4px 8px}
+.message{min-height:46px;height:auto;overflow:visible;white-space:normal;line-height:1.6;flex-shrink:0;padding:11px 15px;align-self:stretch}
+.hNo{position:relative;isolation:isolate;min-height:42px;display:grid;place-items:center}
+.hNo .hNoText{position:relative;z-index:1}
+.hNo .hGhost{position:absolute;inset:0;display:grid;place-items:center;font-size:45px;font-family:'Noto Sans JP',sans-serif;font-weight:900;z-index:0;opacity:.20;line-height:1}
+.hNo .hGhost.ok{color:#ff6870}
+.hNo .hGhost.ng{color:#70aaff}
+.historyItem{grid-template-columns:48px minmax(0,1fr) 60px}
+/* Scenic mode: keep the exact last scene on screen; hide all instruments */
+.scenicMode .frame,.scenicMode .screenShade,.scenicMode #resultModal{display:none!important}
+.scenicView{position:fixed;z-index:50;inset:0;display:flex;flex-direction:column;justify-content:space-between;align-items:center;pointer-events:none;padding:clamp(16px,3vw,38px);background:linear-gradient(180deg,rgba(0,10,20,.20),transparent 26%,transparent 75%,rgba(0,10,20,.24))}
+.scenicView.hidden{display:none!important}
+.scenicView>*{pointer-events:auto}
+.scenicTop{text-align:center;background:rgba(1,17,31,.44);border:1px solid rgba(225,252,255,.22);border-radius:20px;padding:12px 24px;backdrop-filter:blur(4px);text-shadow:0 2px 12px #001321}
+.scenicTop strong{display:block;font-weight:900;font-size:clamp(24px,4vw,46px)}
+.scenicTop span{font-size:14px;font-weight:700;color:#d1f2ff}
+.scenicBack{border:2px solid rgba(255,255,255,.36);border-radius:999px;color:#fff;font-weight:900;font-size:17px;padding:12px 28px;background:rgba(5,25,43,.69);backdrop-filter:blur(5px);box-shadow:0 6px 16px #0005}
+@media(max-width:1040px){.submarine{min-height:100dvh}.inner{min-height:100dvh}.left{grid-template-rows:auto minmax(220px,35vh) auto auto auto}}
+@media(max-width:700px){.board{min-height:102px}.digitsArea{min-height:77px;padding-bottom:18px}.answerDigits{padding-bottom:11px}.observation{min-height:200px}.message{font-size:13px}}
+
+/* v7 — Single-screen responsive cockpit. App content does not scroll. */
+html,body{width:100%;height:100%;overflow:hidden!important;overscroll-behavior:none}
+.frame{height:100dvh;min-height:0;padding:clamp(4px,.8vw,10px);overflow:hidden}
+.submarine{height:100%;min-height:0!important;max-height:100%;overflow:hidden}
+.inner{height:100%;min-height:0!important;grid-template-rows:auto minmax(0,1fr) auto;padding:clamp(7px,1vw,13px);gap:clamp(5px,.75vw,9px)}
+.main{height:100%;min-height:0;overflow:hidden}
+.left{height:100%;min-height:0;grid-template-rows:auto minmax(80px,1fr) auto auto auto;gap:clamp(4px,.6vh,8px)}
+.observation{min-height:0!important;height:100%;overflow:hidden}
+.questionBox{padding:7px 12px 9px;border-width:3px;border-radius:15px}
+.questionTop{margin-bottom:3px}
+.questionText{font-size:clamp(16px,1.8vw,26px);line-height:1.28}
+.questionDifficulty{padding-top:2px;font-size:11px}
+.displayBox{flex-shrink:0;padding:5px 9px 7px}
+.displayTop{margin-bottom:2px}
+.board{min-height:0!important;padding:4px 10px 4px}
+.scaleLine{margin:2px 0 3px}
+.digitsArea{min-height:68px!important;padding:2px 3px 15px}
+.answerDigits{padding:0 0 7px;font-size:clamp(40px,6.8vw,90px);line-height:1.05}
+.placeLabel{bottom:-1.03em}
+.controls{flex-shrink:0;gap:clamp(10px,2vw,22px);padding:3px 0 5px}
+.circleBtn{width:clamp(74px, min(10vw,12vh), 118px);height:clamp(74px, min(10vw,12vh), 118px);min-width:0!important;min-height:0!important;flex:none;font-size:clamp(35px,4.2vw,58px)}
+.circleBtn small{font-size:clamp(9px,.9vw,12px)}
+.goBtn{font-size:clamp(28px,3.4vw,43px)}
+.message{min-height:34px;padding:5px 10px;font-size:clamp(11px,1vw,13px);line-height:1.35}
+.side{min-height:0;overflow:hidden;grid-template-rows:auto auto auto minmax(0,1fr);gap:5px}
+.sideTitle{padding:7px 10px;font-size:19px}
+.depthBox{padding:6px;gap:5px}
+.depthCell{padding:5px}
+.depthCell .value{font-size:23px}
+.arrivalRate{padding:4px 7px}
+.statsBox{padding:7px 9px;gap:3px;font-size:11px}
+.statsTitle{font-size:13px}
+.statsLine b{font-size:16px}
+.history{min-height:0;max-height:none!important;grid-auto-rows:min-content;gap:4px;overflow-y:auto;overscroll-behavior:contain}
+.historyItem{padding:4px 6px;grid-template-columns:40px minmax(0,1fr) 40px;gap:6px}
+.hNo{min-height:32px;font-size:19px}
+.hMark{height:33px;font-size:23px;border-radius:10px}
+.hNo .hGhost{font-size:35px}
+.hMain{font-size:11px}.hSub{font-size:10px}
+.footer{min-height:0;font-size:10px}
+@media(max-width:1040px){
+  .submarine{height:100%!important}
+  .inner{height:100%!important}
+  .main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:6px}
+  .left{grid-template-rows:auto minmax(80px,1fr) auto auto auto}
+  .side{display:grid;grid-template-columns:1fr;grid-template-rows:auto auto;gap:4px}
+  .sideTitle{display:none}
+  .depthBox{display:flex;padding:3px 7px;align-items:center;gap:8px}
+  .depthCell{display:none}
+  .arrivalRate{flex:1;grid-column:auto;padding:2px 7px;background:transparent;font-size:11px}
+  .arrivalRate b{font-size:18px}
+  .arrivalExplanation{display:none}
+  .statsBox{display:none}
+  .history{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:1fr;gap:3px;overflow:hidden;max-height:none}
+  .historyItem{display:flex;align-items:center;justify-content:center;padding:2px;min-width:0;min-height:33px;position:relative}
+  .historyItem>div:nth-child(2){display:none}
+  .historyItem .hNo{position:absolute;top:1px;left:3px;min-height:0;font-size:10px;line-height:1;color:#edf6ff;z-index:2}
+  .historyItem .hNo .hGhost{display:none}
+  .historyItem .hMark{height:30px;width:100%;font-size:19px;border-radius:7px}
+  .footer{display:none}
+  .topbar{grid-template-columns:1fr auto;gap:5px}
+  .logoPanel{min-width:0;padding:6px 10px}
+  .logoMain{font-size:clamp(17px,3.2vw,24px)}
+  .logoSub{display:none}
+  .centerInfo{grid-column:1;grid-row:2;justify-content:flex-start;gap:5px}
+  .badge{padding:2px 9px;font-size:11px}
+  .badge strong{font-size:16px;padding-left:3px}
+  .statusPanel{grid-column:2;grid-row:1/3;padding:5px 9px;gap:8px}
+  .statusBlock{min-width:48px}
+  .statusValue{font-size:19px}
+  .statusLabel{font-size:9px}
+  .questionBox{padding:5px 9px 6px;border-width:3px}
+  .qNo,.qCat{font-size:10px;padding:2px 7px}
+  .questionText{font-size:clamp(14px,3.2vw,23px)}
+  .questionDifficulty{font-size:10px;gap:3px}
+  .difficultyPill{padding:2px 6px}
+  .accuracyTrack{width:48px;height:6px}
+  .controls{gap:clamp(12px,3vw,24px);padding:2px 0 5px}
+  .circleBtn{width:clamp(68px, min(19vw,11.5vh), 108px);height:clamp(68px, min(19vw,11.5vh), 108px);font-size:clamp(34px,6vw,52px)}
+  .circleBtn small{font-size:10px}
+  .goBtn{font-size:clamp(25px,5vw,36px)}
+  .board{min-height:0!important}
+  .digitsArea{min-height:62px!important;padding-bottom:12px}
+  .message{min-height:31px;padding:4px 8px;font-size:11px}
+  .observation{min-height:0!important}
+}
+@media(max-width:600px){
+  .frame{padding:3px}
+  .submarine{border-width:3px;border-radius:14px}
+  .submarine::before{inset:4px;border-radius:9px}
+  .inner{padding:6px 7px;gap:4px}
+  .topbar{grid-template-columns:minmax(0,1fr) auto}
+  .centerInfo{gap:3px}
+  .badge{font-size:10px;padding:2px 6px}
+  .centerInfo .badge:nth-child(3){display:none}
+  .statusPanel{padding:4px 7px}
+  .statusBlock:last-child{display:none}
+  .questionText{font-size:clamp(15px,4.1vw,21px)}
+  .questionTop{margin-bottom:2px}
+  .questionDifficulty{font-size:9px}
+  .accuracyTrack{display:none}
+  .left{gap:4px}
+  .displayBox{padding:3px 6px 5px}
+  .displayTop{font-size:10px;margin-bottom:0}
+  .board{padding:2px 5px}
+  .digitsArea{min-height:59px!important;padding-bottom:11px}
+  .answerDigits{font-size:clamp(35px,10.4vw,68px);padding-bottom:6px}
+  .placeLabel{font-size:9px}
+  .unitLabel{font-size:15px}
+  .controls{gap:clamp(11px,4vw,22px);padding:1px 0 4px}
+  .circleBtn{width:clamp(66px, min(22vw,11vh), 92px);height:clamp(66px, min(22vw,11vh), 92px)}
+  .circleBtn small{font-size:9px}
+  .message{font-size:10px;min-height:30px;line-height:1.25}
+  .historyItem{min-height:29px}
+  .historyItem .hMark{height:26px;font-size:17px}
+  .historyItem .hNo{font-size:9px;left:2px;top:0}
+  .depthBox{padding:0 5px}
+  .arrivalRate{font-size:10px}
+  .arrivalRate b{font-size:15px}
+}
+@media(max-height:720px){
+  .inner{gap:3px}
+  .left{gap:3px}
+  .questionBox{padding-top:4px;padding-bottom:4px}
+  .questionTop{margin-bottom:1px}
+  .questionText{line-height:1.18}
+  .questionDifficulty{padding-top:1px}
+  .displayTop{line-height:1.05}
+  .digitsArea{min-height:53px!important;padding-bottom:10px}
+  .board{padding-top:2px;padding-bottom:2px}
+  .controls{padding:0 0 3px}
+  .circleBtn{width:clamp(55px, min(17vw,10vh), 83px);height:clamp(55px, min(17vw,10vh), 83px)}
+  .circleBtn small{font-size:8px}
+  .message{padding:3px 7px;min-height:24px}
+  .historyItem{min-height:25px}
+  .historyItem .hMark{height:24px}
+  .topbar .logoPanel{padding-top:4px;padding-bottom:4px}
+}
+@media(max-height:520px) and (orientation:landscape){
+  .inner{padding:4px 8px}
+  .topbar{display:flex;flex-wrap:nowrap}
+  .logoPanel{flex:0 0 auto}
+  .logoMain{font-size:15px}
+  .centerInfo{flex:1;display:flex;justify-content:flex-start}
+  .statusPanel{flex:0 0 auto}
+  .main{grid-template-columns:minmax(0,1fr) 185px;grid-template-rows:1fr;gap:5px}
+  .left{grid-template-rows:auto minmax(15px,1fr) auto auto;gap:3px}
+  .side{display:grid;grid-template-columns:1fr;grid-template-rows:auto auto;gap:4px;align-content:center}
+  .depthBox{padding:3px}
+  .history{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,25px)}
+  .historyItem{min-height:24px;padding:1px}
+  .historyItem .hMark{height:21px;font-size:15px}
+  .questionBox{padding:3px 7px}
+  .questionText{font-size:13px;line-height:1.15}
+  .questionDifficulty{display:none}
+  .displayTop{display:none}
+  .board{padding:0 5px}
+  .scaleLine{display:none}
+  .digitsArea{min-height:44px!important;padding:0 2px 9px}
+  .answerDigits{font-size:clamp(29px,5vw,46px);padding-bottom:3px}
+  .controls{gap:12px}
+  .circleBtn{width:clamp(39px,10vh,55px);height:clamp(39px,10vh,55px);font-size:26px}
+  .circleBtn small{display:none}
+  .goBtn{font-size:22px}
+  .message{display:none}
+  .observation{min-height:0}
+}
+
+#sea,.screenShade{pointer-events:none}
+button{touch-action:manipulation}
+.modalWrap{grid-template:minmax(0,1fr)/minmax(0,1fr)}
+.modal{max-width:100%;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+@media(max-height:600px){
+  .modalWrap{padding:8px}
+  .modal{padding:10px 16px 14px}
+  .modalMark{font-size:28px}.modalTitle{font-size:25px}
+  .modalSub{margin-top:3px;font-size:16px}
+  .modalText{margin-top:5px;font-size:13px;line-height:1.4}
+  .modalBtn{margin-top:9px;padding:9px}
+}
+@media (max-width:1040px) and (orientation:portrait){
+  .main,.left{grid-template-columns:minmax(0,1fr)}
+  .left,.displayBox{min-width:0}
+  .answerDigits{flex:1 1 0;container-type:inline-size}
+  .answerDigits .digit{
+    font-size:min(1em,calc(150cqi / var(--digit-count)));
+    flex-basis:.65em;
+  }
+}
+.startBrand,.logoMain{display:flex;align-items:center;gap:.4em}
+.startBrand{justify-content:center;font-weight:800;color:#d8f5ff;margin-bottom:6px}
+.startBrand img,.gameMark img{display:block;border-radius:22%}
+.gameMark img{width:1.15em;height:1.15em}
+.roomLink{display:inline-block;color:#d8f5ff;font-weight:700;margin-top:8px;padding:9px}
+
+.bubbleSpray i{background:radial-gradient(circle at 30% 24%,#fff 0 6%,#ffffff77 8%,transparent 19%);aspect-ratio:1}
+.archiveTrigger{position:relative;border:0;background:none;padding:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.archiveTrigger img{display:block;pointer-events:none;border-radius:22%}
+.gameMark{width:100%;text-align:left;z-index:1}.gameMark::after{content:"";position:absolute;inset:-6px}.gameMark span{pointer-events:none}
+body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
+#archive{box-sizing:border-box;width:min(620px,94vw);height:min(720px,90dvh);max-height:94dvh;margin:auto;padding:clamp(14px,3vw,26px);border:1px solid #78c7ca;border-radius:20px;background:#102f41;color:#edfcff;box-shadow:0 20px 70px #001421aa}
+#archive[open]{display:flex;flex-direction:column;gap:8px}
+#archive::backdrop{background:#021320bf}
+#archive header,#archive nav,.archiveList li{display:flex;align-items:center;gap:8px}
+#archive header,.archiveList li{justify-content:space-between}
+#archive h2,#archive p,#archive ul{margin:0}
+#archive h2{font-size:clamp(19px,4vw,28px)}
+#archive button,#archive input{border:1px solid #507581;border-radius:9px;padding:7px 12px;background:#173e50;color:#edfaff;font:inherit}
+#archive button[aria-pressed=true]{background:#a0ece4;color:#10333b}
+.archiveWhisper{color:#8ca8af;font-size:13px}
+.archiveScope,.archiveCount,.archiveList small{color:#b8d3d8;font-size:12px}
+.archiveList{overflow:auto;min-height:0;padding:0;overscroll-behavior:contain}
+.archiveList li{border-top:1px solid #315564;padding:10px 1px;font-size:14px}
+.archiveList small{display:block;margin-top:4px}
+.archiveList strong{white-space:nowrap;color:#9beee4}
+</style>
+</head>
+<body>
+<style>
+#launchCurtain,#answerCard{position:fixed;z-index:1000;color:#fff}
+#launchCurtain{inset:0;background:#225b77}#launchSea{width:100%;height:100%}#launchTitle{position:absolute;bottom:18%;left:0;width:100%;text-align:center;font-size:clamp(24px,5vw,42px);text-shadow:0 2px 8px #103347}
+#answerCard{bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(460px,94vw);padding:14px 18px;background:#092d43;border:2px solid #74ded0;border-radius:18px;box-shadow:0 8px 32px #00192799;text-align:center;box-sizing:border-box}
+#answerCard[data-result="ng"]{border-color:#ffa58d}#answerValue{display:block;font-size:clamp(24px,5vw,34px);line-height:1.3;overflow-wrap:anywhere}#answerNext{margin-top:8px;padding:9px 24px;border-radius:24px;font-size:16px;background:#cbf9ec;color:#113d4c;border:0;font-weight:bold}
+#launchCurtain[hidden],#answerCard[hidden]{display:none}
+</style><div id="launchCurtain" hidden=""><canvas id="launchSea"></canvas><strong id="launchTitle">海上から出発</strong></div>
+<section id="answerCard" hidden="" aria-live="polite"><b id="answerVerdict"></b><strong id="answerValue"></strong><button id="answerNext">次へ進む</button></section>
+<canvas id="sea" width="922" height="733" style="width: 615px; height: 489px;"></canvas>
+<div class="screenShade"></div>
+<div class="frame">
+  <div class="submarine">
+    <div class="rivet r1"></div><div class="rivet r2"></div><div class="rivet r3"></div><div class="rivet r4"></div>
+    <div class="inner">
+      <div class="topbar">
+        <div class="logoPanel panel">
+          <button type="button" class="logoMain archiveTrigger gameMark" aria-label="asobiroom 深海ゼロダイブ"><img src="./zero-dive_files/asobiroom.png" width="32" height="32" alt="" draggable="false"><span>深海ゼロダイブ</span></button>
+          <div class="logoSub">出題された数字に「0」だけを足して、正しい答えを完成させろ！</div>
+        </div>
+        <div class="centerInfo">
+          <div class="badge">ROUND <strong id="roundNow">1</strong> / 10</div>
+          <div class="badge">CORRECT <strong id="correctNow">0</strong></div>
+          <div class="badge">STAGE <strong id="stageNow">海面付近</strong></div>
+        </div>
+        <div class="statusPanel panel">
+          <div class="statusBlock"><div class="statusLabel">DEPTH</div><div class="statusValue" id="depthNow">0000m</div></div>
+          <div class="statusBlock"><div class="statusLabel">SCORE</div><div class="statusValue" id="scoreNow">0</div></div>
+        </div>
+      </div>
+
+      <div class="main">
+        <section class="left">
+          <div class="questionBox">
+            <div class="questionTop">
+              <div class="qNo">第 <span id="questionNo">1</span> 問</div>
+              <div class="qCat" id="categoryLabel">地理</div>
+            </div>
+            <div class="questionText" id="questionText">地球の赤道一周の長さは約何km？</div>
+            <div class="questionDifficulty"><span id="difficultyPill" class="difficultyPill medium">難易度：ふつう</span><span id="accuracyLabel">正解率：未集計</span><span class="accuracyTrack"><span id="accuracyFill" class="accuracyFill" style="display:block;width:0%"></span></span></div>
+          </div>
+
+          <div class="observation" id="observation"><span class="obsLabel">◉  SUBMARINE OBSERVATION WINDOW</span><span class="sceneTitle" id="sceneTitle">海面付近</span><span class="diveText" id="diveText">▼ 潜航中 ▼</span><div class="depthLines"></div><div class="bubbleSpray" id="diveBubbles"></div><div class="collisionFish" id="collisionFish" aria-hidden="true"><svg viewBox="0 0 500 280"><defs><lineargradient id="bodyGrad" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#8fe5f1"></stop><stop offset=".42" stop-color="#1a86a5"></stop><stop offset="1" stop-color="#073853"></stop></lineargradient><radialgradient id="eyeGrad"><stop offset="0" stop-color="#0a0c18"></stop><stop offset=".72" stop-color="#080c14"></stop><stop offset="1" stop-color="#9be9f3"></stop></radialgradient></defs><path d="M125 132 L28 46 Q47 132 28 218 L125 163" fill="#1d718d" stroke="#b6f2f6" stroke-width="6"></path><path d="M160 75 Q205 3 273 53 L309 86" fill="#278ca9" stroke="#96e2ec" stroke-width="5"></path><path d="M143 186 Q220 264 310 192" fill="#146782" stroke="#75c9d6" stroke-width="4"></path><path d="M94 143 C138 29 326 20 424 130 Q450 148 424 162 C304 277 131 235 94 143Z" fill="url(#bodyGrad)" stroke="#b4ebf6" stroke-width="7"></path><path d="M140 160 Q270 202 392 163" stroke="#a8eaf5" stroke-width="11" opacity=".43" fill="none"></path><path d="M213 61 Q244 145 213 222 M268 50 Q305 145 273 222 M320 64 Q354 135 316 205" stroke="#134c72" stroke-width="10" opacity=".34" fill="none"></path><ellipse cx="372" cy="118" rx="26" ry="27" fill="#e6faff"></ellipse><ellipse cx="376" cy="118" rx="16" ry="18" fill="url(#eyeGrad)"></ellipse><circle cx="381" cy="110" r="5" fill="#fff"></circle><path d="M410 162 Q444 177 465 156" stroke="#062d46" stroke-width="10" fill="none" stroke-linecap="round"></path><path d="M121 152 Q146 141 158 139" stroke="#caffff" stroke-width="5" opacity=".5"></path></svg></div><div class="impactFlash"></div><svg class="impactCracks" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true"><g stroke="#d7faff" stroke-width="2" fill="none" opacity=".95"><path d="M305 150 L280 105 L249 91 L219 51 M280 105 L303 68 L295 17 M305 150 L356 130 L393 106 L455 108 M356 130 L380 170 L436 182 L473 220 M305 150 L285 194 L253 218 L227 280 M285 194 L332 220 L354 287 M305 150 L246 149 L195 165 L152 146"></path><circle cx="305" cy="150" r="19"></circle><circle cx="305" cy="150" r="9"></circle></g></svg></div>
+
+          <div class="displayBox">
+            <div class="displayTop"><span>NUMERIC DISPLAY</span><div class="lamps"><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span></div></div>
+            <div class="board" id="board">
+              <div class="scaleLine"></div><div class="bubbleSpray" id="digitBubbles"></div>
+              <div class="digitsArea">
+                <div class="answerDigits" id="answerDigits"></div>
+                <div class="unitLabel" id="unitLabel">km</div>
+              </div>
+              <div class="judgeOverlay" id="judgeOverlay"><div class="judgeText">JUDGING...</div></div>
+              <div class="resultOverlay" id="resultOverlay"><div class="mark" id="resultMark">○</div></div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="circleBtn plusBtn" id="plusBtn"><span>＋</span><small>0を増やす</small></button>
+            <button class="circleBtn minusBtn" id="minusBtn"><span>－</span><small>0を減らす</small></button>
+            <button class="circleBtn goBtn" id="goBtn">GO</button>
+          </div>
+
+          <div class="message" id="messageBox">スタートすると問題が出題されます。＋と－で0の数を調整し、GOで判定！</div>
+        </section>
+
+        <aside class="side">
+          <div class="sideTitle panel">航海ログ</div>
+          <div class="depthBox panel">
+            <div class="depthCell"><div class="label">現在地</div><div class="small" id="placeNow">海面付近</div></div>
+            <div class="depthCell"><div class="label">到達深度</div><div class="value" id="deepestDepth">0m</div></div><div class="arrivalRate"><span>現在地の到達率</span><b id="currentArrivalRate">100%</b></div><div class="arrivalExplanation" id="arrivalRateNote">全プレイヤーの過去13回の完走中、13回到達</div>
+          </div>
+          <div class="statsBox panel">
+              <div class="statsTitle">航海データ <span style="font-size:11px;color:#9bd4e4"><span id="statsSource">全プレイヤーの記録</span></span></div>
+              <div class="statsLine"><span>プレイ回数</span><b id="playTotal">37</b></div>
+              <div class="statsLine"><span>累計正解率</span><b id="overallAccuracy">61%</b></div>
+              <div class="statsLine"><span>最高到達ステージ</span><b id="bestStage">10 / 10</b></div>
+              <div class="statsLine"><span>竜宮城到達率</span><b id="castleRate">8%</b></div>
+              <div class="stageTrack" id="stageTrack"><span class="done" title="ステージ1到達率: 100%"></span><span class="done" title="ステージ2到達率: 100%"></span><span class="done" title="ステージ3到達率: 100%"></span><span class="done" title="ステージ4到達率: 92%"></span><span class="done" title="ステージ5到達率: 69%"></span><span class="done" title="ステージ6到達率: 62%"></span><span class="done" title="ステージ7到達率: 46%"></span><span class="done" title="ステージ8到達率: 38%"></span><span class="done" title="ステージ9到達率: 15%"></span><span class="done" title="ステージ10到達率: 8%"></span></div>
+            </div>
+            <div class="history" id="history"><div class="historyItem">
+        <div class="hNo"><span class="hNoText">01</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">02</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">03</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">04</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">05</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">06</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">07</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">08</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">09</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div><div class="historyItem">
+        <div class="hNo"><span class="hNoText">10</span></div>
+        <div>
+          <div class="hMain">未出題</div>
+          <div class="hSub">結果待機中</div>
+        </div>
+        <div class="hMark pending">…</div>
+      </div></div>
+        </aside>
+      </div>
+
+      <div class="footer">
+        <div>正解するたびに潜航。海底の景色を楽しみながら、竜宮城を目指せ！</div>
+        <div class="keyPill">0 / Backspace / Enter　<button id="soundBtn" class="soundBtn" aria-label="効果音のオンオフ">🔊 SOUND ON</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modalWrap" id="startModal">
+  <div class="modal">
+    <div class="startBrand">asobiroom のゲーム</div>
+    <h1 class="modalTitle">深海ゼロダイブ</h1>
+    <div class="modalSub">0だけを操作して、10問の雑学クイズに挑戦！</div>
+    <div class="modalText">
+      ・問題は毎回ランダムで10問出題<br>
+      ・不正解でも次の問題へ進行<br>
+      ・問題プールは大量、しかも見た問題はしばらく出にくい仕様<br>
+      ・全問正解で竜宮城に到着！
+    </div>
+    <button class="modalBtn" id="startBtn">潜水開始！</button>
+  </div>
+</div>
+
+<div class="modalWrap hidden" id="resultModal">
+  <div class="modal">
+    <div class="modalMark" id="finalIcon">🏯</div>
+    <h1 class="modalTitle" id="finalTitle">結果発表</h1>
+    <div class="modalSub" id="finalSub">竜宮城に到着！</div>
+    <div class="modalText" id="finalText"></div>
+    <button class="modalBtn" id="scenicBtn" style="background:linear-gradient(180deg,#dffbff,#77d3f0);color:#06354a;box-shadow:0 6px 0 #277292">🌊 到達したエリアの景色を見る</button>
+    <button class="modalBtn" id="restartBtn">もう一度潜る</button>
+    <a class="roomLink" href="https://asobiroom.adroitcider4.chatgpt.site/">← asobiroom に戻る</a>
+  </div>
+</div>
+
+
+<div class="scenicView hidden" id="scenicView" aria-hidden="true">
+  <div class="scenicTop"><strong id="scenicTitle">海中エリア</strong><span id="scenicDepth">水深 0m</span></div>
+  <button type="button" class="scenicBack" id="closeScenic">← 結果画面に戻る</button>
+</div>
+
+<dialog id="archive" aria-labelledby="archiveTitle">
+  <header><div><small>深海ゼロダイブ</small><h2 id="archiveTitle">秘密の航海記録</h2></div><button class="archiveClose" autofocus="">閉じる</button></header>
+  <p class="archiveWhisper">よくここがわかったね！</p>
+  <p class="archiveScope">全プレイヤーの記録</p>
+  <nav aria-label="記録の表示"><button data-section="questions">問題と正答率</button><button data-section="areas">エリア到達率</button></nav>
+  <input type="search" aria-label="問題を検索" placeholder="問題文・ジャンルで検索">
+  <small class="archiveCount"></small><ul class="archiveList"></ul>
+</dialog>
+<script src="./zero-dive_files/shared.js.ダウンロード"></script>
+<script src="./zero-dive_files/archive.js.ダウンロード"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const sceneData = [
+    {depth:0, place:'海面付近'},
+    {depth:120, place:'浅瀬エリア'},
+    {depth:350, place:'サンゴ礁'},
+    {depth:700, place:'海中の森'},
+    {depth:1200, place:'ウミガメ水域'},
+    {depth:1800, place:'沈没船'},
+    {depth:2500, place:'クラゲ海域'},
+    {depth:3400, place:'深海の入口'},
+    {depth:4300, place:'海底火山地帯'},
+    {depth:5300, place:'深海遺跡'},
+    {depth:6500, place:'竜宮城'}
+  ];
+  const questionPool = [{"id":1,"category":"地理","q":"地球の赤道一周の長さは約何km？","base":"4","zeros":4,"unit":"km"},{"id":2,"category":"地理","q":"日本列島の南北の長さは約何km？","base":"3","zeros":3,"unit":"km"},{"id":3,"category":"地理","q":"日本でいちばん高い富士山の標高は約何m？","base":"38","zeros":2,"unit":"m"},{"id":4,"category":"地理","q":"世界最高峰エベレストの標高は約何m？","base":"88","zeros":2,"unit":"m"},{"id":5,"category":"地理","q":"琵琶湖の面積は約何km²？","base":"67","zeros":1,"unit":"km²"},{"id":6,"category":"地理","q":"霞ヶ浦の面積は約何km²？","base":"22","zeros":1,"unit":"km²"},{"id":7,"category":"地理","q":"新潟県の面積は約何km²？","base":"12","zeros":3,"unit":"km²"},{"id":8,"category":"地理","q":"信濃川の全長は約何m？","base":"37","zeros":4,"unit":"m"},{"id":9,"category":"地理","q":"ナイル川の全長は約何m？","base":"67","zeros":5,"unit":"m"},{"id":10,"category":"地理","q":"アマゾン川の全長は約何m？","base":"64","zeros":5,"unit":"m"},{"id":11,"category":"地理","q":"バイカル湖の最大水深は約何m？","base":"16","zeros":2,"unit":"m"},{"id":12,"category":"地理","q":"サハラ砂漠の面積は約何km²？","base":"9","zeros":6,"unit":"km²"},{"id":13,"category":"地理","q":"カスピ海の面積は約何km²？","base":"37","zeros":4,"unit":"km²"},{"id":14,"category":"地理","q":"太平洋の面積は約何km²？","base":"166","zeros":6,"unit":"km²"},{"id":15,"category":"地理","q":"マリアナ海溝の最深部は約何m？","base":"11","zeros":3,"unit":"m"},{"id":16,"category":"宇宙","q":"地球から月までの距離は約何km？","base":"38","zeros":4,"unit":"km"},{"id":17,"category":"宇宙","q":"月の直径は約何km？","base":"35","zeros":2,"unit":"km"},{"id":18,"category":"宇宙","q":"地球の直径は約何km？","base":"13","zeros":3,"unit":"km"},{"id":19,"category":"宇宙","q":"火星の直径は約何km？","base":"68","zeros":2,"unit":"km"},{"id":20,"category":"宇宙","q":"木星の直径は約何km？","base":"14","zeros":4,"unit":"km"},{"id":21,"category":"宇宙","q":"太陽の直径は約何km？","base":"14","zeros":5,"unit":"km"},{"id":22,"category":"宇宙","q":"光が1秒で進む距離は約何km？","base":"3","zeros":5,"unit":"km"},{"id":23,"category":"宇宙","q":"国際宇宙ステーションの高度は約何km？","base":"4","zeros":2,"unit":"km"},{"id":24,"category":"宇宙","q":"地球の年齢は約何年？","base":"46","zeros":8,"unit":"年"},{"id":25,"category":"宇宙","q":"土星の環の最大直径は約何km？","base":"27","zeros":4,"unit":"km"},{"id":26,"category":"宇宙","q":"ハッブル宇宙望遠鏡の高度は約何km？","base":"54","zeros":1,"unit":"km"},{"id":27,"category":"科学","q":"音が1秒で進む距離は約何m？","base":"34","zeros":1,"unit":"m"},{"id":28,"category":"科学","q":"地球表面の海の割合は約何％？","base":"7","zeros":1,"unit":"％"},{"id":29,"category":"科学","q":"人の体の水分の割合は約何％？","base":"6","zeros":1,"unit":"％"},{"id":30,"category":"科学","q":"人体の骨の数は約何本？","base":"2","zeros":2,"unit":"本"},{"id":31,"category":"科学","q":"人の脳の重さは約何g？","base":"14","zeros":2,"unit":"g"},{"id":32,"category":"科学","q":"シロナガスクジラの心臓の重さは約何kg？","base":"18","zeros":1,"unit":"kg"},{"id":33,"category":"科学","q":"奈良の大仏の高さは約何cm？","base":"15","zeros":2,"unit":"cm"},{"id":34,"category":"科学","q":"奈良の大仏の重さは約何t？","base":"25","zeros":1,"unit":"t"},{"id":35,"category":"建物","q":"東京スカイツリーの高さは約何m？","base":"63","zeros":1,"unit":"m"},{"id":36,"category":"建物","q":"東京タワーの高さは約何m？","base":"33","zeros":1,"unit":"m"},{"id":37,"category":"建物","q":"エッフェル塔の高さは約何m？","base":"33","zeros":1,"unit":"m"},{"id":38,"category":"建物","q":"自由の女神像の高さは台座込みで約何m？","base":"9","zeros":1,"unit":"m"},{"id":39,"category":"建物","q":"ブルジュ・ハリファの高さは約何m？","base":"83","zeros":1,"unit":"m"},{"id":40,"category":"建物","q":"ギザの大ピラミッドの元の高さは約何m？","base":"14","zeros":1,"unit":"m"},{"id":41,"category":"建物","q":"姫路城大天守の高さは約何cm？","base":"46","zeros":2,"unit":"cm"},{"id":42,"category":"建物","q":"清水寺の舞台の高さは約何cm？","base":"13","zeros":2,"unit":"cm"},{"id":43,"category":"建物","q":"法隆寺五重塔の高さは約何cm？","base":"32","zeros":2,"unit":"cm"},{"id":44,"category":"建物","q":"大阪城天守閣の高さは約何cm？","base":"55","zeros":2,"unit":"cm"},{"id":45,"category":"建物","q":"通天閣の高さは約何m？","base":"1","zeros":2,"unit":"m"},{"id":46,"category":"建物","q":"さっぽろテレビ塔の高さは約何m？","base":"15","zeros":1,"unit":"m"},{"id":47,"category":"建物","q":"横浜ランドマークタワーの高さは約何m？","base":"3","zeros":2,"unit":"m"},{"id":48,"category":"建物","q":"六本木ヒルズ森タワーの高さは約何m？","base":"24","zeros":1,"unit":"m"},{"id":49,"category":"建物","q":"あべのハルカスの高さは約何m？","base":"3","zeros":2,"unit":"m"},{"id":50,"category":"建物","q":"サグラダ・ファミリア完成時の高さは約何m？","base":"17","zeros":1,"unit":"m"},{"id":51,"category":"建物","q":"ピサの斜塔の高さは約何cm？","base":"56","zeros":2,"unit":"cm"},{"id":52,"category":"建物","q":"ビッグベンの高さは約何cm？","base":"96","zeros":2,"unit":"cm"},{"id":53,"category":"建物","q":"ゴールデンゲートブリッジ主塔の高さは約何m？","base":"23","zeros":1,"unit":"m"},{"id":54,"category":"建物","q":"シドニー・オペラハウスの高さは約何cm？","base":"65","zeros":2,"unit":"cm"},{"id":55,"category":"建物","q":"凱旋門の高さは約何cm？","base":"5","zeros":3,"unit":"cm"},{"id":56,"category":"建物","q":"コロッセオの収容人数は約何人？","base":"5","zeros":4,"unit":"人"},{"id":57,"category":"建物","q":"万里の長城の総延長は約何m？","base":"21","zeros":6,"unit":"m"},{"id":58,"category":"建物","q":"パナマ運河の全長は約何m？","base":"8","zeros":4,"unit":"m"},{"id":59,"category":"建物","q":"スエズ運河の全長は約何m？","base":"19","zeros":4,"unit":"m"},{"id":60,"category":"建物","q":"東京湾アクアラインの全長は約何m？","base":"15","zeros":3,"unit":"m"},{"id":61,"category":"建物","q":"関西国際空港連絡橋の長さは約何m？","base":"37","zeros":2,"unit":"m"},{"id":62,"category":"建物","q":"青函トンネルの全長は約何m？","base":"54","zeros":3,"unit":"m"},{"id":63,"category":"建物","q":"瀬戸大橋の全長は約何m？","base":"13","zeros":3,"unit":"m"},{"id":64,"category":"建物","q":"明石海峡大橋の全長は約何m？","base":"39","zeros":2,"unit":"m"},{"id":65,"category":"建物","q":"黒部ダムの高さは約何m？","base":"19","zeros":1,"unit":"m"},{"id":66,"category":"建物","q":"黒部ダムの堤頂長は約何m？","base":"49","zeros":1,"unit":"m"},{"id":67,"category":"建物","q":"黒部ダムの総工費は約何円？","base":"5","zeros":10,"unit":"円"},{"id":68,"category":"建物","q":"東京ドームの収容人数は約何人？","base":"55","zeros":3,"unit":"人"},{"id":69,"category":"建物","q":"甲子園球場の収容人数は約何人？","base":"47","zeros":3,"unit":"人"},{"id":70,"category":"建物","q":"国立競技場の収容人数は約何人？","base":"68","zeros":3,"unit":"人"},{"id":71,"category":"建物","q":"日本武道館の最大収容人数は約何人？","base":"14","zeros":3,"unit":"人"},{"id":72,"category":"建物","q":"さいたまスーパーアリーナの最大収容人数は約何人？","base":"37","zeros":3,"unit":"人"},{"id":73,"category":"建物","q":"渋谷スクランブル交差点で1回の青信号で渡る人は最大約何人？","base":"3","zeros":3,"unit":"人"},{"id":74,"category":"建物","q":"東京ディズニーランドの面積は約何m²？","base":"51","zeros":4,"unit":"m²"},{"id":75,"category":"建物","q":"USJの面積は約何m²？","base":"54","zeros":4,"unit":"m²"},{"id":76,"category":"建物","q":"レゴランド・ジャパンの面積は約何m²？","base":"93","zeros":3,"unit":"m²"},{"id":77,"category":"建物","q":"ルーヴル美術館の作品数は約何点？","base":"38","zeros":4,"unit":"点"},{"id":78,"category":"建物","q":"ルーヴル美術館の年間来場者数は約何人？","base":"9","zeros":6,"unit":"人"},{"id":79,"category":"建物","q":"東京メトロの1日平均利用者数は約何人？","base":"65","zeros":5,"unit":"人"},{"id":80,"category":"建物","q":"新宿駅の1日平均利用者数は約何人？","base":"35","zeros":5,"unit":"人"},{"id":81,"category":"建物","q":"渋谷駅の1日平均利用者数は約何人？","base":"24","zeros":5,"unit":"人"},{"id":82,"category":"建物","q":"東京駅の1日平均利用者数は約何人？","base":"4","zeros":5,"unit":"人"},{"id":83,"category":"スポーツ","q":"サッカー選手が1試合で走る距離は平均で約何m？","base":"12","zeros":3,"unit":"m"},{"id":84,"category":"スポーツ","q":"フルマラソンの距離は約何m？","base":"42","zeros":3,"unit":"m"},{"id":85,"category":"スポーツ","q":"プロ野球の豪速球の最速クラスは約何km/h？","base":"16","zeros":1,"unit":"km/h"},{"id":86,"category":"スポーツ","q":"大谷翔平クラスの本塁打打球速度は最大約何km/h？","base":"19","zeros":1,"unit":"km/h"},{"id":87,"category":"スポーツ","q":"F1マシンとドライバーの最低重量は約何kg？","base":"8","zeros":2,"unit":"kg"},{"id":88,"category":"スポーツ","q":"NBAコートの長さは約何cm？","base":"28","zeros":2,"unit":"cm"},{"id":89,"category":"スポーツ","q":"サッカーゴールの横幅は約何cm？","base":"73","zeros":1,"unit":"cm"},{"id":90,"category":"スポーツ","q":"卓球台の長さは約何cm？","base":"27","zeros":1,"unit":"cm"},{"id":91,"category":"スポーツ","q":"男子バレーのネットの高さは約何cm？","base":"24","zeros":1,"unit":"cm"},{"id":92,"category":"スポーツ","q":"陸上競技場のトラック1周は約何m？","base":"4","zeros":2,"unit":"m"},{"id":93,"category":"スポーツ","q":"W杯クラスのサッカースタジアム1試合の観客数は約何人？","base":"8","zeros":4,"unit":"人"},{"id":94,"category":"乗り物","q":"東海道新幹線の東京〜新大阪の距離は約何m？","base":"51","zeros":4,"unit":"m"},{"id":95,"category":"乗り物","q":"新幹線の最高営業速度は約何km/h？","base":"32","zeros":1,"unit":"km/h"},{"id":96,"category":"乗り物","q":"ジェット旅客機の巡航高度は約何m？","base":"1","zeros":4,"unit":"m"},{"id":97,"category":"乗り物","q":"旅客機の巡航速度は約何km/h？","base":"9","zeros":2,"unit":"km/h"},{"id":98,"category":"乗り物","q":"ジャンボジェット機の全長は約何cm？","base":"7","zeros":3,"unit":"cm"},{"id":99,"category":"乗り物","q":"タイタニック号の全長は約何cm？","base":"27","zeros":3,"unit":"cm"},{"id":100,"category":"乗り物","q":"そうりゅう型潜水艦の全長は約何cm？","base":"84","zeros":2,"unit":"cm"},{"id":101,"category":"乗り物","q":"深海探査艇「しんかい6500」の最大潜航深度は何m？","base":"65","zeros":2,"unit":"m"},{"id":102,"category":"乗り物","q":"「しんかい6500」の建造費は約何円？","base":"13","zeros":9,"unit":"円"},{"id":103,"category":"乗り物","q":"はやぶさ2の打ち上げ時の重量は約何kg？","base":"6","zeros":2,"unit":"kg"},{"id":104,"category":"経済","q":"東京スカイツリーの建設費は約何円？","base":"65","zeros":9,"unit":"円"},{"id":105,"category":"経済","q":"あべのハルカスの建設費は約何円？","base":"13","zeros":10,"unit":"円"},{"id":106,"category":"経済","q":"ブルジュ・ハリファの建設費は約何円？","base":"15","zeros":10,"unit":"円"},{"id":107,"category":"経済","q":"明石海峡大橋の建設費は約何円？","base":"5","zeros":11,"unit":"円"},{"id":108,"category":"経済","q":"青函トンネルの建設費は約何円？","base":"7","zeros":11,"unit":"円"},{"id":109,"category":"経済","q":"リニア中央新幹線品川〜名古屋の工事費は約何円？","base":"7","zeros":12,"unit":"円"},{"id":110,"category":"経済","q":"東京ドームの建設費は約何円？","base":"35","zeros":9,"unit":"円"},{"id":111,"category":"経済","q":"関西国際空港の建設費は約何円？","base":"15","zeros":11,"unit":"円"},{"id":112,"category":"経済","q":"レインボーブリッジの建設費は約何円？","base":"57","zeros":9,"unit":"円"},{"id":113,"category":"経済","q":"大阪・関西万博の会場建設費は約何円？","base":"23","zeros":10,"unit":"円"},{"id":114,"category":"経済","q":"東京タワーの建設費は当時約何円？","base":"3","zeros":9,"unit":"円"},{"id":115,"category":"経済","q":"東海道新幹線の建設費は当時約何円？","base":"38","zeros":10,"unit":"円"},{"id":116,"category":"経済","q":"大相撲の横綱の優勝賞金は約何円？","base":"1","zeros":4,"unit":"円"},{"id":117,"category":"歴史","q":"サグラダ・ファミリアは着工から完成予定まで約何年？","base":"14","zeros":1,"unit":"年"},{"id":118,"category":"歴史","q":"ピラミッド建設に使われた石は約何個？","base":"23","zeros":5,"unit":"個"},{"id":119,"category":"歴史","q":"コロンブスが新大陸に到達したのは西暦何年ごろ？","base":"149","zeros":1,"unit":"年"},{"id":120,"category":"歴史","q":"江戸幕府が開かれたのは西暦何年ごろ？","base":"160","zeros":1,"unit":"年"},{"id":121,"category":"歴史","q":"関ヶ原の戦いは西暦何年ごろ？","base":"160","zeros":1,"unit":"年"},{"id":122,"category":"歴史","q":"奈良時代の平城京遷都は西暦何年ごろ？","base":"71","zeros":1,"unit":"年"},{"id":123,"category":"文化","q":"ハリー・ポッターシリーズの世界累計発行部数は約何部？","base":"5","zeros":8,"unit":"部"},{"id":124,"category":"文化","q":"ONE PIECEの世界累計発行部数は約何部？","base":"5","zeros":8,"unit":"部"},{"id":125,"category":"文化","q":"PlayStation 2の世界累計販売台数は約何台？","base":"16","zeros":7,"unit":"台"},{"id":126,"category":"文化","q":"Nintendo Switchの世界累計販売台数は約何台？","base":"14","zeros":7,"unit":"台"},{"id":127,"category":"文化","q":"ファミコンの国内販売台数は約何台？","base":"19","zeros":6,"unit":"台"},{"id":128,"category":"文化","q":"YouTubeの月間利用者数は約何人？","base":"25","zeros":8,"unit":"人"},{"id":129,"category":"文化","q":"Instagramの月間利用者数は約何人？","base":"2","zeros":9,"unit":"人"},{"id":130,"category":"文化","q":"X（旧Twitter）の月間利用者数は約何人？","base":"5","zeros":8,"unit":"人"},{"id":131,"category":"文化","q":"世界のインターネット利用者数は約何人？","base":"54","zeros":8,"unit":"人"},{"id":132,"category":"文化","q":"スタジオジブリパークの総面積は約何m²？","base":"71","zeros":5,"unit":"m²"},{"id":133,"category":"文化","q":"4尺玉花火の直径は約何cm？","base":"12","zeros":1,"unit":"cm"},{"id":134,"category":"都市","q":"東京都の人口は約何人？","base":"14","zeros":6,"unit":"人"},{"id":135,"category":"都市","q":"大阪市の人口は約何人？","base":"27","zeros":5,"unit":"人"},{"id":136,"category":"都市","q":"横浜市の人口は約何人？","base":"37","zeros":5,"unit":"人"},{"id":137,"category":"都市","q":"名古屋市の人口は約何人？","base":"23","zeros":5,"unit":"人"},{"id":138,"category":"都市","q":"福岡市の人口は約何人？","base":"16","zeros":5,"unit":"人"},{"id":139,"category":"都市","q":"京都市の人口は約何人？","base":"14","zeros":5,"unit":"人"},{"id":140,"category":"都市","q":"仙台市の人口は約何人？","base":"11","zeros":5,"unit":"人"},{"id":141,"category":"都市","q":"札幌市の人口は約何人？","base":"19","zeros":5,"unit":"人"},{"id":142,"category":"都市","q":"新潟市の人口は約何人？","base":"78","zeros":4,"unit":"人"},{"id":143,"category":"都市","q":"長岡市の人口は約何人？","base":"27","zeros":4,"unit":"人"},{"id":144,"category":"都市","q":"パリの人口は約何人？","base":"21","zeros":5,"unit":"人"},{"id":145,"category":"都市","q":"ニューヨーク市の人口は約何人？","base":"84","zeros":5,"unit":"人"},{"id":146,"category":"都市","q":"ロサンゼルス市の人口は約何人？","base":"39","zeros":5,"unit":"人"},{"id":147,"category":"都市","q":"北海道の面積は約何km²？","base":"8","zeros":4,"unit":"km²"},{"id":148,"category":"自然","q":"キリンの身長は約何cm？","base":"5","zeros":2,"unit":"cm"},{"id":149,"category":"自然","q":"シロナガスクジラの体長は約何cm？","base":"3","zeros":3,"unit":"cm"},{"id":150,"category":"自然","q":"アフリカゾウの体重は約何kg？","base":"6","zeros":3,"unit":"kg"},{"id":151,"category":"自然","q":"ダチョウの最高速度は約何km/h？","base":"7","zeros":1,"unit":"km/h"},{"id":152,"category":"自然","q":"チーターの最高速度は約何km/h？","base":"1","zeros":2,"unit":"km/h"},{"id":153,"category":"自然","q":"オオサンショウウオの最大長は約何cm？","base":"15","zeros":1,"unit":"cm"},{"id":154,"category":"自然","q":"クロマグロの体長は約何cm？","base":"3","zeros":2,"unit":"cm"},{"id":155,"category":"自然","q":"シャチの体長は約何cm？","base":"9","zeros":2,"unit":"cm"},{"id":156,"category":"自然","q":"皇帝ペンギンの身長は約何cm？","base":"12","zeros":1,"unit":"cm"},{"id":157,"category":"自然","q":"ナスカの地上絵・ハチドリの大きさは約何m？","base":"9","zeros":1,"unit":"m"},{"id":158,"category":"雑学","q":"東京ドームの屋根面積は約何m²？","base":"46","zeros":3,"unit":"m²"},{"id":159,"category":"雑学","q":"関西万博の大屋根リングの直径は約何m？","base":"6","zeros":2,"unit":"m"},{"id":160,"category":"雑学","q":"モアイ像の大きいものの高さは約何m？","base":"1","zeros":1,"unit":"m"},{"id":161,"category":"雑学","q":"一升瓶の容量は約何mL？","base":"18","zeros":2,"unit":"mL"},{"id":162,"category":"雑学","q":"コカ・コーラの350mL缶の内容量は何mL？","base":"35","zeros":1,"unit":"mL"},{"id":163,"category":"雑学","q":"レオナルド・ダ・ヴィンチ「最後の晩餐」の横幅は約何cm？","base":"9","zeros":2,"unit":"cm"},{"id":164,"category":"雑学","q":"世界の人口は約何人？","base":"8","zeros":9,"unit":"人"},{"id":165,"category":"雑学","q":"日本の人口は約何人？","base":"12","zeros":7,"unit":"人"},{"id":166,"category":"雑学","q":"新宿御苑の面積は約何m²？","base":"58","zeros":4,"unit":"m²"},{"id":167,"category":"雑学","q":"代々木公園の面積は約何m²？","base":"54","zeros":4,"unit":"m²"},{"id":168,"category":"食べ物","q":"一般的なショートケーキ1個のカロリーは約何kcal？","base":"3","zeros":2,"unit":"kcal"},{"id":169,"category":"食べ物","q":"一般的なカップラーメン1食のカロリーは約何kcal？","base":"4","zeros":2,"unit":"kcal"},{"id":170,"category":"食べ物","q":"白ご飯100gあたりのカロリーは約何kcal？","base":"16","zeros":1,"unit":"kcal"},{"id":171,"category":"食べ物","q":"牛乳200mLのカロリーは約何kcal？","base":"13","zeros":1,"unit":"kcal"},{"id":172,"category":"食べ物","q":"バナナ1本（可食部約100g）のカロリーは約何kcal？","base":"9","zeros":1,"unit":"kcal"},{"id":173,"category":"食べ物","q":"卵1個のカロリーは約何kcal？","base":"8","zeros":1,"unit":"kcal"},{"id":174,"category":"食べ物","q":"食パン6枚切り1枚のカロリーは約何kcal？","base":"15","zeros":1,"unit":"kcal"},{"id":175,"category":"食べ物","q":"りんご1個（可食部約250g）のカロリーは約何kcal？","base":"14","zeros":1,"unit":"kcal"},{"id":176,"category":"食べ物","q":"板チョコ1枚（50g）のカロリーは約何kcal？","base":"28","zeros":1,"unit":"kcal"},{"id":177,"category":"生き物","q":"ミツバチの一つの巣には多いとき約何匹いる？","base":"5","zeros":4,"unit":"匹"},{"id":178,"category":"生き物","q":"アリの大規模なコロニーは約何匹に達することがある？","base":"1","zeros":6,"unit":"匹"},{"id":179,"category":"生き物","q":"タコの吸盤は腕8本合わせて約何個？","base":"2","zeros":3,"unit":"個"},{"id":180,"category":"生き物","q":"人間の味蕾の数は約何個？","base":"1","zeros":4,"unit":"個"},{"id":181,"category":"生き物","q":"人間の赤血球は血液1mm³中に約何個？","base":"5","zeros":6,"unit":"個"},{"id":182,"category":"生き物","q":"心臓が1日に拍動する回数は約何回？","base":"1","zeros":5,"unit":"回"},{"id":183,"category":"生き物","q":"人間の頭髪の本数は平均で約何本？","base":"1","zeros":5,"unit":"本"},{"id":184,"category":"生き物","q":"シロナガスクジラの一日の餌の量は約何kg？","base":"4","zeros":3,"unit":"kg"},{"id":185,"category":"スポーツ","q":"サッカー日本代表のホーム戦のスタジアムで観客約何人を収容できる？（埼玉スタジアム）","base":"63","zeros":3,"unit":"人"},{"id":186,"category":"スポーツ","q":"FIFAワールドカップ本大会で出場する選手は1大会あたり約何人？（32チーム・各26人の場合）","base":"83","zeros":1,"unit":"人"},{"id":187,"category":"スポーツ","q":"一般的なプロサッカー選手の1試合での総走行距離は約何km？","base":"1","zeros":1,"unit":"km"},{"id":188,"category":"スポーツ","q":"世界最大級のマラソン大会の完走者数は約何人？","base":"5","zeros":4,"unit":"人"},{"id":189,"category":"建造物","q":"東京スカイツリーに使われた鉄骨の総重量は約何t？","base":"36","zeros":3,"unit":"t"},{"id":190,"category":"建造物","q":"東京タワーに使われた鋼材は約何t？","base":"4","zeros":3,"unit":"t"},{"id":191,"category":"建造物","q":"東京ドームのグラウンド面積は約何m²？","base":"13","zeros":3,"unit":"m²"},{"id":192,"category":"建造物","q":"ピラミッドの建造に使われた石材は約何個？","base":"23","zeros":5,"unit":"個"},{"id":193,"category":"建造物","q":"エンパイア・ステート・ビルの窓は約何枚？","base":"65","zeros":2,"unit":"枚"},{"id":194,"category":"建造物","q":"東京スカイツリーの第一展望台の高さは約何m？","base":"35","zeros":1,"unit":"m"},{"id":195,"category":"建造物","q":"関門トンネルの海底区間の長さは約何m？","base":"78","zeros":1,"unit":"m"},{"id":196,"category":"建造物","q":"横浜ベイブリッジの全長は約何m？","base":"86","zeros":1,"unit":"m"},{"id":197,"category":"お金","q":"映画の超大作にかかる製作費は約何ドル？（例：2億ドル規模）","base":"2","zeros":8,"unit":"ドル"},{"id":198,"category":"お金","q":"大規模なテーマパークの建設費は約何円？（例：数千億円規模）","base":"3","zeros":11,"unit":"円"},{"id":199,"category":"お金","q":"高層ビルの建設にかかる費用は約何円？（例：1000億円規模）","base":"1","zeros":11,"unit":"円"},{"id":200,"category":"都市","q":"人口約100万人の都市には何人住む？","base":"1","zeros":6,"unit":"人"},{"id":201,"category":"宇宙","q":"天の川銀河にある恒星の数は約何個と見積もられる？","base":"1","zeros":11,"unit":"個"},{"id":202,"category":"宇宙","q":"宇宙から地上まで帰還する宇宙船の大気圏突入速度は約何km/h？","base":"28","zeros":3,"unit":"km/h"},{"id":203,"category":"宇宙","q":"月面の昼間の最高気温は約何℃？","base":"12","zeros":1,"unit":"℃"},{"id":204,"category":"宇宙","q":"太陽中心部の温度は約何℃？","base":"15","zeros":6,"unit":"℃"},{"id":205,"category":"文化","q":"日本の神社の数は約何社？","base":"8","zeros":4,"unit":"社"},{"id":206,"category":"文化","q":"日本の寺院の数は約何寺？","base":"7","zeros":4,"unit":"寺"},{"id":207,"category":"文化","q":"世界で話される言語は約何種類？","base":"7","zeros":3,"unit":"種類"},{"id":208,"category":"文化","q":"東京ディズニーランドの開園当時の建設費は約何円？","base":"18","zeros":10,"unit":"円"},{"id":209,"category":"人体","q":"大人の脳にあるニューロンは約何個？","base":"86","zeros":9,"unit":"個"},{"id":210,"category":"人体","q":"人間の血管を全部つなぐと長さは約何km？","base":"1","zeros":5,"unit":"km"},{"id":211,"category":"自然","q":"サンゴ礁が生息できる海の深さは一般に約何m以内？","base":"5","zeros":1,"unit":"m"},{"id":212,"category":"自然","q":"シロナガスクジラの最大クラスの体重は約何kg？","base":"15","zeros":4,"unit":"kg"},{"id":213,"category":"自然","q":"世界最大級の樹木セコイアの樹齢は約何年？","base":"3","zeros":3,"unit":"年"},{"id":214,"category":"乗り物","q":"大型客船の乗客定員は約何人？（最大級）","base":"7","zeros":3,"unit":"人"},{"id":215,"category":"乗り物","q":"新幹線N700系16両編成の定員は約何人？","base":"13","zeros":2,"unit":"人"},{"id":216,"category":"乗り物","q":"航空機エアバスA380の最大座席数は約何席？","base":"85","zeros":1,"unit":"席"},{"id":217,"category":"乗り物","q":"世界最大級のコンテナ船の積載能力は約何TEU？","base":"24","zeros":3,"unit":"TEU"},{"id":218,"category":"雑学","q":"一般的な家庭の冷蔵庫の年間消費電力量は約何kWh？","base":"3","zeros":2,"unit":"kWh"},{"id":219,"category":"雑学","q":"日本の自動販売機の設置台数は約何台？","base":"4","zeros":6,"unit":"台"},{"id":220,"category":"雑学","q":"一般的な家庭の電子レンジの消費電力は約何W？","base":"1","zeros":3,"unit":"W"},{"id":221,"category":"雑学","q":"世界中にあるチェーン系コーヒー店の店舗数は約何店？（大手1社の規模）","base":"4","zeros":4,"unit":"店"},{"id":222,"category":"雑学","q":"1日に世界で送られるメールは約何通？","base":"3","zeros":11,"unit":"通"},{"id":223,"category":"雑学","q":"世界のスマートフォン利用者は約何人？","base":"5","zeros":9,"unit":"人"},{"id":224,"category":"雑学","q":"日本で1日に排出される家庭ごみは約何t？","base":"8","zeros":4,"unit":"t"},{"id":225,"category":"雑学","q":"東京の地下鉄の年間利用者数は約何人？","base":"3","zeros":9,"unit":"人"},{"id":226,"category":"雑学","q":"日本全国の郵便ポストの数は約何本？","base":"17","zeros":4,"unit":"本"},
+{"id":227,"category":"地理","q":"青森県の面積は約何km²？","base":"96","zeros":2,"unit":"km²"},
+{"id":228,"category":"地理","q":"岩手県の面積は約何km²？","base":"15","zeros":3,"unit":"km²"},
+{"id":229,"category":"地理","q":"宮城県の面積は約何km²？","base":"73","zeros":2,"unit":"km²"},
+{"id":230,"category":"地理","q":"秋田県の面積は約何km²？","base":"12","zeros":3,"unit":"km²"},
+{"id":231,"category":"地理","q":"山形県の面積は約何km²？","base":"93","zeros":2,"unit":"km²"},
+{"id":232,"category":"地理","q":"福島県の面積は約何km²？","base":"14","zeros":3,"unit":"km²"},
+{"id":233,"category":"地理","q":"茨城県の面積は約何km²？","base":"61","zeros":2,"unit":"km²"},
+{"id":234,"category":"地理","q":"栃木県の面積は約何km²？","base":"64","zeros":2,"unit":"km²"},
+{"id":235,"category":"地理","q":"群馬県の面積は約何km²？","base":"64","zeros":2,"unit":"km²"},
+{"id":236,"category":"地理","q":"埼玉県の面積は約何km²？","base":"38","zeros":2,"unit":"km²"},
+{"id":237,"category":"地理","q":"千葉県の面積は約何km²？","base":"52","zeros":2,"unit":"km²"},
+{"id":238,"category":"地理","q":"東京都の面積は約何km²？","base":"22","zeros":2,"unit":"km²"},
+{"id":239,"category":"地理","q":"神奈川県の面積は約何km²？","base":"24","zeros":2,"unit":"km²"},
+{"id":240,"category":"地理","q":"富山県の面積は約何km²？","base":"42","zeros":2,"unit":"km²"},
+{"id":241,"category":"地理","q":"石川県の面積は約何km²？","base":"42","zeros":2,"unit":"km²"},
+{"id":242,"category":"地理","q":"福井県の面積は約何km²？","base":"42","zeros":2,"unit":"km²"},
+{"id":243,"category":"地理","q":"山梨県の面積は約何km²？","base":"45","zeros":2,"unit":"km²"},
+{"id":244,"category":"地理","q":"長野県の面積は約何km²？","base":"14","zeros":3,"unit":"km²"},
+{"id":245,"category":"地理","q":"岐阜県の面積は約何km²？","base":"11","zeros":3,"unit":"km²"},
+{"id":246,"category":"地理","q":"静岡県の面積は約何km²？","base":"78","zeros":2,"unit":"km²"},
+{"id":247,"category":"地理","q":"愛知県の面積は約何km²？","base":"52","zeros":2,"unit":"km²"},
+{"id":248,"category":"地理","q":"三重県の面積は約何km²？","base":"58","zeros":2,"unit":"km²"},
+{"id":249,"category":"地理","q":"滋賀県の面積は約何km²？","base":"4","zeros":3,"unit":"km²"},
+{"id":250,"category":"地理","q":"京都府の面積は約何km²？","base":"46","zeros":2,"unit":"km²"},
+{"id":251,"category":"地理","q":"大阪府の面積は約何km²？","base":"19","zeros":2,"unit":"km²"},
+{"id":252,"category":"地理","q":"兵庫県の面積は約何km²？","base":"84","zeros":2,"unit":"km²"},
+{"id":253,"category":"地理","q":"奈良県の面積は約何km²？","base":"37","zeros":2,"unit":"km²"},
+{"id":254,"category":"地理","q":"和歌山県の面積は約何km²？","base":"47","zeros":2,"unit":"km²"},
+{"id":255,"category":"地理","q":"鳥取県の面積は約何km²？","base":"35","zeros":2,"unit":"km²"},
+{"id":256,"category":"地理","q":"島根県の面積は約何km²？","base":"67","zeros":2,"unit":"km²"},
+{"id":257,"category":"地理","q":"岡山県の面積は約何km²？","base":"71","zeros":2,"unit":"km²"},
+{"id":258,"category":"地理","q":"広島県の面積は約何km²？","base":"85","zeros":2,"unit":"km²"},
+{"id":259,"category":"地理","q":"山口県の面積は約何km²？","base":"61","zeros":2,"unit":"km²"},
+{"id":260,"category":"地理","q":"徳島県の面積は約何km²？","base":"41","zeros":2,"unit":"km²"},
+{"id":261,"category":"地理","q":"香川県の面積は約何km²？","base":"19","zeros":2,"unit":"km²"},
+{"id":262,"category":"地理","q":"愛媛県の面積は約何km²？","base":"57","zeros":2,"unit":"km²"},
+{"id":263,"category":"地理","q":"高知県の面積は約何km²？","base":"71","zeros":2,"unit":"km²"},
+{"id":264,"category":"地理","q":"福岡県の面積は約何km²？","base":"5","zeros":3,"unit":"km²"},
+{"id":265,"category":"地理","q":"佐賀県の面積は約何km²？","base":"24","zeros":2,"unit":"km²"},
+{"id":266,"category":"地理","q":"長崎県の面積は約何km²？","base":"41","zeros":2,"unit":"km²"},
+{"id":267,"category":"地理","q":"熊本県の面積は約何km²？","base":"74","zeros":2,"unit":"km²"},
+{"id":268,"category":"地理","q":"大分県の面積は約何km²？","base":"63","zeros":2,"unit":"km²"},
+{"id":269,"category":"地理","q":"宮崎県の面積は約何km²？","base":"77","zeros":2,"unit":"km²"},
+{"id":270,"category":"地理","q":"鹿児島県の面積は約何km²？","base":"92","zeros":2,"unit":"km²"},
+{"id":271,"category":"地理","q":"沖縄県の面積は約何km²？","base":"23","zeros":2,"unit":"km²"},
+{"id":272,"category":"海と島","q":"グリーンランドの面積は約何km²？","base":"22","zeros":5,"unit":"km²"},
+{"id":273,"category":"海と島","q":"ニューギニア島の面積は約何km²？","base":"8","zeros":5,"unit":"km²"},
+{"id":274,"category":"海と島","q":"ボルネオ島の面積は約何km²？","base":"74","zeros":4,"unit":"km²"},
+{"id":275,"category":"海と島","q":"マダガスカル島の面積は約何km²？","base":"59","zeros":4,"unit":"km²"},
+{"id":276,"category":"海と島","q":"バフィン島の面積は約何km²？","base":"51","zeros":4,"unit":"km²"},
+{"id":277,"category":"海と島","q":"スマトラ島の面積は約何km²？","base":"47","zeros":4,"unit":"km²"},
+{"id":278,"category":"海と島","q":"グレートブリテン島の面積は約何km²？","base":"22","zeros":4,"unit":"km²"},
+{"id":279,"category":"海と島","q":"スラウェシ島の面積は約何km²？","base":"19","zeros":4,"unit":"km²"},
+{"id":280,"category":"海と島","q":"ジャワ島の面積は約何km²？","base":"13","zeros":4,"unit":"km²"},
+{"id":281,"category":"海と島","q":"キューバ島の面積は約何km²？","base":"11","zeros":4,"unit":"km²"},
+{"id":282,"category":"海と島","q":"ルソン島の面積は約何km²？","base":"11","zeros":4,"unit":"km²"},
+{"id":283,"category":"海と島","q":"本州の面積は約何km²？","base":"23","zeros":4,"unit":"km²"},
+{"id":284,"category":"海と島","q":"四国の面積は約何km²？","base":"18","zeros":3,"unit":"km²"},
+{"id":285,"category":"海と島","q":"沖縄本島の面積は約何km²？","base":"12","zeros":2,"unit":"km²"},
+{"id":286,"category":"海と島","q":"佐渡島の面積は約何km²？","base":"85","zeros":1,"unit":"km²"},
+{"id":287,"category":"海と島","q":"奄美大島の面積は約何km²？","base":"71","zeros":1,"unit":"km²"},
+{"id":288,"category":"海と島","q":"淡路島の面積は約何km²？","base":"59","zeros":1,"unit":"km²"},
+{"id":289,"category":"海と島","q":"屋久島の面積は約何km²？","base":"5","zeros":2,"unit":"km²"},
+{"id":290,"category":"海と島","q":"種子島の面積は約何km²？","base":"44","zeros":1,"unit":"km²"},
+{"id":291,"category":"海と島","q":"福江島の面積は約何km²？","base":"33","zeros":1,"unit":"km²"},
+{"id":292,"category":"水辺","q":"支笏湖の最も深い場所は約何m？","base":"36","zeros":1,"unit":"m"},
+{"id":293,"category":"水辺","q":"洞爺湖の最も深い場所は約何m？","base":"18","zeros":1,"unit":"m"},
+{"id":294,"category":"水辺","q":"十和田湖の最も深い場所は約何m？","base":"33","zeros":1,"unit":"m"},
+{"id":295,"category":"水辺","q":"琵琶湖の最も深い場所は約何m？","base":"1","zeros":2,"unit":"m"},
+{"id":296,"category":"水辺","q":"猪苗代湖の最も深い場所は約何m？","base":"94","zeros":0,"unit":"m"},
+{"id":297,"category":"水辺","q":"屈斜路湖の最も深い場所は約何m？","base":"12","zeros":1,"unit":"m"},
+{"id":298,"category":"水辺","q":"スペリオル湖の最も深い場所は約何m？","base":"41","zeros":1,"unit":"m"},
+{"id":299,"category":"水辺","q":"ヴィクトリア湖の最も深い場所は約何m？","base":"84","zeros":0,"unit":"m"},
+{"id":300,"category":"水辺","q":"ミシガン湖の最も深い場所は約何m？","base":"28","zeros":1,"unit":"m"},
+{"id":301,"category":"水辺","q":"ヒューロン湖の最も深い場所は約何m？","base":"23","zeros":1,"unit":"m"},
+{"id":302,"category":"水辺","q":"タンガニーカ湖の最も深い場所は約何m？","base":"15","zeros":2,"unit":"m"},
+{"id":303,"category":"水辺","q":"オンタリオ湖の最も深い場所は約何m？","base":"24","zeros":1,"unit":"m"},
+{"id":304,"category":"水辺","q":"アマゾン川の流域面積は約何km²？","base":"7","zeros":6,"unit":"km²"},
+{"id":305,"category":"水辺","q":"コンゴ川の流域面積は約何km²？","base":"37","zeros":5,"unit":"km²"},
+{"id":306,"category":"水辺","q":"ナイル川の流域面積は約何km²？","base":"33","zeros":5,"unit":"km²"},
+{"id":307,"category":"水辺","q":"長江の流域面積は約何km²？","base":"19","zeros":5,"unit":"km²"},
+{"id":308,"category":"水辺","q":"インダス川の流域面積は約何km²？","base":"96","zeros":4,"unit":"km²"},
+{"id":309,"category":"水辺","q":"ユーコン川の流域面積は約何km²？","base":"85","zeros":4,"unit":"km²"},
+{"id":310,"category":"水辺","q":"黄河の流域面積は約何km²？","base":"98","zeros":4,"unit":"km²"},
+{"id":311,"category":"水辺","q":"利根川の流域面積は約何km²？","base":"17","zeros":3,"unit":"km²"},
+{"id":312,"category":"水辺","q":"信濃川の流域面積は約何km²？","base":"12","zeros":3,"unit":"km²"},
+{"id":313,"category":"水辺","q":"北上川の流域面積は約何km²？","base":"1","zeros":4,"unit":"km²"},
+{"id":314,"category":"水辺","q":"石狩川の流域面積は約何km²？","base":"14","zeros":3,"unit":"km²"},
+{"id":315,"category":"水辺","q":"木曽川の流域面積は約何km²？","base":"91","zeros":2,"unit":"km²"},
+{"id":316,"category":"水辺","q":"淀川の流域面積は約何km²？","base":"82","zeros":2,"unit":"km²"},
+{"id":317,"category":"水辺","q":"最上川の流域面積は約何km²？","base":"7","zeros":3,"unit":"km²"},
+{"id":318,"category":"水辺","q":"富士川の流域面積は約何km²？","base":"4","zeros":3,"unit":"km²"},
+{"id":319,"category":"水辺","q":"十勝川の流域面積は約何km²？","base":"9","zeros":3,"unit":"km²"},
+{"id":320,"category":"自然","q":"妙高山の標高は約何m？","base":"25","zeros":2,"unit":"m"},
+{"id":321,"category":"自然","q":"槍ヶ岳の標高は約何m？","base":"32","zeros":2,"unit":"m"},
+{"id":322,"category":"自然","q":"間ノ岳の標高は約何m？","base":"32","zeros":2,"unit":"m"},
+{"id":323,"category":"自然","q":"北岳の標高は約何m？","base":"32","zeros":2,"unit":"m"},
+{"id":324,"category":"自然","q":"焼岳の標高は約何m？","base":"25","zeros":2,"unit":"m"},
+{"id":325,"category":"自然","q":"旭岳（大雪山）の標高は約何m？","base":"23","zeros":2,"unit":"m"},
+{"id":326,"category":"自然","q":"鳥海山の標高は約何m？","base":"22","zeros":2,"unit":"m"},
+{"id":327,"category":"自然","q":"石鎚山の標高は約何m？","base":"2","zeros":3,"unit":"m"},
+{"id":328,"category":"自然","q":"八経ヶ岳の標高は約何m？","base":"19","zeros":2,"unit":"m"},
+{"id":329,"category":"自然","q":"熊野岳（蔵王山）の標高は約何m？","base":"18","zeros":2,"unit":"m"},
+{"id":330,"category":"自然","q":"大山（鳥取県）の標高は約何m？","base":"17","zeros":2,"unit":"m"},
+{"id":331,"category":"宇宙","q":"太陽から水星までの平均距離は約何km？","base":"58","zeros":6,"unit":"km"},
+{"id":332,"category":"宇宙","q":"太陽から金星までの平均距離は約何km？","base":"11","zeros":7,"unit":"km"},
+{"id":333,"category":"宇宙","q":"太陽から地球までの平均距離は約何km？","base":"15","zeros":7,"unit":"km"},
+{"id":334,"category":"宇宙","q":"太陽から火星までの平均距離は約何km？","base":"23","zeros":7,"unit":"km"},
+{"id":335,"category":"宇宙","q":"太陽から木星までの平均距離は約何km？","base":"78","zeros":7,"unit":"km"},
+{"id":336,"category":"宇宙","q":"太陽から土星までの平均距離は約何km？","base":"14","zeros":8,"unit":"km"},
+{"id":337,"category":"宇宙","q":"太陽から天王星までの平均距離は約何km？","base":"29","zeros":8,"unit":"km"},
+{"id":338,"category":"宇宙","q":"太陽から海王星までの平均距離は約何km？","base":"45","zeros":8,"unit":"km"},
+{"id":339,"category":"宇宙","q":"水星が太陽を1周するのに地球の日数で約何日かかる？","base":"88","zeros":0,"unit":"日"},
+{"id":340,"category":"宇宙","q":"金星が太陽を1周するのに地球の日数で約何日かかる？","base":"22","zeros":1,"unit":"日"},
+{"id":341,"category":"宇宙","q":"地球が太陽を1周するのに地球の日数で約何日かかる？","base":"365","zeros":0,"unit":"日"},
+{"id":342,"category":"宇宙","q":"火星が太陽を1周するのに地球の日数で約何日かかる？","base":"69","zeros":1,"unit":"日"},
+{"id":343,"category":"宇宙","q":"木星が太陽を1周するのに地球の日数で約何日かかる？","base":"43","zeros":2,"unit":"日"},
+{"id":344,"category":"宇宙","q":"土星が太陽を1周するのに地球の日数で約何日かかる？","base":"11","zeros":3,"unit":"日"},
+{"id":345,"category":"宇宙","q":"天王星が太陽を1周するのに地球の日数で約何日かかる？","base":"31","zeros":3,"unit":"日"},
+{"id":346,"category":"宇宙","q":"海王星が太陽を1周するのに地球の日数で約何日かかる？","base":"6","zeros":4,"unit":"日"},
+{"id":347,"category":"宇宙","q":"平均すると、水星の物質1m³の質量は約何kg？","base":"54","zeros":2,"unit":"kg"},
+{"id":348,"category":"宇宙","q":"平均すると、金星の物質1m³の質量は約何kg？","base":"52","zeros":2,"unit":"kg"},
+{"id":349,"category":"宇宙","q":"平均すると、地球の物質1m³の質量は約何kg？","base":"55","zeros":2,"unit":"kg"},
+{"id":350,"category":"宇宙","q":"平均すると、火星の物質1m³の質量は約何kg？","base":"39","zeros":2,"unit":"kg"},
+{"id":351,"category":"宇宙","q":"平均すると、木星の物質1m³の質量は約何kg？","base":"13","zeros":2,"unit":"kg"},
+{"id":352,"category":"宇宙","q":"平均すると、土星の物質1m³の質量は約何kg？","base":"69","zeros":1,"unit":"kg"},
+{"id":353,"category":"宇宙","q":"平均すると、天王星の物質1m³の質量は約何kg？","base":"13","zeros":2,"unit":"kg"},
+{"id":354,"category":"宇宙","q":"平均すると、海王星の物質1m³の質量は約何kg？","base":"16","zeros":2,"unit":"kg"},
+{"id":355,"category":"宇宙","q":"水星の赤道直径は約何km？","base":"49","zeros":2,"unit":"km"},
+{"id":356,"category":"宇宙","q":"金星の赤道直径は約何km？","base":"12","zeros":3,"unit":"km"},
+{"id":357,"category":"宇宙","q":"土星の赤道直径は約何km？","base":"12","zeros":4,"unit":"km"},
+{"id":358,"category":"宇宙","q":"天王星の赤道直径は約何km？","base":"51","zeros":3,"unit":"km"},
+{"id":359,"category":"宇宙","q":"海王星の赤道直径は約何km？","base":"5","zeros":4,"unit":"km"},
+{"id":360,"category":"宇宙","q":"水星が太陽の周りを進む速さは平均で約何m/秒？","base":"47","zeros":3,"unit":"m/秒"},
+{"id":361,"category":"宇宙","q":"金星が太陽の周りを進む速さは平均で約何m/秒？","base":"35","zeros":3,"unit":"m/秒"},
+{"id":362,"category":"宇宙","q":"地球が太陽の周りを進む速さは平均で約何m/秒？","base":"3","zeros":4,"unit":"m/秒"},
+{"id":363,"category":"宇宙","q":"火星が太陽の周りを進む速さは平均で約何m/秒？","base":"24","zeros":3,"unit":"m/秒"},
+{"id":364,"category":"宇宙","q":"木星が太陽の周りを進む速さは平均で約何m/秒？","base":"13","zeros":3,"unit":"m/秒"},
+{"id":365,"category":"宇宙","q":"土星が太陽の周りを進む速さは平均で約何m/秒？","base":"97","zeros":2,"unit":"m/秒"},
+{"id":366,"category":"宇宙","q":"天王星が太陽の周りを進む速さは平均で約何m/秒？","base":"68","zeros":2,"unit":"m/秒"},
+{"id":367,"category":"宇宙","q":"海王星が太陽の周りを進む速さは平均で約何m/秒？","base":"54","zeros":2,"unit":"m/秒"},
+{"id":368,"category":"海","q":"世界の海の深さを平均すると約何m？","base":"37","zeros":2,"unit":"m"},
+{"id":369,"category":"海","q":"太平洋の平均水深は約何m？","base":"4","zeros":3,"unit":"m"},
+{"id":370,"category":"海","q":"1海里は約何m？","base":"19","zeros":2,"unit":"m"},
+{"id":371,"category":"海","q":"船が10ノットで3時間進むと何海里？","base":"3","zeros":1,"unit":"海里"},
+{"id":372,"category":"海","q":"水中で音が秒速1500mなら、反射音が2秒で戻る海底の深さは何m？","base":"15","zeros":2,"unit":"m"},
+{"id":373,"category":"海","q":"海水1kgに塩類が35gあるとき、海水1tに含まれる塩類は何g？","base":"35","zeros":3,"unit":"g"},
+{"id":374,"category":"海","q":"毎分15mずつ潜る探査艇が2時間で潜る深さは何m？","base":"18","zeros":2,"unit":"m"},
+{"id":375,"category":"海","q":"水中カメラが5秒ごとに1枚撮影する。1時間分で何枚？","base":"72","zeros":1,"unit":"枚"},
+{"id":376,"category":"スポーツ","q":"弓道の近的競技で、射位から的までの28mは何cm？","base":"28","zeros":2,"unit":"cm"},
+{"id":377,"category":"スポーツ","q":"直径36cmの霞的は、直径何mm？","base":"36","zeros":1,"unit":"mm"},
+{"id":378,"category":"スポーツ","q":"弓道で5人が一人4射ずつ引くと計何射？","base":"2","zeros":1,"unit":"射"},
+{"id":379,"category":"スポーツ","q":"競泳の50mプールを30往復すると何m？","base":"3","zeros":3,"unit":"m"},
+{"id":380,"category":"スポーツ","q":"400mトラックで1万m走を2本走ると合計何周？","base":"5","zeros":1,"unit":"周"},
+{"id":381,"category":"スポーツ","q":"バスケで3ポイントシュートを10本決めると何点？","base":"3","zeros":1,"unit":"点"},
+{"id":382,"category":"スポーツ","q":"100mを10秒で走ると平均で時速何km？","base":"36","zeros":0,"unit":"km/h"},
+{"id":383,"category":"スポーツ","q":"自転車で時速24kmを保って15分進むと何m？","base":"6","zeros":3,"unit":"m"},
+{"id":384,"category":"スポーツ","q":"1kmを5分で走る人の分速は何m？","base":"2","zeros":2,"unit":"m"},
+{"id":385,"category":"スポーツ","q":"4人が200mずつ泳ぐリレーは合計何m？","base":"8","zeros":2,"unit":"m"},
+{"id":386,"category":"音楽","q":"毎分120拍の曲を4分間演奏すると全部で何拍？","base":"48","zeros":1,"unit":"拍"},
+{"id":387,"category":"音楽","q":"4拍子の曲で50小節を演奏すると何拍？","base":"2","zeros":2,"unit":"拍"},
+{"id":388,"category":"音楽","q":"周波数440Hzの「ラ」は10秒間で何回振動する？","base":"44","zeros":2,"unit":"回"},
+{"id":389,"category":"音楽","q":"440Hzの「ラ」を1オクターブ上げると何Hz？","base":"88","zeros":1,"unit":"Hz"},
+{"id":390,"category":"音楽","q":"CD音声では1秒に44,100回標本化する。片チャンネルの10秒分は何回？","base":"441","zeros":3,"unit":"回"},
+{"id":391,"category":"音楽","q":"3分20秒の曲を休みなく3回流すと合計何秒？","base":"6","zeros":2,"unit":"秒"},
+{"id":392,"category":"音楽","q":"全音符10個分の長さは、八分音符の何個分？","base":"8","zeros":1,"unit":"個"},
+{"id":393,"category":"映像","q":"24コマ毎秒のアニメ。1分間の映像は何コマ？","base":"144","zeros":1,"unit":"コマ"},
+{"id":394,"category":"映像","q":"フルHD（1920×1080）の画面は約何画素？","base":"21","zeros":5,"unit":"画素"},
+{"id":395,"category":"映像","q":"8K UHD（7680×4320）の映像は約何画素？","base":"33","zeros":6,"unit":"画素"},
+{"id":396,"category":"映像","q":"毎秒60枚の動画を10分撮ると全部で何枚？","base":"36","zeros":3,"unit":"枚"},
+{"id":397,"category":"映像","q":"映画の上映時間が2時間15分なら何秒？","base":"81","zeros":2,"unit":"秒"},
+{"id":398,"category":"映像","q":"1枚4MBの写真を250枚保存すると合計何MB？","base":"1","zeros":3,"unit":"MB"},
+{"id":399,"category":"情報","q":"1バイトは8ビット。125バイトは何ビット？","base":"1","zeros":3,"unit":"ビット"},
+{"id":400,"category":"情報","q":"1MiB（メビバイト）は約何バイト？","base":"105","zeros":4,"unit":"バイト"},
+{"id":401,"category":"情報","q":"IPv4の32ビットで表せるアドレスは約何個？","base":"43","zeros":8,"unit":"個"},
+{"id":402,"category":"情報","q":"RGB各色を256段階にすると、約何色を表せる？","base":"17","zeros":6,"unit":"色"},
+{"id":403,"category":"情報","q":"0〜9から選ぶ暗証番号4桁は、先頭の0も含めると何通り？","base":"1","zeros":4,"unit":"通り"},
+{"id":404,"category":"情報","q":"10Gbpsの回線で1秒に送れるデータ量は理論上何ビット？","base":"1","zeros":10,"unit":"ビット"},
+{"id":405,"category":"情報","q":"1秒で100万回処理する装置は、1分で何回処理する？","base":"6","zeros":7,"unit":"回"},
+{"id":406,"category":"情報","q":"1msごとに記録を取るセンサーは1秒に何回記録する？","base":"1","zeros":3,"unit":"回"},
+{"id":407,"category":"科学","q":"1MHzの電波は1秒間に何回振動する？","base":"1","zeros":6,"unit":"回"},
+{"id":408,"category":"科学","q":"波長500nmの緑色の光。波長1mm分には波が何個並ぶ？","base":"2","zeros":3,"unit":"個"},
+{"id":409,"category":"科学","q":"電流2Aを5分間流すと移動する電気量は何クーロン？","base":"6","zeros":2,"unit":"C"},
+{"id":410,"category":"科学","q":"抵抗100Ωに電圧5Vをかけると、流れる電流は何mA？","base":"5","zeros":1,"unit":"mA"},
+{"id":411,"category":"科学","q":"100Wの電球を10時間つけると何Wh使う？","base":"1","zeros":3,"unit":"Wh"},
+{"id":412,"category":"科学","q":"1kWhをジュールに換算するといくら？","base":"36","zeros":5,"unit":"J"},
+{"id":413,"category":"科学","q":"半減期10年の物質が80gある。20年後に残る量は何g？","base":"2","zeros":1,"unit":"g"},
+{"id":414,"category":"科学","q":"秒速340mの音が3秒で進む距離は何m？","base":"102","zeros":1,"unit":"m"},
+{"id":415,"category":"科学","q":"密度2.7g/cm³のアルミニウム100cm³の質量は何g？","base":"27","zeros":1,"unit":"g"},
+{"id":416,"category":"科学","q":"1ヘクトパスカルは何パスカル？","base":"1","zeros":2,"unit":"Pa"},
+{"id":417,"category":"科学","q":"1気圧をパスカルで表すと約いくら？","base":"1","zeros":5,"unit":"Pa"},
+{"id":418,"category":"科学","q":"1分に3000回転するモーターは、1秒間に何回転する？","base":"5","zeros":1,"unit":"回"},
+{"id":419,"category":"学校","q":"原稿用紙（20字×20行）を25枚埋めると何文字？","base":"1","zeros":4,"unit":"文字"},
+{"id":420,"category":"学校","q":"1辺が10cmの立方体の体積は何cm³？","base":"1","zeros":3,"unit":"cm³"},
+{"id":421,"category":"学校","q":"1辺が100mの正方形の土地の面積は何m²？","base":"1","zeros":4,"unit":"m²"},
+{"id":422,"category":"学校","q":"半径10cmの円の面積は、円周率を3.14とすると何cm²？","base":"314","zeros":0,"unit":"cm²"},
+{"id":423,"category":"学校","q":"縮尺2万5000分の1の地図で4cmは、実際には何m？","base":"1","zeros":3,"unit":"m"},
+{"id":424,"category":"学校","q":"縦8m、横6m、高さ3mの部屋の容積は何L？","base":"144","zeros":3,"unit":"L"},
+{"id":425,"category":"学校","q":"直角を1分角の単位で表すと何分角？","base":"54","zeros":2,"unit":"分角"},
+{"id":426,"category":"学校","q":"正十二角形の内角の和は何度？","base":"18","zeros":2,"unit":"度"},
+{"id":427,"category":"学校","q":"碁盤の縦横19本の線が交わる点は何個？","base":"361","zeros":0,"unit":"個"},
+{"id":428,"category":"暮らし","q":"大さじ1杯を15mLとすると、20杯で何mL？","base":"3","zeros":2,"unit":"mL"},
+{"id":429,"category":"暮らし","q":"米1合を180mLとすると、1升（10合）は何mL？","base":"18","zeros":2,"unit":"mL"},
+{"id":430,"category":"暮らし","q":"1個60gの卵を10個使うと殻込みで何g？","base":"6","zeros":2,"unit":"g"},
+{"id":431,"category":"暮らし","q":"1日に2Lの水を使うと、30日間では何mL？","base":"6","zeros":4,"unit":"mL"},
+{"id":432,"category":"暮らし","q":"毎秒1滴、1滴0.05mLの水が落ちる。1時間で何mL？","base":"18","zeros":1,"unit":"mL"},
+{"id":433,"category":"暮らし","q":"2割引で1600円になった品物。元値は何円？","base":"2","zeros":3,"unit":"円"},
+{"id":434,"category":"暮らし","q":"1冊240ページの本を25冊読むと合計何ページ？","base":"6","zeros":3,"unit":"ページ"},
+{"id":435,"category":"暮らし","q":"毎日8000歩を30日続けると合計何歩？","base":"24","zeros":4,"unit":"歩"},
+{"id":436,"category":"暮らし","q":"100円硬貨50枚の額面は合計何円？","base":"5","zeros":3,"unit":"円"},
+{"id":437,"category":"暮らし","q":"厚さ0.1mmの紙を1000枚重ねると高さは何cm？","base":"1","zeros":1,"unit":"cm"},
+{"id":438,"category":"暮らし","q":"1分に12L出る蛇口で180Lためるには何秒？","base":"9","zeros":2,"unit":"秒"},
+{"id":439,"category":"時間","q":"うるう年の2月は全部で何時間？","base":"696","zeros":0,"unit":"時間"},
+{"id":440,"category":"時間","q":"平年の1年間を時間に換算すると何時間？","base":"876","zeros":1,"unit":"時間"},
+{"id":441,"category":"時間","q":"1週間を分で表すと何分？","base":"1008","zeros":1,"unit":"分"},
+{"id":442,"category":"時間","q":"15分の砂時計を4回使うと合計何秒？","base":"36","zeros":2,"unit":"秒"},
+{"id":443,"category":"時間","q":"紀元2001年から紀元3001年までの期間は何年？","base":"1","zeros":3,"unit":"年"},
+{"id":444,"category":"交通","q":"時速90kmの車は1秒に何m進む？","base":"25","zeros":0,"unit":"m"},
+{"id":445,"category":"交通","q":"秒速80mの列車が30秒間で進む距離は何m？","base":"24","zeros":2,"unit":"m"},
+{"id":446,"category":"交通","q":"長さ200mの列車が秒速20mで800mのトンネルを通過するには何秒？","base":"5","zeros":1,"unit":"秒"},
+{"id":447,"category":"交通","q":"ロープウェーが高低差600mを5分で上ると、平均で毎分何m上る？","base":"12","zeros":1,"unit":"m"},
+{"id":448,"category":"交通","q":"片道18kmの航路を25往復した船の航行距離は何km？","base":"9","zeros":2,"unit":"km"},
+{"id":449,"category":"遊び","q":"ジョーカー抜きのトランプから1枚ずつ引く。2組分で何枚？","base":"104","zeros":0,"unit":"枚"},
+{"id":450,"category":"遊び","q":"六面サイコロ3個の出目は、区別して数えると何通り？","base":"216","zeros":0,"unit":"通り"},
+{"id":451,"category":"遊び","q":"1000ピースのパズルを5人で同数ずつ担当すると一人何ピース？","base":"2","zeros":2,"unit":"ピース"},
+{"id":452,"category":"遊び","q":"毎秒2回ボタンを押すと、5分間で何回押せる？","base":"6","zeros":2,"unit":"回"},
+{"id":453,"category":"遊び","q":"1回につき250点もらうゲームで40回成功すると何点？","base":"1","zeros":4,"unit":"点"}];
+  const TOTAL_ROUNDS = 10;
+  const STORAGE_KEY = 'zero_dive_used_ids_v2';
+  const STATS_KEY = 'zero_dive_stats_v3';
+  function loadStats(){
+    try { const v=JSON.parse(localStorage.getItem(STATS_KEY)||'{}');return {plays:v.plays||0,finished:v.finished||0,wins:v.wins||0,answered:v.answered||0,correct:v.correct||0,best:v.best||0,perQuestion:v.perQuestion||{},stageCounts:Array.isArray(v.stageCounts)?v.stageCounts:Array(10).fill(0)}; }
+    catch {return {plays:0,finished:0,wins:0,answered:0,correct:0,best:0,perQuestion:{},stageCounts:Array(10).fill(0)};}
+  }
+  let stats=loadStats();
+  let displayStats=stats;
+  let statsScope="このブラウザ";
+  function saveStats(){try{localStorage.setItem(STATS_KEY,JSON.stringify(stats));}catch{}}
+  function estimatedDifficulty(q){
+    // An editorial estimate until this browser has enough attempts to assess this question.
+    if(['生活','学校','スポーツ'].includes(q.category))return 'easy';
+    if(['経済','建物','歴史','文化','雑学'].includes(q.category))return 'hard';
+    return 'medium';
+  }
+  function renderDifficulty(){
+    if(!current)return;
+    const result=displayStats.perQuestion[current.id]||{tries:0,right:0};
+    const rate=result.tries?Math.round(result.right/result.tries*100):null;
+    const diff= result.tries>=3 ? (rate>=70?'easy':rate>=35?'medium':'hard') : estimatedDifficulty(current);
+    const names={easy:'かんたん',medium:'ふつう',hard:'むずかしい'};
+    const pill=$('#difficultyPill');pill.className='difficultyPill '+diff;
+    pill.textContent=`難易度：${names[diff]}${result.tries<3?'（目安）':''}`;
+    $('#accuracyLabel').textContent=rate===null?'正解率：未集計':`正解率：${rate}%（${result.right}/${result.tries}回）`;
+    $('#accuracyFill').style.width=(rate===null?0:rate)+'%';
+  }
+  function renderStats(){
+    $('#playTotal').textContent=displayStats.plays;
+    $('#overallAccuracy').textContent=displayStats.answered?Math.round(displayStats.correct/displayStats.answered*100)+'%':'—';
+    $('#bestStage').textContent=`${displayStats.best} / 10`;
+    $('#castleRate').textContent=displayStats.finished?Math.round(displayStats.wins/displayStats.finished*100)+'%':'—';
+    $('#stageTrack').innerHTML=Array.from({length:10},(_,i)=>{const n=displayStats.stageCounts[i]||0;const pct=displayStats.finished?Math.round(n/displayStats.finished*100):0;return `<span class="${i<displayStats.best?'done':''}" title="ステージ${i+1}到達率: ${displayStats.finished?pct+'%':'未集計'}"></span>`;}).join('');
+  }
+  function recordAnswer(q,ok){
+    const rec=stats.perQuestion[q.id]||{tries:0,right:0};rec.tries++;if(ok)rec.right++;
+    stats.perQuestion[q.id]=rec;stats.answered++;if(ok)stats.correct++;
+    saveStats();sendRecord({answered:1,correct:Number(ok),['q'+q.id+'.tries']:1,['q'+q.id+'.right']:Number(ok)});renderStats();
+  }
+  function burstBubbles(which='digit',count=9){
+    const wrap=$(which==='digit'?'#digitBubbles':'#diveBubbles');
+    for(let i=0;i<count;i++){
+      const b=document.createElement('i');
+      b.style.setProperty('--s',(6+Math.random()*19)+'px');
+      b.style.setProperty('--x',which==='digit'?(72+Math.random()*24)+'%':(Math.random()*100)+'%');
+      b.style.setProperty('--d',(.35+Math.random()*.7)+'s');
+      b.style.setProperty('--rise',(-80-Math.random()*(which==='digit'?90:420))+'px');
+      b.style.setProperty('--drift',(-50+Math.random()*100)+'px');
+      wrap.appendChild(b);setTimeout(()=>b.remove(),1300);
+    }
+  }
+  function floatRemovedZero(){
+    const last=$('#answerDigits .digit.zero:last-child');
+    if(!last)return;
+    const board=$('#board');
+    const a=last.getBoundingClientRect(),b=board.getBoundingClientRect();
+    const x=a.left-b.left+a.width/2, y=a.top-b.top+a.height/2;
+    const ghost=document.createElement('span');
+    ghost.className='removalGhost';ghost.textContent='0';
+    ghost.style.cssText=`left:${x-a.width/2}px;top:${y-a.height/2}px;width:${a.width}px;height:${a.height}px;font:700 ${getComputedStyle(last).fontSize} Rajdhani,monospace`;
+    board.appendChild(ghost);
+    setTimeout(()=>ghost.remove(),520);
+    // The removed zero splits into distinct translucent bubbles at its exact screen position.
+    for(let i=0;i<18;i++){
+      const particle=document.createElement('i');particle.className='popParticle';
+      const angle=(i/18)*Math.PI*2+Math.random()*.25;
+      const distance=30+Math.random()*105;
+      particle.style.setProperty('--px',x+'px'); particle.style.setProperty('--py',y+'px');
+      particle.style.setProperty('--size',(5+Math.random()*19)+'px');
+      particle.style.setProperty('--vx',Math.cos(angle)*distance+'px');
+      particle.style.setProperty('--vy',(Math.sin(angle)*distance-46)+'px');
+      particle.style.setProperty('--duration',(.36+Math.random()*.38)+'s');
+      board.appendChild(particle);setTimeout(()=>particle.remove(),850);
+    }
+  }
+  function bubbleDigit(mode){
+    if(mode==='add'){
+      burstBubbles('digit',7);
+      const last=$('#answerDigits .digit.zero:last-child');
+      if(last)last.classList.add('bubble-enter');
+    }
+  }
+
+
+  let round = 0;
+  let correct = 0;
+  let score = 0;
+  let zeroCount = 0;
+  let current = null;
+  let questionSet = [];
+  let history = [];
+  let playing = false;
+  let lock = false;
+  let resultTimeout = null;
+
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  function getUsedIds(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  }
+  function setUsedIds(ids){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(ids)); } catch {}
+  }
+  function buildQuestionSet(){
+    let used = getUsedIds();
+    let available = questionPool.filter(q => !used.includes(q.id));
+    if(available.length < TOTAL_ROUNDS){
+      used = [];
+      available = [...questionPool];
+    }
+    const picked = shuffle(available).slice(0, TOTAL_ROUNDS);
+    setUsedIds([...used, ...picked.map(q => q.id)]);
+    return picked;
+  }
+  function answerString(q=current, z=zeroCount){
+    return q ? q.base + '0'.repeat(z) : '';
+  }
+  function targetString(q=current){
+    return q ? q.base + '0'.repeat(q.zeros) : '';
+  }
+  function renderDigits(animate=false){
+    const root=$('#answerDigits');
+    const old=[...root.querySelectorAll('.digit')].map(e=>e.getBoundingClientRect());
+    const chars=answerString().split('');
+    root.style.setProperty('--digit-count',chars.length);
+    root.innerHTML=chars.map((char,i)=>{
+      const fromRight=chars.length-i;
+      const label=fromRight===5?'万':fromRight===9?'億':fromRight===13?'兆':'';
+      return `<span class="digit ${i>=current.base.length?'zero':''}">${char}${label?`<em class="placeLabel">${label}</em>`:''}</span>`;
+    }).join('');
+    $('#unitLabel').textContent=current.unit||'';
+    const width=root.clientWidth;
+    // Fit every digit into the LCD, including 13+ digits; avoid truncation or overlap.
+    const size=Math.min(100,(width-2)/(chars.length*.65));
+    root.style.fontSize=size+'px';
+    const nodes=[...root.querySelectorAll('.digit')];
+    if(animate && old.length){
+      requestAnimationFrame(()=>{
+        nodes.forEach((node,i)=>{
+          const before=old[i]; if(!before)return;
+          const after=node.getBoundingClientRect();
+          const dx=before.left-after.left, dy=before.top-after.top;
+          if(Math.abs(dx)>1||Math.abs(dy)>1){
+            node.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0,0)'}],{duration:330,easing:'cubic-bezier(.2,.8,.25,1)'});
+          }
+        });
+      });
+    }
+  }
+  function formatJapaneseNumber(num){
+    const raw=String(num).replace(/^0+(?=\d)/,'');
+    if(!/^\d+$/.test(raw))return raw;
+    const groups=[];
+    const units=['','万','億','兆','京','垓','秭','穣','溝','澗','正','載','極'];
+    for(let i=raw.length;i>0;i-=4)groups.unshift(raw.slice(Math.max(0,i-4),i));
+    const parts=[];
+    for(let i=0;i<groups.length;i++){
+      const value=Number(groups[i]); if(!value)continue;
+      const rank=groups.length-1-i;
+      // Beyond named Japanese units, keep ordinary separated digits; never use exponents.
+      if(rank>=units.length)return raw.replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      parts.push(value.toLocaleString('ja-JP')+units[rank]);
+    }
+    return parts.join('')||'0';
+  }
+  function renderHistory(){
+    const wrap = $('#history');
+    wrap.innerHTML = '';
+    for(let i=0;i<TOTAL_ROUNDS;i++){
+      const h = history[i];
+      const state = h ? (h.correct ? 'ok' : 'ng') : 'pending';
+      const item = document.createElement('div');
+      item.className = 'historyItem';
+      item.innerHTML = `
+        <div class="hNo">${h ? `<span class="hGhost ${state}">${h.correct ? '○' : '×'}</span>` : ''}<span class="hNoText">${String(i+1).padStart(2,'0')}</span></div>
+        <div>
+          <div class="hMain">${h ? h.question : '未出題'}</div>
+          <div class="hSub">${h ? `正解：${formatJapaneseNumber(h.answer)}${h.unit || ''}` : '結果待機中'}</div>
+        </div>
+        <div class="hMark ${state}">${h ? (h.correct ? '○' : '×') : '…'}</div>
+      `;
+      wrap.appendChild(item);
+    }
+  }
+  function renderHeader(){
+    const scene = sceneData[correct];
+    $('#sceneTitle').textContent = scene.place;
+    $('#roundNow').textContent = Math.min(round + 1, TOTAL_ROUNDS);
+    $('#correctNow').textContent = correct;
+    $('#stageNow').textContent = scene.place;
+    $('#depthNow').textContent = String(scene.depth).padStart(4,'0') + 'm';
+    $('#scoreNow').textContent = score;
+    $('#placeNow').textContent = scene.place;
+    $('#deepestDepth').textContent = scene.depth + 'm';
+    const stageReach = correct === 0 ? displayStats.finished : (displayStats.stageCounts[correct-1] || 0);
+    $('#currentArrivalRate').textContent = displayStats.finished ? Math.round(stageReach/displayStats.finished*100) + '%' : '—';
+    $('#arrivalRateNote').textContent = displayStats.finished ? `${statsScope}の過去${displayStats.finished}回の完走中、${stageReach}回到達` : '完走データがないため未集計';
+    renderStats();
+  }
+  function renderQuestion(){
+    if(!current) return;
+    $('#questionNo').textContent = round + 1;
+    $('#categoryLabel').textContent = current.category;
+    $('#questionText').textContent = current.q;
+    zeroCount = 0;
+    renderDigits();
+    renderDifficulty();
+    renderHistory();
+    renderHeader();
+  }
+  function showMessage(msg, type=''){
+    const box = $('#messageBox');
+    box.textContent = msg;
+    box.className = 'message' + (type ? ' ' + type : '');
+  }
+  function nextQuestion(){
+    if(round >= TOTAL_ROUNDS){ endGame(); return; }
+    current = questionSet[round];
+    renderQuestion();
+    lock = false;
+    showMessage('＋と－で0の数を調整して、GOを押してください。');
+  }
+
+  let audioOn = true;
+  function ensureAudio(){
+    if(!audioOn) return null;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    if(!ensureAudio.ctx) ensureAudio.ctx = new AC();
+    if(ensureAudio.ctx.state === 'suspended') ensureAudio.ctx.resume();
+    return ensureAudio.ctx;
+  }
+  function note(ctx,freq,delay,duration,opts={}){
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    const now=ctx.currentTime+delay;
+    o.type=opts.type||'sine';
+    o.frequency.setValueAtTime(freq,now);
+    if(opts.endFreq) o.frequency.exponentialRampToValueAtTime(opts.endFreq,now+duration);
+    const vol=opts.vol||.08;
+    g.gain.setValueAtTime(.0001,now);
+    g.gain.exponentialRampToValueAtTime(vol,now+.012);
+    g.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+duration+.03);
+  }
+  function noise(ctx,delay,duration,vol=.025){
+    const len=Math.ceil(ctx.sampleRate*duration), buffer=ctx.createBuffer(1,len,ctx.sampleRate);
+    const data=buffer.getChannelData(0);
+    for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.3);
+    const src=ctx.createBufferSource(),g=ctx.createGain(),f=ctx.createBiquadFilter();
+    src.buffer=buffer;f.type='highpass';f.frequency.value=800;
+    g.gain.value=vol;src.connect(f);f.connect(g);g.connect(ctx.destination);
+    src.start(ctx.currentTime+delay);src.stop(ctx.currentTime+delay+duration);
+  }
+  function sound(kind){
+    const ctx=ensureAudio();if(!ctx)return;
+    if(kind==='plus'){
+      note(ctx,690,0,.09,{endFreq:1030,type:'triangle',vol:.065});note(ctx,1380,.025,.06,{vol:.022});
+    }else if(kind==='minus'){
+      note(ctx,550,0,.10,{endFreq:310,type:'triangle',vol:.06});note(ctx,850,0,.06,{vol:.02});
+    }else if(kind==='go'){
+      note(ctx,560,0,.085,{type:'square',vol:.045});note(ctx,840,.08,.10,{type:'triangle',vol:.055});noise(ctx,0,.075,.015);
+    }else if(kind==='correct'){
+      [523.25,659.25,783.99,1046.5].forEach((f,i)=>note(ctx,f,i*.09,.31,{type:'triangle',vol:.075}));
+      note(ctx,1568,.29,.34,{type:'sine',vol:.045});noise(ctx,.24,.25,.025);
+    }else if(kind==='wrong'){
+      note(ctx,630,0,.22,{endFreq:350,type:'sawtooth',vol:.045});
+      note(ctx,270,.15,.36,{endFreq:160,type:'triangle',vol:.075});
+    }else if(kind==='dive'){
+      note(ctx,240,0,.58,{endFreq:90,type:'sawtooth',vol:.025});
+      note(ctx,620,0,.52,{endFreq:230,type:'sine',vol:.055});
+      noise(ctx,0,.50,.015);
+    }else if(kind==='crash'){
+      noise(ctx,0,.26,.09);note(ctx,200,0,.35,{endFreq:90,type:'sawtooth',vol:.06});
+      note(ctx,580,.06,.18,{endFreq:280,type:'triangle',vol:.045});
+    }else if(kind==='end'){
+      [392,523.25,659.25,784,1046.5].forEach((f,i)=>note(ctx,f,i*.11,.35,{type:'triangle',vol:.07}));
+    }
+  }
+  const judgeSiren={
+    osc:null, mod:null,gain:null,
+    start(){
+      const ctx=ensureAudio();if(!ctx)return;
+      this.stop();
+      const osc=ctx.createOscillator(),mod=ctx.createOscillator(),mg=ctx.createGain(),g=ctx.createGain();
+      osc.type='triangle';osc.frequency.value=920;
+      mod.type='sine';mod.frequency.value=7.5;mg.gain.value=190;
+      mod.connect(mg);mg.connect(osc.frequency);
+      const now=ctx.currentTime;
+      g.gain.setValueAtTime(.0001,now);g.gain.linearRampToValueAtTime(.052,now+.05);
+      osc.connect(g);g.connect(ctx.destination);osc.start(now);mod.start(now);
+      this.osc=osc;this.mod=mod;this.gain=g;
+    },
+    stop(){
+      if(!this.osc)return;
+      const ctx=ensureAudio.ctx || null; const now=ctx?ctx.currentTime:0;
+      if(this.gain&&ctx){this.gain.gain.cancelScheduledValues(now);this.gain.gain.setValueAtTime(Math.max(.0001,this.gain.gain.value),now);this.gain.gain.exponentialRampToValueAtTime(.0001,now+.045);}
+      try{this.osc.stop(now+.06);this.mod.stop(now+.06);}catch{}
+      this.osc=this.mod=this.gain=null;
+    }
+  };
+  function flashResult(isCorrect){
+    const ov = $('#resultOverlay');
+    const mark = $('#resultMark');
+    ov.className = 'resultOverlay ' + (isCorrect ? 'ok' : 'ng') + ' show';
+    mark.textContent = isCorrect ? '○' : '×';
+    clearTimeout(resultTimeout);
+    resultTimeout = setTimeout(() => ov.className = 'resultOverlay', 900);
+  }
+  function beginJudging(){
+    $('#judgeOverlay').classList.add('active');
+    judgeSiren.start();
+  }
+  function endJudging(){
+    $('#judgeOverlay').classList.remove('active');
+    judgeSiren.stop();
+  }
+
+  function submit(){
+    if(!playing || lock || !current) return;
+    lock = true;
+    sound('go');
+    beginJudging();
+    setTimeout(() => {
+      endJudging();
+      const ok = answerString() === targetString();
+      history.push({question:current.q,answer:targetString(),unit:current.unit,correct:ok});
+      recordAnswer(current,ok);
+      if(ok){
+        showMessage(`正解！ 答えは ${formatJapaneseNumber(targetString())}${current.unit || ''} です。`, 'ok');
+        sound('correct');
+      }else{
+        showMessage(`不正解… 正解は ${formatJapaneseNumber(targetString())}${current.unit || ''} でした。`, 'ng');
+        sound('wrong');
+      }
+      flashResult(ok);
+      renderHistory();
+      const card=$('#answerCard');
+      card.dataset.result=ok?'ok':'ng';
+      $('#answerVerdict').textContent=ok?'○ 正解！':'× 不正解　正しい答え';
+      $('#answerValue').textContent=formatJapaneseNumber(targetString())+(current.unit||'');
+      card.hidden=false;
+      $('#answerNext').focus({preventScroll:true});
+      // 正誤表示をしっかり見せてから潜航する（判定直後には深度を変えない）
+      $('#answerNext').onclick=()=>{
+        $('#answerNext').onclick=null;
+        card.hidden=true;
+        if(ok){
+          sound('dive');
+          $('#observation').classList.add('diving');
+          burstBubbles('dive',36);
+          correct++;
+          stats.best=Math.max(stats.best,correct);saveStats();sendRecord({best:correct});
+          score+=100;
+          renderHeader();
+          showMessage(`▼ 潜航中… ${sceneData[correct].place}へ！`,'ok');
+        } else {
+          $('#observation').classList.add('colliding');
+          burstBubbles('dive',17);
+          sound('crash');
+          showMessage('魚と衝突！ 潜水失敗！ この深さから次の問題へ。','ng');
+        }
+        setTimeout(() => {
+          $('#observation').classList.remove('diving','colliding');
+          $('#resultOverlay').className='resultOverlay';
+          round++;
+          if(round >= TOTAL_ROUNDS) endGame();
+          else nextQuestion();
+        },ok ? 690 : 800);
+      };
+    },1500);
+  }
+  function launchDive(){
+    const curtain=$('#launchCurtain'), surface=$('#launchSea'), brush=surface.getContext('2d');
+    curtain.hidden=false;lock=true;
+    const w=surface.width=Math.max(320,innerWidth),h=surface.height=innerHeight;
+    const start=performance.now(),duration=matchMedia('(prefers-reduced-motion: reduce)').matches?650:3200;
+    function frame(now){
+      const p=Math.min(1,(now-start)/duration), descent=p*p*(3-2*p);
+      const horizon=h*(.60-.96*descent);
+      const sky=brush.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#7bd9eb');sky.addColorStop(1,'#ffe2af');brush.fillStyle=sky;brush.fillRect(0,0,w,h);
+      brush.fillStyle='#fff2bf';brush.beginPath();brush.arc(w*.72,horizon-h*.17,Math.min(w,h)*.055,0,Math.PI*2);brush.fill();
+      const water=brush.createLinearGradient(0,horizon,0,h);water.addColorStop(0,'#83e5db');water.addColorStop(.32,'#239db2');water.addColorStop(1,'#125579');
+      brush.fillStyle=water;brush.beginPath();brush.moveTo(-1,h);
+      for(let x=-1;x<w+12;x+=10)brush.lineTo(x,horizon+6*Math.sin(x/45+p*9));
+      brush.lineTo(w+12,h);brush.fill();
+      brush.save();brush.translate(w*(.36+.16*descent),horizon+descent*h*.90);brush.rotate(.27*Math.sin(p*Math.PI));const scale=Math.min(w/430,h/400,1.5);brush.scale(scale,scale);
+      brush.fillStyle='#18475a';brush.fillRect(-6,-25,8,18);brush.fillRect(-6,-26,17,6);brush.fillRect(-48,-9,12,18);
+      brush.fillStyle='#f6bd55';brush.beginPath();brush.ellipse(0,0,38,16,0,0,7);brush.fill();
+      for(const x of [-14,0,14]){brush.fillStyle='#23566c';brush.beginPath();brush.arc(x,-2,5,0,7);brush.fill();}
+      brush.restore();
+      $('#launchTitle').textContent=p<.35?'海上から出発':p<.82?'潜航中…':'海面付近に到着';
+      if(p<1)requestAnimationFrame(frame);else{curtain.hidden=true;nextQuestion();}
+    }
+    requestAnimationFrame(frame);
+  }
+  function startGame(){
+    if(playing)return;
+    toggleScenic(false);
+    round = 0; correct = 0; score = 0; zeroCount = 0; current = null; history = []; playing = true; lock = false;
+    questionSet = buildQuestionSet();
+    stats.plays++;saveStats();sendRecord({plays:1});renderStats();
+    $('#startModal').classList.add('hidden');
+    $('#resultModal').classList.add('hidden');
+    renderHistory(); renderHeader(); launchDive();
+  }
+  function endGame(){
+    playing = false;
+    stats.finished++;if(correct===10)stats.wins++;stats.best=Math.max(stats.best,correct);for(let i=0;i<correct;i++)stats.stageCounts[i]=(stats.stageCounts[i]||0)+1;saveStats();renderHeader();renderStats();
+    const scene = sceneData[correct];
+    const completed={finished:1,wins:Number(correct===10),best:correct};
+    for(let i=0;i<correct;i++)completed['s'+i]=1;
+    sendRecord(completed);
+    $('#finalIcon').textContent = correct === 10 ? '🏯' : correct >= 7 ? '🌊' : '🐟';
+    $('#finalTitle').textContent = correct === 10 ? '完全制覇！' : '潜水終了！';
+    $('#finalSub').textContent = correct === 10 ? '竜宮城に到着！' : `${scene.place} まで到達！`;
+    $('#finalText').innerHTML = `全10問中 <strong>${correct}問正解</strong><br>到達深度：<strong>${scene.depth}m</strong><br>到達地点：<strong>${scene.place}</strong><br>スコア：<strong>${score}</strong><br><br>${correct === 10 ? '全問正解！ 伝説の竜宮城にたどり着きました！' : 'もう一度挑戦して、さらに深く潜ってみよう！'}`;
+    $('#resultModal').classList.remove('hidden');
+    sound('end');
+  }
+
+  $('#plusBtn').addEventListener('click', () => { if(!playing || lock) return; if(zeroCount >= 12) return; zeroCount++; renderDigits(true); bubbleDigit('add'); sound('plus'); });
+  $('#minusBtn').addEventListener('click', () => { if(!playing || lock) return; if(zeroCount <= 0) return; floatRemovedZero(); zeroCount--; renderDigits(true); bubbleDigit('minus'); sound('minus'); });
+  $('#goBtn').addEventListener('click', submit);
+  $('#startBtn').addEventListener('click', startGame);
+  $('#restartBtn').addEventListener('click', startGame);
+  let galleryStage=null;
+  function toggleScenic(visible){
+    document.body.classList.toggle('scenicMode',visible);
+    $('#scenicView').classList.toggle('hidden',!visible);
+    $('#scenicView').setAttribute('aria-hidden',String(!visible));
+    if(visible){
+      const scene=sceneData[galleryStage ?? correct];
+      $('#closeScenic').textContent=galleryStage===null?'← 結果画面に戻る':'← エリア一覧に戻る';
+      $('#scenicTitle').textContent=scene.place;
+      $('#scenicDepth').textContent='到達水深 '+scene.depth.toLocaleString('ja-JP')+'m';
+    }
+  }
+  $('#scenicBtn').addEventListener('click',()=>toggleScenic(true));
+  function closeScenery(){
+    toggleScenic(false);
+    if(galleryStage===null)return;
+    const previous=galleryStage;
+    galleryStage=null;
+    $('#archive').showModal();
+    $('#archive [data-area="'+previous+'"]').focus();
+  }
+  $('#closeScenic').addEventListener('click',closeScenery);
+  $('#soundBtn').addEventListener('click', () => { audioOn=!audioOn;$('#soundBtn').textContent=audioOn?'🔊 SOUND ON':'🔇 SOUND OFF';if(!audioOn)judgeSiren.stop(); });
+  window.addEventListener('resize', () => { if(current) renderDigits(); });
+  document.addEventListener('keydown', e => {
+    if(!$('#answerCard').hidden || !$('#launchCurtain').hidden)return;
+    if($('#archive').open || e.target.closest('a[href],.archiveTrigger'))return;
+    if(!$('#startModal').classList.contains('hidden')){ if(e.key === 'Enter') startGame(); return; }
+    if(document.body.classList.contains('scenicMode')){if(e.key === 'Escape')closeScenery();return;}
+    if(!$('#resultModal').classList.contains('hidden')){ if(e.key === 'Enter') startGame(); return; }
+    if(e.key === '0'){ e.preventDefault(); $('#plusBtn').click(); }
+    else if(e.key === 'Backspace'){ e.preventDefault(); $('#minusBtn').click(); }
+    else if(e.key === 'Enter'){ e.preventDefault(); submit(); }
+  });
+
+  // Background drawing
+  const canvas = $('#sea'); const ctx = canvas.getContext('2d'); let W=0,H=0,t=0,animDepth=0;
+  const bubbles = Array.from({length:85},() => ({x:Math.random(), y:Math.random(), r:Math.random()*4+1, sp:Math.random()*0.003+.001, ph:Math.random()*Math.PI*2}));
+  const fishies = Array.from({length:12}, (_,i) => ({x:Math.random(), y:Math.random(), s:Math.random()*22+14, dir:i%2?1:-1, sp:Math.random()*0.0014+.0007, ph:Math.random()*Math.PI*2, color:['#8ce4e5','#fbcf9f','#c0d8ff','#f7b6cc'][i%4]}));
+  function resize(){ canvas.width = innerWidth * devicePixelRatio; canvas.height = innerHeight * devicePixelRatio; canvas.style.width = innerWidth+'px'; canvas.style.height = innerHeight+'px'; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); W = innerWidth; H = innerHeight; }
+  addEventListener('resize', resize); resize();
+  function ellipse(x,y,rx,ry,color,a=1){ ctx.globalAlpha = a; ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); ctx.fillStyle = color; ctx.fill(); ctx.globalAlpha = 1; }
+  function line(x1,y1,x2,y2,w,color,a=1){ ctx.globalAlpha = a; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineWidth = w; ctx.strokeStyle = color; ctx.stroke(); ctx.globalAlpha = 1; }
+  function poly(points, fill, stroke, lw=1, a=1){ ctx.globalAlpha = a; ctx.beginPath(); points.forEach((p,i)=> i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); if(fill){ ctx.fillStyle = fill; ctx.fill(); } if(stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke(); } ctx.globalAlpha = 1; }
+  function coral(x,y,s,color){ ctx.save(); ctx.translate(x,y); ctx.strokeStyle=color; ctx.lineCap='round'; function br(x1,y1,len,ang,w,d){ if(d<=0) return; const x2=x1+Math.sin(ang)*len, y2=y1-Math.cos(ang)*len; ctx.lineWidth=w; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); br(x2,y2,len*.72,ang-.48,w*.72,d-1); br(x2,y2,len*.68,ang+.5,w*.72,d-1);} br(0,0,s,0,s*.13,4); ctx.restore(); }
+  function fish(x,y,s,dir,color){ ctx.save(); ctx.translate(x,y); ctx.scale(dir,1); ellipse(0,0,s,s*.45,color); poly([[-s*.85,0],[-s*1.6,-s*.55],[-s*1.6,s*.55]], color); ellipse(s*.5,-s*.08,s*.12,s*.12,'#fff'); ellipse(s*.52,-s*.08,s*.05,s*.05,'#123'); ctx.restore(); }
+  function jelly(x,y,s,ph){ ctx.save(); ctx.translate(x,y+Math.sin(ph)*8); ctx.shadowBlur=20; ctx.shadowColor='#b7c4ff'; ellipse(0,0,s,s*.58,'#afc4ff88'); ctx.shadowBlur=0; ctx.strokeStyle='#d7e1ff99'; ctx.lineWidth=1.4; for(let i=-3;i<=3;i++){ ctx.beginPath(); ctx.moveTo(i*s*.2,s*.16); ctx.bezierCurveTo(i*s*.35,s*.85,i*s*.12,s*1.2+Math.sin(ph+i)*8,i*s*.28,s*1.8); ctx.stroke(); } ctx.restore(); }
+  function turtle(x,y,s){ ellipse(x,y,s*1.1,s*.75,'#3ca69c'); ellipse(x,y,s*.8,s*.55,'#2c7a71'); ellipse(x+s*1.2,y-s*.1,s*.3,s*.26,'#60bea7'); ellipse(x-s*.55,y-s*.65,s*.45,s*.18,'#4bb29d'); ellipse(x+s*.55,y+s*.65,s*.45,s*.18,'#4bb29d'); }
+  // Each landmark uses the same flat shapes and palette as the fish and coral.
+  function wreck(){
+    ctx.save();
+    ctx.rotate(-.12);
+    poly([[-102,-22],[105,-25],[84,8],[59,17],[-66,17],[-91,4]],'#754e43','#bc8a70',2);
+    line(-87,-10,91,-13,3,'#a7755a');
+    for(let x=-61;x<72;x+=22)ellipse(x,-17,3,3,'#283d48');
+    line(-30,-22,-30,-104,4,'#b69772');
+    line(29,-24,43,-77,4,'#b69772');
+    line(-62,-82,-8,-88,3,'#c1ad88');
+    poly([[-59,-81],[-12,-86],[-17,-52],[-25,-57],[-31,-49],[-41,-54],[-50,-47]],'#afc5ad');
+    poly([[42,-73],[74,-37],[34,-40]],'#8eada2');
+    line(-30,-100,-87,-23,1.4,'#779997');
+    line(40,-74,88,-25,1.4,'#779997');
+    ctx.restore();
+    for(let i=0;i<7;i++){
+      const x=(t*14+i*37)%310-155;
+      fish(x,-47+(i%3)*11+Math.sin(t*2+i)*4,4+i%3,1,'#a1ded2');
+    }
+  }
+  function volcanicVent(){
+    poly([[-131,16],[-82,-11],[-35,-66],[-15,-79],[11,-75],[29,-82],[67,-30],[124,16]],'#354857','#56717b',2);
+    poly([[-15,-77],[-4,-57],[-14,-37],[3,-25],[-2,10],[11,-27],[-6,-39],[4,-58],[9,-76]],'#ec7b50');
+    ellipse(6,-78,22,4,'#ffbd6e');
+    for(let i=0;i<10;i++){
+      const rise=(t*11+i*9)%76;
+      ellipse(5+Math.sin(i+rise*.05)*(4+rise*.10),-80-rise,3+rise*.11,3+rise*.09,'#a7b8bb',.38*(1-rise/76));
+    }
+  }
+  function sanctuary(){
+    for(let i=0;i<3;i++)poly([[-93+i*7,14-i*6],[94-i*7,14-i*6],[91-i*7,9-i*6],[-91+i*7,9-i*6]],'#779895');
+    for(const x of [-66,-25,18,59]){
+      const top=x===18?-34:-70;
+      poly([[x-6,0],[x+6,0],[x+5,top],[x-5,top-2]],'#82aaa2');
+      line(x-2,-3,x-2,top+5,2,'#acc9b9');
+      if(x!==18)poly([[x-10,-69],[x+10,-69],[x+12,-76],[x-12,-76]],'#acc5b6');
+    }
+    poly([[-83,-76],[-81,-84],[-18,-108],[7,-97],[0,-90],[10,-84],[4,-76]],'#77978f','#adc3ab',2);
+    poly([[39,-76],[48,-85],[76,-82],[82,-76]],'#648782');
+    coral(73,12,11,'#cd8e93');
+  }
+  function pavilion(x,y,size){
+    ctx.save();ctx.translate(x,y);ctx.scale(size,size);
+    poly([[-31,0],[31,0],[31,-36],[-31,-36]],'#ebb98c');
+    for(const post of [-26,-11,10,25])line(post,-35,post,0,4,'#af5453');
+    poly([[-48,-40],[-32,-38],[-11,-47],[0,-56],[11,-47],[32,-38],[48,-40],[34,-31],[-34,-31]],'#388f8e','#8dd4ba',2);
+    line(-33,-30,33,-30,2,'#f0c177');
+    ctx.restore();
+  }
+  function dragonPalace(){
+    pavilion(-68,3,.88);pavilion(68,3,.88);
+    pavilion(0,-36,.8);pavilion(0,-4,1.25);
+    poly([[-15,-4],[-15,-20],[-8,-29],[8,-29],[15,-20],[15,-4]],'#553c55');
+    for(const x of [-40,40]){
+      line(x,-42,x,-35,1,'#f7da92');
+      ellipse(x,-31,4,6,'#ffd38a',.86+.12*Math.sin(t*2));
+    }
+    for(let i=-4;i<=4;i++){
+      const x=i*11,y=6+i*i*.65;
+      line(x,y,x,y+6,2,'#d16a64');
+      if(i<4)line(x,y,x+11,6+(i+1)*(i+1)*.65,3,'#e99072');
+    }
+  }
+  const landmarks={5:wreck,8:volcanicVent,9:sanctuary,10:dragonPalace};
+  const observation=$('#observation');
+  let windowBox=observation.getBoundingClientRect();
+  new ResizeObserver(()=>{windowBox=observation.getBoundingClientRect();}).observe(observation);
+  function drawLandmark(stage){
+    const paint=landmarks[stage];
+    if(!paint)return;
+    const scenic=document.body.classList.contains('scenicMode');
+    const width=scenic?W:windowBox.width, height=scenic?H:windowBox.height;
+    if(!width||!height)return;
+    const left=scenic?0:windowBox.left, top=scenic?0:windowBox.top;
+    const floor=top+height*.79;
+    poly([[0,floor+12],[W*.2,floor-5],[W*.43,floor+7],[W*.64,floor-3],[W,floor+9],[W,H],[0,H]],'#133c49');
+    ctx.save();
+    ctx.translate(left+width*.51,floor);
+    const scale=Math.min(width/295,height/212);
+    ctx.scale(scale,scale);
+    paint();
+    coral(-118,15,13,'#548f8c');
+    coral(111,19,10,'#7a9a98');
+    ctx.restore();
+  }
+  const shallows=[['#71deda','#2399ae'],['#43c6d0','#277e95'],['#48bcb5','#21638a'],['#35958a','#103e50'],['#427fa1','#142e51']];
+  function drawShallows(stage){
+    const scenic=document.body.classList.contains('scenicMode');
+    const box=scenic?{left:0,top:0,width:W,height:H}:windowBox;
+    if(!box.width||!box.height)return;
+    ctx.save();
+    ctx.translate(box.left,box.top);
+    ctx.scale(box.width/500,box.height/280);
+    // Draw the terrain beyond the porthole edges so landscape views stay continuous.
+    const ground=['#66b9af','#ddb97f','#77578a','#234f42','#254360'][stage];
+    const floor=x=>[246+5*Math.sin(x/45),207+18*Math.sin(x/81),217+20*Math.sin(x/52),226+13*Math.cos(x/56),157+87*Math.exp(-((x-250)**2)/13000)+13*Math.sin(x/40)][stage];
+    const ridge=[];
+    for(let x=-100;x<=600;x+=10)ridge.push([x,floor(x)]);
+    poly([...ridge,[600,400],[-100,400]],ground);
+    if(stage===0){
+      for(let i=0;i<7;i++)poly([[i*90,0],[i*90+16,0],[i*90-31,164],[i*90-59,185]],'rgba(245,255,212,.14)');
+    }else if(stage===1){
+      for(let x=0;x<550;x+=25){const y=floor(x)+13+x%17;line(x,y,x+15,y-2,2,'#efdaa7');}
+    }else if(stage===2){
+      for(let x=5;x<530;x+=32)coral(x,floor(x)+7,14+x%23,['#ff877c','#ecb566','#ce80bd'][Math.floor(x/32)%3]);
+    }else if(stage===3){
+      for(let i=0;i<36;i++){const x=i*15,y=floor(x),h=32+52*(.5+.5*Math.sin(i*7.3));const sway=9*Math.sin(t+i);
+        poly([[x-5,y+3],[x-8,y-h*.5],[x+sway,y-h],[x+7,y-h*.52],[x+4,y+3]],i%3?'#307956':'#57955a');}
+    }else{
+      for(let x=8;x<510;x+=27){const y=floor(x);poly([[x,y],[x+22,floor(x+22)],[x+7,y+25]],'#35536c');}
+    }
+    for(let i=0;i<[22,6,9,5,3][stage];i++){
+      const x=((t*[32,18,21,12,11][stage]+i*71)%580)-40;
+      const y=stage===0?50+Math.sin(i*6.6)*18+Math.sin(t+i)*4:stage===1?floor(x)-22-11*Math.sin(t+i):75+(i*33)%95+7*Math.sin(t+i);
+      ctx.save();ctx.translate(x,y);
+      if(stage===0){fish(0,0,5,1,'#def7ec');}
+      if(stage===1){const flap=4*Math.sin(t*3+i);poly([[-12,0],[-4,-12+flap],[10,-1],[-2,12-flap]],'#856f62');line(-8,0,-28,4,1.7,'#6f625a');}
+      if(stage===2){fish(0,0,10,1,'#ff9855');ellipse(-2,0,2,4,'#fff0cf');}
+      if(stage===3){ctx.rotate(-.35);ellipse(0,0,12,3,'#caaf73');line(-11,0,-19,1,2,'#b8a16c');ellipse(9,-1,1,1,'#223b35');}
+      if(stage===4){turtle(0,0,12+i*4);}
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  let diveMotion=0;
+  function draw(){
+    const stage=galleryStage ?? correct;
+    t += .016;
+    const target = sceneData[stage].depth;
+    const moving = Math.abs(target-animDepth)>8;
+    diveMotion=moving?Math.min(1,diveMotion+.06):Math.max(0,diveMotion-.045);
+    animDepth += (target - animDepth) * .032;
+    const ratio = Math.min(1, (galleryStage===null?animDepth:target) / 6500);
+    const deep = Math.pow(ratio, .55);
+    const g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, shallows[stage]?.[0] ?? `rgb(${Math.round(34-deep*28)},${Math.round(154-deep*130)},${Math.round(188-deep*138)})`);
+    g.addColorStop(1, shallows[stage]?.[1] ?? `rgb(3,${Math.round(72-deep*60)},${Math.round(120-deep*98)})`);
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    if(stage === 0){ ctx.fillStyle='rgba(220,255,255,.45)'; ctx.beginPath(); ctx.moveTo(0,H*.07); for(let x=0;x<=W+20;x+=16) ctx.lineTo(x,H*.07+Math.sin(x*.018+t)*8); ctx.lineTo(W,0); ctx.lineTo(0,0); ctx.closePath(); ctx.fill(); for(let i=0;i<8;i++) poly([[W*.08*i,0],[W*.08*i+100,H*.55],[W*.08*i+160,H*.55]], 'rgba(188,255,242,.06)'); }
+    bubbles.forEach(b=>{ b.y -= b.sp*(.6+ratio*1.5)+diveMotion*.026; b.x += Math.sin(t+b.ph)*.0006; if(b.y < -.02){b.y=1.05;b.x=Math.random();} ellipse(b.x*W,b.y*H,b.r*(1+deep*.8),b.r*(1+deep*.8),ratio>.6?'#c5cbff':'#b3fff8',.18+b.r*.03); });
+    drawLandmark(stage);
+    if(stage <= 4)drawShallows(stage);
+    if(stage === 6 || stage === 7){ poly([[0,H*.88],[W*.16,H*.84],[W*.36,H*.89],[W*.58,H*.82],[W*.82,H*.87],[W,H*.83],[W,H],[0,H]], '#071f33'); for(let i=0;i<14;i++) jelly((i+.5)*W/14,H*(.2+(i%5)*.11),12+(i%4)*3,t*1.5+i); }
+    if(diveMotion>.01){for(let i=0;i<33;i++){const x=((i*103.17+Math.sin(i*8)*23)%W+W)%W,y=((i*163.11+t*380*diveMotion)%H);line(x,y,x+Math.sin(i)*6,y-22*diveMotion,1.1,'#b7faff',.05+diveMotion*.29);}}
+    requestAnimationFrame(draw);
+  }
+  const refreshArchive=setupArchive(questionPool,sceneData,()=>displayStats,stage=>{
+    galleryStage=stage;
+    toggleScenic(true);
+    $('#closeScenic').focus();
+  });
+  const sendRecord=sharedRecords(stats,(data,online)=>{
+    if(online){
+      const perQuestion={};
+      for(const q of questionPool){
+        const tries=data['q'+q.id+'.tries']||0;
+        if(tries)perQuestion[q.id]={tries,right:data['q'+q.id+'.right']||0};
+      }
+      displayStats={plays:data.plays||0,finished:data.finished||0,wins:data.wins||0,
+        answered:data.answered||0,correct:data.correct||0,best:data.best||0,perQuestion,
+        stageCounts:Array.from({length:10},(_,i)=>data['s'+i]||0)};
+    }else displayStats=stats;
+    statsScope=online?'全プレイヤー':'このブラウザ';
+    const label=online?'全プレイヤーの記録':'このブラウザの記録（オンライン集計未接続）';
+    $('#statsSource').textContent=label;
+    $('.archiveScope').textContent=label;
+    renderHeader();renderDifficulty();refreshArchive();
+  });
+  renderHistory(); renderHeader(); draw();
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a59af66969e93b99',t:'MTc5NDU0MzQwMg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a59af66969e93b99',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; visibility: hidden;" src="./zero-dive_files/saved_resource.html"></iframe>
+</body></html>
