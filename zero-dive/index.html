@@ -664,7 +664,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
 
       <div class="footer">
         <div>正解するたびに潜航。海底の景色を楽しみながら、竜宮城を目指せ！</div>
-        <div class="keyPill">0 / Backspace / Enter　<button id="soundBtn" class="soundBtn" aria-label="効果音のオンオフ">🔊 SOUND ON</button></div>
+        <div class="keyPill">0 / Backspace / Enter　<button id="soundBtn" class="soundBtn" aria-label="BGMと効果音のオンオフ">🔊 SOUND ON</button></div>
       </div>
     </div>
   </div>
@@ -933,6 +933,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
 }
 
 </script>
+<script src="../asobi-bgm.js?v=20261114a"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
@@ -1440,6 +1441,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
   }
 
   let audioOn = true;
+  const oceanBgm = new window.AsobiBgm('ocean', () => ensureAudio());
   function ensureAudio(){
     if(!audioOn) return null;
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -1567,6 +1569,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
           $('#observation').classList.add('diving');
           burstBubbles('dive',36);
           correct++;
+          oceanBgm.setDepth(correct);
           stats.best=Math.max(stats.best,correct);saveStats();sendRecord({best:correct});
           score+=100;
           renderHeader();
@@ -1616,6 +1619,8 @@ function setupArchive(questions, scenes, getStats, showArea) {
     window.asobiPlayer?.record('zero-dive','start');
     toggleScenic(false);
     round = 0; correct = 0; score = 0; zeroCount = 0; current = null; history = []; playing = true; lock = false;
+    oceanBgm.setDepth(0);
+    oceanBgm.start();
     currentResultId=crypto.randomUUID();$('#diveRankSubmit').disabled=false;
     questionSet = buildQuestionSet();
     stats.plays++;saveStats();sendRecord({plays:1});renderStats();
@@ -1625,6 +1630,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
   }
   function endGame(){
     playing = false;
+    oceanBgm.stop();
     if(correct===10)window.asobiPlayer?.record('zero-dive','clear');
     stats.finished++;if(correct===10)stats.wins++;stats.best=Math.max(stats.best,correct);for(let i=0;i<correct;i++)stats.stageCounts[i]=(stats.stageCounts[i]||0)+1;saveStats();renderHeader();renderStats();
     const scene = sceneData[correct];
@@ -1667,7 +1673,9 @@ function setupArchive(questions, scenes, getStats, showArea) {
     $('#archive [data-area="'+previous+'"]').focus();
   }
   $('#closeScenic').addEventListener('click',closeScenery);
-  $('#soundBtn').addEventListener('click', () => { audioOn=!audioOn;$('#soundBtn').textContent=audioOn?'🔊 SOUND ON':'🔇 SOUND OFF';if(!audioOn)judgeSiren.stop(); });
+  $('#soundBtn').addEventListener('click', () => { audioOn=!audioOn;$('#soundBtn').textContent=audioOn?'🔊 SOUND ON':'🔇 SOUND OFF';if(!audioOn){judgeSiren.stop();oceanBgm.stop()}else if(playing){oceanBgm.start();oceanBgm.setDepth(correct)} });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)oceanBgm.stop();else if(playing&&audioOn)oceanBgm.start()});
+  window.addEventListener('pagehide',()=>oceanBgm.stop());
   window.addEventListener('resize', () => { if(current) renderDigits(); });
   document.addEventListener('keydown', e => {
     if(!$('#answerCard').hidden || !$('#launchCurtain').hidden)return;
