@@ -8,7 +8,8 @@
     'zero-dive': { name: '深海ゼロダイブ', icon: '🌊', href: '/zero-dive/' },
     darts: { name: 'FLIGHTLINE DARTS', icon: '🎯', href: '/darts/' },
     'dobon-quiz': { name: 'ドボンクイズ', icon: '💣', href: '/dobon-quiz/' },
-    'sector-09': { name: '隔離区画09', icon: '👁️', href: '/sector-09/' }
+    'sector-09': { name: '隔離区画01', icon: '👁️', href: '/sector-09/' },
+    billiards: { name: 'BILLIARDS CLUB', icon: '🎱', href: '/billiards/' }
   });
   const AVATARS = ['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲'];
   const LEVELS = [1, 1, 1, 2, 3, 4, 6, 10, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 5, 5, 6, 8];
@@ -57,7 +58,7 @@
   const snapshot = () => ({ ...state, games: { ...state.games }, recent: [...state.recent], claimed: { ...state.claimed }, level: level(), nextLevelXp: threshold(level() + 1), currentLevelXp: threshold(level()) });
 
   function missions(today = day()) {
-    const dailyGame = Object.keys(GAMES)[Number(today.replaceAll('-', '')) % 4];
+    const dailyGame = Object.keys(GAMES)[Number(today.replaceAll('-', '')) % Object.keys(GAMES).length];
     const events = state.recent.filter(event => day(event.time) === today && event.action === 'start');
     const defs = [
       { id: 'first', icon: '✨', title: '今日の初プレイ', description: 'ゲームを1回遊ぶ', target: 1, current: events.length, bonus: 15 },
@@ -79,7 +80,7 @@
     const count = Object.values(state.claimed).filter(Boolean).length;
     return [
       { icon: '🌱', title: 'はじめの一歩', hint: '初めて遊ぶ', earned: state.starts >= 1 },
-      { icon: '🎮', title: 'ゲーム探検家', hint: '4作品すべて遊ぶ', earned: distinct >= 4 },
+      { icon: '🎮', title: 'ゲーム探検家', hint: '異なる4作品を遊ぶ', earned: distinct >= 4 },
       { icon: '🔥', title: '常連さん', hint: '合計10回遊ぶ', earned: state.starts >= 10 },
       { icon: '🏆', title: 'クリア名人', hint: '5回クリアする', earned: state.clears >= 5 },
       { icon: '🌟', title: '100回の挑戦', hint: '合計100回遊ぶ', earned: state.starts >= 100 },

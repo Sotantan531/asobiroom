@@ -34,7 +34,8 @@
         <a href="/zero-dive/">🌊 深海ゼロダイブ</a>
         <a href="/darts/">🎯 FLIGHTLINE DARTS</a>
         <a href="/dobon-quiz/">💣 ドボンクイズ</a>
-        <a href="/sector-09/">👁️ 隔離区画09</a>
+        <a href="/sector-09/">👁️ 隔離区画01</a>
+        <a href="/billiards/">🎱 BILLIARDS CLUB</a>
       </div>
       <a class="asobi-menu-main-link" href="/#arcadeRankings"><span>🏆</span> みんなのランキング <b aria-hidden="true">›</b></a>
       <a class="asobi-menu-main-link" href="/#arcadeMissions"><span>✨</span> 今日のミッション <b aria-hidden="true">›</b></a>
@@ -50,7 +51,7 @@
           <li><a href="/zero-dive/"><span class="game-name">🌊 深海ゼロダイブ</span><span data-count="zero-dive">—</span></a></li>
           <li><a href="/darts/"><span class="game-name">🎯 FLIGHTLINE DARTS</span><span data-count="darts">—</span></a></li>
           <li><a href="/dobon-quiz/"><span class="game-name">💣 ドボンクイズ</span><span data-count="dobon-quiz">—</span></a></li>
-          <li><a href="/sector-09/"><span class="game-name">👁️ 隔離区画09</span><span data-count="sector-09">—</span></a></li>
+          <li><a href="/sector-09/"><span class="game-name">👁️ 隔離区画01</span><span data-count="sector-09">—</span></a></li>
         </ul>
         <p class="asobi-dashboard-status" role="status" aria-live="polite">開くと最新の記録を取得します。</p>
         <p class="asobi-dashboard-note">訪問はタブごとに1回、プレイはゲーム開始時に加算。集計開始前の履歴は含みません。</p>
@@ -128,7 +129,7 @@
   drawer.querySelector('#asobiStatsRefresh').addEventListener('click', refresh);
   drawer.querySelector('#asobiMenuRandom').addEventListener('click', () => {
     const games = player ? Object.values(player.GAMES) : [
-      { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-09/' }
+      { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-09/' }, { href: '/billiards/' }
     ];
     location.href = games[Math.floor(Math.random() * games.length)].href;
   });
