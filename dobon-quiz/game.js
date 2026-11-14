@@ -3,6 +3,20 @@ const ROUND_MS=80000;
 const tiers=['簡単','ふつう','難しい'];
 const priors=[.38,.74,.86,.43,.92,.45,.62,.34,.7,.56,.82,.9,.39,.65,.46,.78,...extraQuestions.map(q=>q[2]),...addedRatings];
 let stats=[],seen=new Set(),level=0,index,round,phase='menu',count,remaining,deadline,interval,audio;
+const bgm=new window.AsobiBgm('dobon',()=>audio);
+let bgmMuted=false;
+try{bgmMuted=localStorage.getItem('asobiroom.dobon.bgm-muted')==='true'}catch{}
+bgm.setEnabled(!bgmMuted);
+const bgmToggle=document.createElement('button');
+bgmToggle.id='bgmToggle';bgmToggle.type='button';bgmToggle.title='BGMを切り替える';
+bgmToggle.setAttribute('aria-label','BGMのオン・オフ');
+function renderBgmToggle(){bgmToggle.textContent=bgmMuted?'♫ OFF':'♫ ON';bgmToggle.setAttribute('aria-pressed',String(!bgmMuted))}
+bgmToggle.onclick=()=>{
+ bgmMuted=!bgmMuted;try{localStorage.setItem('asobiroom.dobon.bgm-muted',String(bgmMuted))}catch{}
+ bgm.setEnabled(!bgmMuted);renderBgmToggle();
+ if(!bgmMuted&&['play','judging','final'].includes(phase)){try{audio?.resume()}catch{}bgm.start();bgm.setUrgent(remaining<=30000)}
+};
+renderBgmToggle();el('score').before(bgmToggle);
 function groups(){
  const pools=[[],[],[]];
  bank.forEach((q,i)=>{
@@ -48,9 +62,10 @@ function tone(ok){
 }
 function progress(){el('score').textContent='正解 '+count+' / 10';el('track').innerHTML=Array.from({length:10},(_,i)=>i<count?'<i class="on"></i>':'<i></i>').join('')}
 function clock(){el('time').textContent=Math.ceil(remaining/1000);el('shade').style.width=(100*(1-remaining/ROUND_MS))+'%'}
-function tick(){if(!['play','judging','final'].includes(phase))return;remaining=Math.max(0,deadline-performance.now());clock();if(!remaining&&phase!=='final')end('時間切れ！',false,'timeout')}
+function tick(){if(!['play','judging','final'].includes(phase))return;remaining=Math.max(0,deadline-performance.now());clock();bgm.setUrgent(remaining<=30000);if(!remaining&&phase!=='final')end('時間切れ！',false,'timeout')}
 function end(message,won,kind){
  if(phase==='end')return;
+ bgm.stop();
  if(won)window.asobiPlayer?.record('dobon-quiz','clear');
  phase='end';el('choices').querySelector('.pending')?.classList.remove('pending');clearInterval(interval);el('choices').querySelectorAll('button').forEach(b=>b.disabled=true);
  const h=document.createElement('h2'),p=document.createElement('p');h.textContent=message;p.textContent='ドボンは「'+bank[index][3]+'」。'+bank[index][4];el('result').replaceChildren(h,p);el('start').hidden=el('home').hidden=false;
@@ -86,8 +101,10 @@ function start(){
  const words=q[2].split(' '),buttons=words.map((word,j)=>{const b=document.createElement('button'),note=document.createElement('span');note.className='note';b.className='tile';b.dataset.word=word;b.append(note,word);b.onclick=()=>select(b,j);return b});
  for(let i=buttons.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[buttons[i],buttons[j]]=[buttons[j],buttons[i]]}
  const logo=document.createElement('div');logo.className='brandcell';logo.innerHTML='<span class="room-brand"><img src="asobiroom.svg" alt="" width="27" height="27"><span>asobiroom</span></span>ドボン！';el('choices').replaceChildren(...buttons,logo);
- count=0;remaining=ROUND_MS;deadline=performance.now()+remaining;phase='play';displayRate();progress();clock();interval=setInterval(tick,80);
+ count=0;remaining=ROUND_MS;deadline=performance.now()+remaining;phase='play';bgm.setUrgent(false);bgm.start();displayRate();progress();clock();interval=setInterval(tick,80);
 }
 tiers.forEach((name,i)=>{const b=document.createElement('button');b.textContent=name;b.onclick=()=>{level=i;start()};el('levels').append(b)});
 updateLevels();
-el('start').onclick=async()=>{if(phase==='end'){const previous=round;await inFlight;if(phase!=='end'||previous!==round)return}start()};el('home').onclick=()=>{clearFinale();round=null;clearInterval(interval);for(const id of ['result','choices','track','genre','prompt'])el(id).replaceChildren();for(const id of ['menu','intro','hint'])el(id).hidden=false;el('start').hidden=el('home').hidden=true;phase='menu';remaining=ROUND_MS;clock();el('score').textContent='正解 0 / 10';sync()};
+el('start').onclick=async()=>{if(phase==='end'){const previous=round;await inFlight;if(phase!=='end'||previous!==round)return}start()};el('home').onclick=()=>{clearFinale();bgm.stop();round=null;clearInterval(interval);for(const id of ['result','choices','track','genre','prompt'])el(id).replaceChildren();for(const id of ['menu','intro','hint'])el(id).hidden=false;el('start').hidden=el('home').hidden=true;phase='menu';remaining=ROUND_MS;clock();el('score').textContent='正解 0 / 10';sync()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)bgm.stop();else if(['play','judging','final'].includes(phase))bgm.start()});
+window.addEventListener('pagehide',()=>bgm.stop());
