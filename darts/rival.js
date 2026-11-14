@@ -1,6 +1,7 @@
 // Spread is a standard deviation in board units, shared by scoring and checkout shots.
-const scoringSpread=[72.4,31.1,23.9,20.1,17.7,13.4,9.6];
-const cricketSpread=[54.1,36.7,26,21.3,18.4,14.5,11.6];
+// Slightly tighter grouping at every rating, without making low-level CPUs perfect.
+const scoringSpread=[64.5,27.1,20.5,17,14.8,11.1,8];
+const cricketSpread=[48,32,22.9,18.5,15.8,12.1,9.3];
 function groupAround(center,spread){
   const radius=Math.sqrt(-2*Math.log(1-Math.random()))*spread;
   const angle=2*Math.PI*Math.random();
@@ -14,7 +15,10 @@ function targetCenter(n,m){
 }
 function cpu(){
   if(over||!aiTurn())return;
-  let target=[25,2],spread=scoringSpread[effectiveLevel()];
+  // With split bull, T20 is the highest scoring standard target (60 > 50).
+  // Bull-focused training modes still aim at bull by design.
+  const preferT20=rules.bull==='split'&&!['eagle','center','jack'].includes(mode);
+  let target=preferT20?[20,3]:[25,2],spread=scoringSpread[effectiveLevel()];
   if(cricket()||mode==='cc'){
     spread=cricketSpread[effectiveLevel()];
     let n=targets[round-1]||20;
@@ -25,8 +29,13 @@ function cpu(){
     }
     target=[n,n===25?2:3];
   }else if(is01()){
-    const remaining=scores[1],path=checkoutRoute(remaining,3-darts.length);
-    if(path.length)target=[path[0].n,path[0].m];
+    const remaining=scores[1],shotsLeft=3-darts.length;
+    const path=checkoutRoute(remaining,shotsLeft);
+    // Prefer a legal T20-first checkout in split-bull games; never aim at T20
+    // if it would bust or prevent an available finish.
+    if(preferT20&&remaining>60&&shotsLeft>1&&checkoutRoute(remaining-60,shotsLeft-1).length)
+      target=[20,3];
+    else if(path.length)target=[path[0].n,path[0].m];
     else if(remaining<50)target=[Math.min(20,remaining-1),1];
   }
   cpuFlight(...groupAround(targetCenter(...target),spread));
