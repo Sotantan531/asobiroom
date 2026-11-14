@@ -85,7 +85,9 @@
       while (this.nextTime < now + 0.16) {
         if (this.mode === 'dobon') this.dobonStep(this.step, this.nextTime);
         else this.oceanStep(this.step, this.nextTime);
-        const bpm = this.mode === 'dobon' ? (this.urgent ? 156 : 114) : (this.depth >= 8 ? 78 : 72);
+        // Keep the ocean theme adventurous: lively near the surface, expansive below.
+        const bpm = this.mode === 'dobon' ? (this.urgent ? 156 : 114)
+          : this.depth >= 8 ? 92 : this.depth >= 6 ? 90 : this.depth >= 3 ? 94 : 98;
         this.nextTime += 60 / bpm / 4;
         this.step++;
       }
@@ -158,33 +160,50 @@
     oceanStep(step, at) {
       const beat = step % 16, bar = Math.floor(step / 16) % 4;
       const depth = this.depth;
-      const roots = depth < 4 ? [48, 45, 41, 43] : depth < 7 ? [45, 41, 38, 43] : [38, 34, 41, 36];
-      const root = roots[bar];
-      const minor = depth >= 4;
-      const third = minor ? 3 : 4;
+      const scene = depth < 3 ? 0 : depth < 6 ? 1 : depth < 8 ? 2 : 3;
+      // Each entry is [chord root, major/minor third]. Even the abyss has a
+      // hopeful resolution, so descending feels like a discovery, not a defeat.
+      const progressions = [
+        [[48, 4], [43, 4], [45, 3], [41, 4]], // C - G - Am - F: sunlit adventure
+        [[45, 3], [41, 4], [48, 4], [43, 4]], // Am - F - C - G: deeper discovery
+        [[43, 4], [38, 3], [41, 4], [48, 4]], // G - Dm - F - C: mysterious wonder
+        [[38, 3], [34, 4], [41, 4], [36, 4]], // Dm - Bb - F - C: grand finale
+      ];
+      const [root, third] = progressions[scene][bar];
+      const melodyOctave = root < 42 ? 24 : 12;
       if (beat === 0) {
-        const padLength = depth >= 7 ? 3.45 : 2.85;
-        const padLevel = 0.032 + depth * 0.003;
+        const padLength = 60 / (scene === 0 ? 98 : scene === 1 ? 94 : scene === 2 ? 90 : 92) * 3.75;
+        const padLevel = 0.028 + scene * 0.005;
         [0, third, 7, 12].forEach((interval, i) => {
-          this.note(root + interval, at, padLength, padLevel * (i === 0 ? 1.15 : 0.75), i === 0 ? 'sine' : 'triangle', 0.8, 1.0, 1100 + depth * 85);
+          this.note(root + interval, at, padLength, padLevel * (i === 0 ? 1.15 : 0.75), i === 0 ? 'sine' : 'triangle', 0.42, 0.8, 1250 + depth * 70);
         });
-        if (depth >= 3) this.note(root - 12, at, 3.1, 0.048 + depth * 0.004, 'sine', 0.45, 1.25);
-        if (depth >= 8) {
-          this.note(root - 24, at, 3.6, 0.07, 'sine', 0.75, 1.5);
-          this.note(root + 19, at, 3.0, 0.034, 'sine', 0.9, 1.0);
+        if (scene >= 1) this.note(root - 12, at, padLength, 0.036 + scene * 0.008, 'sine', 0.35, 0.9);
+        if (scene === 3) {
+          this.note(root - 24, at, padLength, 0.06, 'sine', 0.55, 1.0);
+          this.note(root + 19, at, padLength, 0.032, 'triangle', 0.6, 0.85, 1300);
         }
       }
-      if (depth < 4 && (beat === 2 || beat === 7 || beat === 11)) {
-        const shift = beat === 7 ? 19 : beat === 11 ? 16 : 12;
-        this.note(root + shift, at, 1.0, 0.043, 'sine', 0.016, 0.7);
-        this.note(root + shift + 12, at, 0.6, 0.012, 'triangle', 0.02, 0.3);
-      } else if (depth >= 4 && (beat === 0 || beat === 5 || beat === 10)) {
-        const shift = beat === 5 ? 15 : beat === 10 ? 19 : 12;
-        this.note(root + shift, at, depth >= 8 ? 1.8 : 1.25, 0.026 + depth * 0.002, 'sine', 0.11, 0.65);
+      // A playful, memorable melody takes the lead instead of sparse sonar.
+      const melody = { 0: 0, 2: third, 5: 7, 7: scene >= 2 ? 12 : 9,
+        10: 7, 13: third, 15: scene >= 2 ? 7 : 12 };
+      if (Object.prototype.hasOwnProperty.call(melody, beat)) {
+        const note = root + melodyOctave + melody[beat];
+        this.note(note, at, beat === 7 || beat === 15 ? 0.45 : 0.28,
+          0.067 + scene * 0.009, 'triangle', 0.009, 0.17, scene >= 2 ? 1900 : 2700);
+        if (beat === 5 || beat === 7) this.note(note + 12, at, 0.22, 0.014 + scene * 0.003, 'sine', 0.012, 0.12);
       }
-      if (depth >= 6 && beat === 8) this.note(root - 5, at, 2.0, 0.034, 'triangle', 0.24, 1.0, 600);
-      // Gentle deep sonar pulses become an epic rhythmic heartbeat near the ruins.
-      if (depth >= 8 && beat % 4 === 0) this.note(root - 12, at, 0.56, 0.044, 'triangle', 0.045, 0.28, 500);
+      // Rippling arpeggios and a soft heartbeat give forward motion underwater.
+      const ripples = { 1: 7, 4: 12, 8: third + 12, 11: 7, 14: 12 };
+      if (Object.prototype.hasOwnProperty.call(ripples, beat)) {
+        this.note(root + 12 + ripples[beat], at, 0.2, 0.022 + scene * 0.005,
+          'sine', 0.008, 0.12);
+      }
+      if (beat % 4 === 0) {
+        this.note(root - 12, at, 0.3, 0.045 + scene * 0.007, 'triangle', 0.015, 0.18, 680);
+        if (scene >= 2) this.note(root + 7, at, 0.3, 0.019 + scene * 0.004, 'triangle', 0.025, 0.18, 900);
+      }
+      if (scene >= 1 && (beat === 4 || beat === 12)) this.percussion(at, 0.08, 0.012 + scene * 0.004, 1400);
+      if (scene === 3 && beat === 8) this.note(root + 12, at, 0.8, 0.038, 'sawtooth', 0.08, 0.45, 580);
     }
   }
 
