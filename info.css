@@ -1,1 +1,89 @@
-*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#0b1730;color:#edf4ff;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;line-height:1.8}a{color:#9bdcff}header,main,footer{max-width:850px;margin:auto;padding:20px}header{display:flex;justify-content:space-between;gap:16px;align-items:center}header a{font-weight:800;text-decoration:none;color:#fff;font-size:23px}main{padding-top:28px;padding-bottom:75px}h1{font-size:clamp(26px,5vw,38px);line-height:1.4}h2{font-size:21px;margin-top:32px}p,li{color:#d7e3f2}.panel{padding:24px;background:#162747;border:1px solid #344e70;border-radius:18px;margin:24px 0}footer{border-top:1px solid #344e70;display:flex;flex-wrap:wrap;gap:14px;font-size:13px}.button{display:inline-block;background:#70d4ff;color:#091b30;text-decoration:none;font-weight:800;padding:10px 20px;border-radius:12px}small{color:#aebfd5}
+/* asobiroom サイト情報・ゲームガイド：ホームと同じロゴの色調 */
+:root {
+  color-scheme: light;
+  --info-bg: #f6f6f1;
+  --info-card: #fffefa;
+  --info-soft: #fff6df;
+  --info-text: #192f46;
+  --info-sub: #526779;
+  --info-line: #dbe3e4;
+  --info-navy: #102b48;
+  --info-yellow: #ffe049;
+  --info-red: #ee625b;
+}
+@media(prefers-color-scheme: dark) {
+  :root:not([data-asobi-theme="light"]) {
+    color-scheme: dark;
+    --info-bg: #0b1829;
+    --info-card: #15283e;
+    --info-soft: #1b354a;
+    --info-text: #f3f7fc;
+    --info-sub: #b2c4d2;
+    --info-line: #31485d;
+  }
+}
+:root[data-asobi-theme="dark"] {
+  color-scheme: dark;
+  --info-bg: #0b1829;
+  --info-card: #15283e;
+  --info-soft: #1b354a;
+  --info-text: #f3f7fc;
+  --info-sub: #b2c4d2;
+  --info-line: #31485d;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--info-bg); color: var(--info-text); font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", system-ui, sans-serif; line-height: 1.8; }
+body > header, body > main, body > footer { max-width: 960px; margin: 0 auto; padding: 22px clamp(18px, 4vw, 36px); }
+body > header { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--info-line); }
+body > header > a { color: var(--info-text); font-size: 23px; font-weight: 900; text-decoration: none; letter-spacing: -.05em; }
+.asobi-info-brand { display: inline-flex; gap: 9px; align-items: center; white-space: nowrap; }
+.asobi-info-brand img { width: 34px; height: 34px; border-radius: 10px; }
+body > header > small { margin-right: auto; }
+body > main { padding-top: 34px; padding-bottom: 65px; }
+h1 { font-size: clamp(27px, 5vw, 40px); letter-spacing: -.045em; line-height: 1.3; margin: 6px 0 20px; }
+h2 { font-size: clamp(19px, 3vw, 23px); margin: 35px 0 13px; }
+h3 { font-size: 17px; }
+p, li { color: var(--info-sub); }
+a { color: var(--info-text); text-underline-offset: 3px; }
+a:hover { color: var(--info-red); }
+small { color: var(--info-sub); }
+.panel, .content-card { padding: clamp(18px, 3vw, 26px); background: var(--info-card); border: 1px solid var(--info-line); border-radius: 18px; margin: 24px 0; box-shadow: 0 8px 24px rgba(8, 30, 50, .05); }
+.panel h2, .content-card h2 { margin-top: 4px; }
+.button { display: inline-block; background: var(--info-yellow); color: var(--info-navy); text-decoration: none; font-weight: 900; padding: 11px 21px; border-radius: 11px; }
+.button:hover { color: var(--info-navy); filter: brightness(.97); }
+.asobi-theme-control { margin-left: auto; display: inline-flex; flex: none; align-items: center; gap: 5px; border: 1px solid var(--info-line); border-radius: 12px; background: var(--info-card); padding: 5px 7px; color: var(--info-text); }
+.asobi-theme-symbol { font-size: 16px; }
+.asobi-theme-select { background: transparent; border: 0; color: var(--info-text); font: 800 12px system-ui, sans-serif; cursor: pointer; padding: 3px 0; }
+.asobi-theme-select option { background: var(--info-card); color: var(--info-text); }
+.asobi-theme-control:focus-within { outline: 3px solid var(--info-red); outline-offset: 2px; }
+body > footer { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; border-top: 2px solid var(--info-yellow); font-size: 12px; }
+body > footer a { font-weight: 750; }
+body > footer small { margin-left: auto; }
+/* ゲームガイド（既存の長文とリンクをそのまま活かす） */
+.site-header-inner, .footer-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 22px; }
+.site-brand { color: var(--info-text); font-size: 23px; font-weight: 900; text-decoration: none; letter-spacing: -.05em; }
+.site-header nav, .site-footer nav { display: flex; gap: 14px; flex-wrap: wrap; }
+.site-header nav a, .site-footer nav a { font-size: 12px; font-weight: 800; text-decoration: none; }
+.page-lead { background: var(--info-soft); padding: clamp(22px, 4vw, 36px); border-radius: 20px; }
+.page-lead h1 { margin: 5px 0 10px; }
+.page-lead p { margin: 0; }
+.eyebrow { color: var(--info-red); font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+.guide-index { display: flex; gap: 8px; flex-wrap: wrap; margin: 22px 0; }
+.guide-index a { display: inline-block; border: 1px solid var(--info-line); border-radius: 10px; padding: 8px 12px; background: var(--info-card); font-size: 12px; font-weight: 800; text-decoration: none; }
+.content-card { scroll-margin-top: 25px; }
+.pill { display: inline-flex; border-radius: 20px; padding: 3px 10px; color: #744e17; background: #ffedbc; font-size: 10px; font-weight: 900; }
+.note { font-size: 12px; }
+.site-footer { flex-direction: column; align-items: stretch; }
+.footer-inner p { font-size: 12px; margin: 0; }
+a:focus-visible { outline: 3px solid var(--info-red); outline-offset: 3px; }
+@media(max-width: 620px) {
+  body > header > small { display: none; }
+  body > header > a { font-size: 19px; }
+  .site-header-inner { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .site-header nav { gap: 10px; }
+  .site-header nav a { font-size: 11px; }
+  body > footer small { margin-left: 0; }
+  .footer-inner { align-items: flex-start; flex-direction: column; }
+}
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } }

@@ -25,8 +25,8 @@
       <article class="arcade-card"><div class="arcade-card-top"><h3>📡 みんなのプレイ速報</h3><span class="arcade-live">● LIVE</span></div><div class="arcade-feed" id="arcadeFeed" aria-live="polite">読み込み中…</div><p class="arcade-small">公開に同意した人の最近のプレイのみ表示します。</p></article>
       <article class="arcade-card arcade-pwa"><div class="arcade-card-top"><h3>📱 ホーム画面から遊ぼう</h3><span class="arcade-chip">APP MODE</span></div><div class="arcade-app-mark">🚪</div><p>asobiroomをホーム画面に追加すると、アプリのようにすぐ開けるよ。</p><button type="button" class="arcade-install" id="arcadeInstall">ホーム画面に追加する方法</button><p class="arcade-small" id="arcadeInstallHelp">iPhoneはSafariの「共有」→「ホーム画面に追加」。Androidはブラウザのメニューから追加できます。</p><p class="arcade-small">ゲームの利用にはインターネット接続が必要な場合があります。</p></article>
     </div><p class="arcade-disclaimer">※ XPと実績はブラウザに保存されます。ランキングは自己申告のプレイイベントによるカジュアルな集計で、厳密な競技記録ではありません。</p>`;
-  const hero = main.querySelector('.hero');
-  if (hero) hero.after(hub); else main.prepend(hub);
+  // ゲーム一覧を主役に。プレイヤー機能は作品棚の下にまとめる。
+  main.append(hub);
   const $ = selector => hub.querySelector(selector);
   const number = value => Number(value || 0).toLocaleString('ja-JP');
   const node = (tag, className, value) => { const el = document.createElement(tag); if (className) el.className = className; if (value !== undefined) el.textContent = value; return el; };

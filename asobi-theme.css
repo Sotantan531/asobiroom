@@ -1,0 +1,249 @@
+/* asobiroom | Modern Playground — ロゴの黄・紺・赤を使う共通デザイントークン */
+:root {
+  color-scheme: light;
+  --as-navy: #102b48;
+  --as-yellow: #ffe049;
+  --as-red: #ee625b;
+  --as-bg: #f6f6f1;
+  --as-surface: #fffefa;
+  --as-soft: #fff8e5;
+  --as-input: #fffefa;
+  --as-text: #192f46;
+  --as-muted: #586b7d;
+  --as-line: #dbe3e4;
+  --as-hero: #fff0b3;
+  --as-hero-ink: #102b48;
+  --as-chip: #fff2d0;
+  --as-chip-text: #7b5418;
+  --as-shadow: 0 12px 32px rgba(25, 47, 67, .075);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-asobi-theme="light"]) {
+    color-scheme: dark;
+    --as-bg: #0b1829;
+    --as-surface: #15283e;
+    --as-soft: #1b354a;
+    --as-input: #102238;
+    --as-text: #f3f7fc;
+    --as-muted: #b2c4d2;
+    --as-line: #31485d;
+    --as-hero: #1c3048;
+    --as-hero-ink: #f8fbff;
+    --as-chip: #304456;
+    --as-chip-text: #ffe496;
+    --as-shadow: 0 16px 40px rgba(0, 0, 0, .22);
+  }
+}
+:root[data-asobi-theme="dark"] {
+  color-scheme: dark;
+  --as-bg: #0b1829;
+  --as-surface: #15283e;
+  --as-soft: #1b354a;
+  --as-input: #102238;
+  --as-text: #f3f7fc;
+  --as-muted: #b2c4d2;
+  --as-line: #31485d;
+  --as-hero: #1c3048;
+  --as-hero-ink: #f8fbff;
+  --as-chip: #304456;
+  --as-chip-text: #ffe496;
+  --as-shadow: 0 16px 40px rgba(0, 0, 0, .22);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--as-bg);
+  color: var(--as-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+  transition: background-color .2s ease, color .2s ease;
+}
+body > header, body > main { max-width: 1240px; margin-inline: auto; }
+body > main { padding: 20px clamp(16px, 3vw, 30px) 42px; }
+body > header {
+  min-height: 78px;
+  padding: 14px 154px 14px clamp(16px, 3vw, 30px);
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 26px);
+  border-bottom: 1px solid var(--as-line);
+}
+.asobi-brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--as-text); font-weight: 900; font-size: 25px; letter-spacing: -.06em; white-space: nowrap; }
+.asobi-brand:hover { color: var(--as-text); }
+.asobi-brand .brand-mark { width: 43px; height: 43px; border-radius: 13px; box-shadow: 0 3px 0 rgba(16, 43, 72, .1); }
+.asobi-top-links { margin-left: auto; display: flex; align-items: center; gap: 22px; }
+.asobi-top-links a { text-decoration: none; color: var(--as-muted); font-size: 12px; font-weight: 800; }
+.asobi-top-links a:hover { color: var(--as-text); }
+.asobi-theme-control {
+  display: inline-flex; align-items: center; flex: none; gap: 5px; padding: 6px 8px 6px 10px;
+  background: var(--as-surface); border: 1px solid var(--as-line); border-radius: 12px;
+  color: var(--as-text); box-shadow: 0 3px 10px rgba(0,0,0,.03);
+}
+.asobi-theme-symbol { font-size: 16px; line-height: 1; }
+.asobi-theme-select { border: 0; outline: 0; background: transparent; color: var(--as-text); font: 800 12px system-ui, sans-serif; padding: 3px 2px; cursor: pointer; }
+.asobi-theme-select option { color: var(--as-text); background: var(--as-surface); }
+.asobi-theme-control:focus-within { outline: 3px solid var(--as-red); outline-offset: 2px; }
+
+/* コンパクトなファーストビュー。常にゲームを先に見せる。 */
+body > main > .hero {
+  position: relative;
+  min-height: 185px;
+  padding: clamp(20px, 3.5vw, 38px) clamp(22px, 4.5vw, 54px);
+  background: var(--as-hero);
+  color: var(--as-hero-ink);
+  border: 1px solid rgba(16, 43, 72, .14);
+  box-shadow: var(--as-shadow);
+  border-radius: 24px;
+  overflow: hidden;
+}
+body > main > .hero::after {
+  content: ""; position: absolute; right: -76px; top: -135px; width: 330px; height: 330px;
+  border: 1.5px solid currentColor; border-radius: 50%; opacity: .08; pointer-events: none;
+}
+.asobi-welcome { display: block; margin: 0 0 10px; font-size: 10px; font-weight: 900; letter-spacing: .18em; opacity: .72; }
+body > main > .hero h1 { font-size: clamp(26px, 4.4vw, 51px); letter-spacing: -.055em; line-height: 1.23; margin: 0 0 8px; }
+body > main > .hero p { font-size: clamp(12px, 1.4vw, 15px); color: var(--as-hero-ink); opacity: .83; line-height: 1.6; }
+body > main > .hero .hero-mark { width: clamp(72px, 9vw, 113px); border: 0; border-radius: 23px; margin: 0 22px 0 12px; box-shadow: 0 8px 16px rgba(9, 23, 40, .1); transform: rotate(5deg); z-index: 1; }
+.asobi-games-heading { display: flex; align-items: center; gap: 14px; justify-content: space-between; margin: 26px 0 13px; }
+.asobi-games-heading h2 { margin: 0; color: var(--as-text); font-size: clamp(22px, 3vw, 29px); letter-spacing: -.045em; }
+.asobi-games-heading small { display: block; margin-top: 3px; color: var(--as-muted); font-size: 11px; font-weight: 600; }
+.asobi-games-heading .arcade-random { color: var(--as-navy)!important; background: var(--as-yellow)!important; border: 1px solid #e7bd35!important; box-shadow: 0 4px 0 rgba(116, 83, 17, .12)!important; border-radius: 11px!important; padding: 11px 16px!important; font-size: 12px; }
+.asobi-games-heading .arcade-random:hover { filter: brightness(.97); }
+.filters { margin: 0 0 13px; gap: 7px; }
+.filters button { border: 1px solid var(--as-line); color: var(--as-muted); background: var(--as-surface); border-radius: 10px; padding: 8px 15px; font-size: 12px; font-weight: 800; }
+.filters button[aria-pressed="true"] { color: #fff; background: var(--as-navy); border-color: var(--as-navy); }
+#shelf { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.8vw, 20px); align-items: stretch; }
+#shelf > .card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: 1px solid var(--as-line); border-radius: 18px; background: var(--as-surface); box-shadow: var(--as-shadow); transition: transform .18s ease, box-shadow .18s ease; }
+#shelf > .card:hover { transform: translateY(-4px); box-shadow: 0 18px 32px rgba(11, 32, 55, .14); }
+#shelf > .card + .card { margin-top: 0; }
+#shelf > .card > :first-child { width: 100%; height: auto; aspect-ratio: 1.48 / 1; min-height: 0; overflow: hidden; flex: none; }
+#shelf > .card .ocean { min-height: 0; }
+#shelf > .card .darts-art, #shelf > .card .quiz-art, #shelf > .card .garden { min-height: 0; }
+#shelf > .card .details { display: flex; flex: 1; flex-direction: column; padding: 16px 17px 18px; }
+#shelf > .card .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+#shelf > .card .tags small { font-size: 10px; font-weight: 900; color: var(--as-chip-text); background: var(--as-chip); padding: 3px 8px; border-radius: 7px; }
+#shelf > .card h3 { color: var(--as-text); font-size: clamp(15px, 1.7vw, 19px); line-height: 1.35; min-height: 2.7em; letter-spacing: -.035em; margin: 12px 0 7px; }
+#shelf > .card p { color: var(--as-muted); font-size: 12px; line-height: 1.7; margin: 0 0 18px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+#shelf > .card .play { align-self: stretch; margin-top: auto; text-align: center; border-radius: 10px; background: var(--as-navy); color: #fff; padding: 11px 8px; font-size: 11px; line-height: 1.45; }
+#shelf > .card .play:hover { background: #255070; }
+#shelf > .card .quiz-art .bomb { transform: rotate(12deg) scale(.9); }
+#shelf > .card .quiz-paper { color: #192f46; }
+#shelf > .old { grid-column: 1 / -1; background: var(--as-surface); border: 1px solid var(--as-line); border-radius: 11px; }
+#shelf > .old a { color: var(--as-text); }
+#empty { color: var(--as-muted); font-size: 13px; }
+
+/* プレイヤー機能。ゲーム一覧の下に、色数を抑えた情報カードを並べる。 */
+.arcade-hub { margin: 36px 0 12px; padding: 0; color: var(--as-text); background: transparent; border: 0; box-shadow: none; border-radius: 0; }
+.arcade-heading { margin-bottom: 16px; }
+.arcade-kicker { color: var(--as-red); font-size: 10px; letter-spacing: .13em; }
+.arcade-heading h2 { margin: 4px 0 3px; color: var(--as-text); font-size: clamp(23px, 3vw, 29px); }
+.arcade-heading p { color: var(--as-muted); font-size: 12px; }
+.arcade-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.arcade-card { padding: 18px; background: var(--as-surface); border: 1px solid var(--as-line); box-shadow: var(--as-shadow); border-radius: 17px; }
+.arcade-card h3 { color: var(--as-text); font-size: 15px; }
+.arcade-card-top { margin-bottom: 15px; }
+.arcade-chip { background: var(--as-chip); color: var(--as-chip-text); border: 0; font-size: 10px; }
+.arcade-muted, .arcade-small, .arcade-disclaimer { color: var(--as-muted); }
+.arcade-avatar { background: var(--as-soft); border: 1px solid var(--as-line); box-shadow: none; }
+.arcade-identity-meta > span:last-child { color: var(--as-chip-text); }
+.arcade-level { color: var(--as-red); }
+.arcade-xpbar { background: var(--as-line); border: 0; }
+.arcade-xpbar span { background: linear-gradient(90deg, var(--as-red), var(--as-yellow)); }
+.arcade-label { color: var(--as-text); }
+.arcade-name-row input { color: var(--as-text); background: var(--as-input); border: 1px solid var(--as-line); }
+.arcade-name-row button, .arcade-claim, .arcade-install { background: var(--as-navy)!important; color: #fff!important; border: 1px solid var(--as-navy)!important; }
+.arcade-avatar-option { background: var(--as-soft)!important; color: var(--as-text)!important; border: 1px solid var(--as-line)!important; }
+.arcade-avatar-option[aria-pressed="true"] { background: var(--as-chip)!important; border: 2px solid var(--as-red)!important; }
+.arcade-optin { background: var(--as-soft); border: 1px solid var(--as-line); }
+.arcade-optin small { color: var(--as-muted); }
+.arcade-optin input { accent-color: var(--as-red); }
+.arcade-mission { background: var(--as-soft); border: 1px solid var(--as-line); }
+.arcade-mission-copy small { color: var(--as-muted); }
+.arcade-mission-track { background: var(--as-line); }
+.arcade-mission-track span { background: linear-gradient(90deg, var(--as-red), var(--as-yellow)); }
+.arcade-badge { border: 1px solid var(--as-line); background: var(--as-soft); }
+.arcade-badge.earned { background: var(--as-chip); border-color: var(--as-yellow); }
+.arcade-badge small { color: var(--as-muted); }
+.arcade-periods button { background: var(--as-soft)!important; color: var(--as-text)!important; border: 1px solid var(--as-line)!important; }
+.arcade-periods button[aria-pressed="true"] { background: var(--as-yellow)!important; color: var(--as-navy)!important; border-color: var(--as-yellow)!important; }
+.arcade-reload { background: var(--as-soft)!important; color: var(--as-text)!important; border: 1px solid var(--as-line)!important; }
+.arcade-rank, .arcade-feed-item { border-bottom: 1px solid var(--as-line); }
+.arcade-rank-xp { color: var(--as-chip-text); }
+.arcade-empty, .arcade-feed-copy span, .arcade-feed-item time { color: var(--as-muted); }
+.arcade-live { color: var(--as-red); }
+.arcade-pwa p:not(.arcade-small) { color: var(--as-text); }
+.arcade-app-mark { background: var(--as-soft); border: 1px solid var(--as-line); }
+.arcade-highlight { background: var(--as-chip); color: var(--as-text); }
+.arcade-disclaimer { margin-top: 12px; }
+
+/* 既存の右上「記録」ドロワーもブランドの紺・黄へ統一。 */
+.asobi-dashboard-toggle { background: var(--as-navy); border-color: rgba(255, 224, 73, .5); color: #fff; box-shadow: 0 5px 16px rgba(6, 18, 36, .16); }
+.asobi-dashboard-toggle .icon { color: var(--as-yellow); }
+.asobi-dashboard-toggle:hover, .asobi-dashboard-toggle[aria-expanded="true"] { background: #1d466b; border-color: var(--as-yellow); }
+.asobi-dashboard-panel { background: var(--as-surface); color: var(--as-text); border: 1px solid var(--as-line); box-shadow: var(--as-shadow); }
+.asobi-dashboard-eyebrow { color: var(--as-red); }
+.asobi-dashboard-sub, .asobi-dashboard-heading, .asobi-dashboard-status, .asobi-dashboard-note { color: var(--as-muted); }
+.asobi-dashboard-total { background: var(--as-soft); border: 1px solid var(--as-line); }
+.asobi-dashboard-total strong { color: var(--as-text); }
+.asobi-dashboard-refresh { background: var(--as-soft); color: var(--as-text); border: 1px solid var(--as-line); }
+.asobi-dashboard-list { border: 1px solid var(--as-line); }
+.asobi-dashboard-list li + li { border-color: var(--as-line); }
+.asobi-dashboard-list a { color: var(--as-text); }
+.asobi-dashboard-list a:hover { background: var(--as-soft); }
+.asobi-dashboard-list [data-count] { color: var(--as-text); }
+:root[data-asobi-theme="dark"] .filters button[aria-pressed="true"] { color: var(--as-navy); background: var(--as-yellow); border-color: var(--as-yellow); }
+:root[data-asobi-theme="dark"] #shelf > .card .play { background: #25476b; }
+:root[data-asobi-theme="dark"] #shelf > .card .play:hover { background: #34618b; }
+
+body > footer { background: var(--as-navy)!important; color: #e9f3ff!important; border-top: 3px solid var(--as-yellow); }
+body > footer a { color: #f8e3a4!important; font-size: 12px; }
+body > footer a:hover { color: #fff!important; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--as-red); outline-offset: 3px; }
+
+@media (max-width: 1030px) {
+  .asobi-top-links { gap: 12px; }
+  #shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .arcade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  body > header { min-height: 66px; padding: 10px 119px 10px 14px; gap: 8px; }
+  .asobi-brand { font-size: 19px; gap: 7px; }
+  .asobi-brand .brand-mark { width: 36px; height: 36px; border-radius: 10px; }
+  .asobi-top-links { display: none; }
+  .asobi-theme-control { margin-left: auto; padding: 5px 5px 5px 7px; }
+  .asobi-theme-select { font-size: 11px; max-width: 61px; }
+  body > main { padding: 13px 13px 30px; }
+  body > main > .hero { min-height: 138px; border-radius: 17px; padding: 18px 17px; }
+  body > main > .hero h1 { font-size: clamp(23px, 5.7vw, 32px); }
+  body > main > .hero .hero-mark { width: 70px; margin: 0 2px 0 8px; border-radius: 16px; }
+  .asobi-welcome { margin-bottom: 7px; font-size: 8px; }
+  .asobi-games-heading { margin: 22px 0 10px; }
+  .asobi-games-heading h2 { font-size: 21px; }
+  .asobi-games-heading .arcade-random { padding: 8px 10px!important; font-size: 11px; }
+  #shelf { gap: 10px; }
+  #shelf > .card { border-radius: 13px; }
+  #shelf > .card > :first-child { aspect-ratio: 1.35 / 1; }
+  #shelf > .card .details { padding: 10px 11px 12px; }
+  #shelf > .card .tags small { padding: 2px 5px; font-size: 9px; }
+  #shelf > .card h3 { font-size: 14px; line-height: 1.35; margin: 8px 0; min-height: 2.7em; }
+  #shelf > .card p { display: none; }
+  #shelf > .card .play { font-size: 0; padding: 8px 7px; }
+  #shelf > .card .play::before { content: "プレイする ↗"; font-size: 12px; }
+  .arcade-hub { margin-top: 31px; }
+  .arcade-grid { grid-template-columns: 1fr; gap: 12px; }
+  .arcade-card { padding: 16px 14px; }
+  .arcade-heading { align-items: flex-start; margin-bottom: 13px; }
+  .arcade-heading h2 { font-size: 23px; }
+}
+@media (max-width: 370px) {
+  body > header { padding-right: 112px; }
+  .asobi-brand { font-size: 16px; }
+  .asobi-theme-symbol { display: none; }
+  .asobi-theme-control { padding-inline: 4px; }
+  body > main > .hero .hero-mark { width: 58px; }
+  body > main > .hero h1 { font-size: 23px; }
+  #shelf > .card h3 { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  body, #shelf > .card { transition: none; }
+}
