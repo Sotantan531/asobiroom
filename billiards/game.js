@@ -736,7 +736,7 @@ function initMatch(breaker=0){
   });
   rules=new MatchRules(selection.mode,breaker);
   started=true;cpuThinking=false;coinQueued=false;
-  window.asobiPlayer?.record('billiards','start');
+  if(window.asobiActivity?.play) window.asobiActivity.play('billiards'); else window.asobiPlayer?.record('billiards','start');
   for(const [,entry] of ballMeshes){
     ballsGroup.remove(entry.mesh,entry.shadow);entry.mesh.material.dispose();
   }
