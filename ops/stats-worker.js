@@ -20,7 +20,14 @@ async function payload(request) {
   if (source.length > 131072) return null;
   try { return JSON.parse(source); } catch { return null; }
 }
-const nameOK = value => typeof value === 'string' && value.trim().length > 0 && value.trim().length <= 16 && !/[<>\u0000-\u001f\u007f]/.test(value);
+const normalizeName = value => typeof value === 'string' ? value.normalize('NFKC').trim() : '';
+// 表示名は API 直叩きでも必ず確認する。既存の不適切な名前も公開時には伏せる。
+const prohibitedName = /(?:https?:\/\/|www\.|[^\s@]+@[^\s@]+\.[^\s@]+|(?:\d[\s()-]?){9,}|死\s*ね|し\s*ね|シ\s*ネ|殺\s*す|こ\s*ろ\s*す|コ\s*ロ\s*ス|自殺\s*しろ|kill\s*yourself|\bkys\b|fuck|nigg)/iu;
+const nameOK = value => {
+  const name = normalizeName(value);
+  return name.length > 0 && name.length <= 16 && !/[\p{Cc}\p{Cf}<>]/u.test(name) && !prohibitedName.test(name);
+};
+const visibleName = value => nameOK(value) ? normalizeName(value) : '非公開ユーザー';
 const idOK = value => typeof value === 'string' && UUID.test(value);
 const jstDayStart = timestamp => Math.floor((timestamp + 9 * 3600000) / DAY_MS) * DAY_MS - 9 * 3600000;
 
@@ -29,7 +36,7 @@ async function darts(request, env, url) {
     const board = url.searchParams.get('board') || '';
     if (!BOARD.test(board)) return json({ error: 'board' }, 400);
     const { results } = await env.DB.prepare('SELECT name,score FROM rankings WHERE board=? ORDER BY score DESC,created,id LIMIT 20').bind(board).all();
-    return json(results);
+    return json(results.map(row => ({ ...row, name: visibleName(row.name) })));
   }
   if (request.method !== 'POST') return json({ error: 'method' }, 405);
   const data = await payload(request);
@@ -37,7 +44,7 @@ async function darts(request, env, url) {
   const { id, board, name, score } = data;
   const max = board === 'center' ? 14400 : board === 'eagle' ? 1200 : board.startsWith('multi') ? 2880 : board.startsWith('jack') ? 10000 : 3600;
   if (/^\d/.test(board) ? score >= 0 || score < -60 : board === 'cut' ? score > 0 || score < -3600 : score < 0 || score > max) return json({ error: 'score' }, 400);
-  await env.DB.prepare('INSERT OR IGNORE INTO rankings(id,board,name,score,created) VALUES(?,?,?,?,?)').bind(id, board, name.trim(), score, Date.now()).run();
+  await env.DB.prepare('INSERT OR IGNORE INTO rankings(id,board,name,score,created) VALUES(?,?,?,?,?)').bind(id, board, normalizeName(name), score, Date.now()).run();
   return json({ saved: true });
 }
 async function dobon(request, env) {
@@ -61,12 +68,12 @@ async function zeroRecords(request, env) {
 async function zeroRanking(request, env) {
   if (request.method === 'GET') {
     const { results } = await env.DB.prepare('SELECT name,score,correct FROM zero_scores ORDER BY score DESC,created,id LIMIT 20').all();
-    return json(results);
+    return json(results.map(row => ({ ...row, name: visibleName(row.name) })));
   }
   if (request.method !== 'POST') return json({ error: 'method' }, 405);
   const data = await payload(request);
   if (!data || !idOK(data.id) || !nameOK(data.name) || !Number.isInteger(data.score) || !Number.isInteger(data.correct) || data.correct < 0 || data.correct > 10 || data.score !== data.correct * 100) return json({ error: 'input' }, 400);
-  await env.DB.prepare('INSERT OR IGNORE INTO zero_scores(id,name,score,correct,created) VALUES(?,?,?,?,?)').bind(data.id, data.name.trim(), data.score, data.correct, Date.now()).run();
+  await env.DB.prepare('INSERT OR IGNORE INTO zero_scores(id,name,score,correct,created) VALUES(?,?,?,?,?)').bind(data.id, normalizeName(data.name), data.score, data.correct, Date.now()).run();
   return json({ saved: true });
 }
 async function activity(request, env) {
@@ -96,7 +103,7 @@ async function community(request, env, url) {
       .bind(data.playerId, dayStart).first();
     if ((row?.total || 0) >= 60) return json({ error: 'daily_limit' }, 429);
     await env.DB.prepare('INSERT OR IGNORE INTO community_events(id,player_id,name,avatar,game,action,xp,created) VALUES(?,?,?,?,?,?,?,?)')
-      .bind(data.id, data.playerId, data.name.trim(), data.avatar, data.game, data.action, data.action === 'start' ? 10 : 25, now).run();
+      .bind(data.id, data.playerId, normalizeName(data.name), data.avatar, data.game, data.action, data.action === 'start' ? 10 : 25, now).run();
     return json({ saved: true });
   }
   if (request.method !== 'GET') return json({ error: 'method' }, 405);
@@ -116,7 +123,10 @@ async function community(request, env, url) {
     env.DB.prepare(leaderboardSql).bind(since).all(),
     env.DB.prepare('SELECT name,avatar,game,action,created FROM community_events ORDER BY created DESC,id DESC LIMIT 12').all()
   ]);
-  return json({ period, leaderboard: ranks.results, feed: feed.results });
+  return json({ period,
+    leaderboard: ranks.results.map(row => ({ ...row, name: visibleName(row.name) })),
+    feed: feed.results.map(row => ({ ...row, name: visibleName(row.name) }))
+  });
 }
 
 export default {
