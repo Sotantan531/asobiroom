@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">BILLIARDS CLUB</title>
+  <desc id="desc">落ち着いた青緑のビリヤード台に、キューとカラフルなボールが並ぶイラスト</desc>
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#275e61"/><stop offset="1" stop-color="#102329"/></radialGradient>
+    <linearGradient id="felt" x2="1" y2="1"><stop stop-color="#168f90"/><stop offset=".55" stop-color="#117d7a"/><stop offset="1" stop-color="#095958"/></linearGradient>
+    <linearGradient id="wood" x2=".8" y2="1"><stop stop-color="#956744"/><stop offset=".5" stop-color="#5d3826"/><stop offset="1" stop-color="#38271f"/></linearGradient>
+    <radialGradient id="shine" cx=".28" cy=".25" r=".8"><stop stop-color="#fff"/><stop offset=".4" stop-color="#e3eaf1"/><stop offset="1" stop-color="#8596a4"/></radialGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <ellipse cx="484" cy="525" rx="405" ry="90" opacity=".58" filter="url(#shadow)"/>
+  <g transform="translate(478 330) rotate(-8) skewX(-4)">
+    <rect x="-397" y="-214" width="794" height="428" rx="48" fill="#020d12" stroke="#c39c67" stroke-width="8"/>
+    <rect x="-378" y="-197" width="756" height="394" rx="41" fill="url(#wood)" stroke="#322116" stroke-width="6"/>
+    <rect x="-333" y="-160" width="666" height="320" rx="10" fill="url(#felt)" stroke="#10555b" stroke-width="16"/>
+    <g fill="#050e13" stroke="#0c2225" stroke-width="6">
+      <circle cx="-328" cy="-159" r="23"/><circle cx="328" cy="-159" r="23"/>
+      <circle cx="-328" cy="159" r="23"/><circle cx="328" cy="159" r="23"/>
+      <ellipse cx="0" cy="-171" rx="27" ry="19"/><ellipse cx="0" cy="171" rx="27" ry="19"/>
+    </g>
+    <g fill="#d6b88b" opacity=".88"><circle cx="-210" cy="-187" r="4"/><circle cx="-105" cy="-187" r="4"/><circle cx="105" cy="-187" r="4"/><circle cx="210" cy="-187" r="4"/><circle cx="-210" cy="187" r="4"/><circle cx="-105" cy="187" r="4"/><circle cx="105" cy="187" r="4"/><circle cx="210" cy="187" r="4"/></g>
+    <path d="M-410 234 106 -22" stroke="#0b1218" stroke-width="16" stroke-linecap="round" opacity=".6"/>
+    <path d="M-423 230 90 -18" stroke="#e4cba1" stroke-width="10" stroke-linecap="round"/>
+    <path d="M-423 230 -288 165" stroke="#6c3a2d" stroke-width="11" stroke-linecap="round"/>
+    <g stroke="#09252a" stroke-width="2"><circle cx="-82" cy="37" r="30" fill="url(#shine)"/><circle cx="183" cy="-39" r="27" fill="#f5bd36"/><circle cx="228" cy="-19" r="27" fill="#0e2737"/><circle cx="207" cy="25" r="27" fill="#d24639"/><circle cx="267" cy="2" r="27" fill="#3479b4"/><circle cx="261" cy="-46" r="27" fill="#f1e4c5"/></g>
+    <g fill="#fff9ea" font-family="Arial,sans-serif" font-weight="bold" font-size="24" text-anchor="middle"><text x="183" y="-31">1</text><text x="228" y="-11">8</text><text x="207" y="33">3</text><text x="267" y="10">2</text><text x="261" y="-38" fill="#1d3441">9</text></g>
+  </g>
+  <g fill="#effff9" opacity=".85" font-family="Arial,sans-serif" font-weight="800" letter-spacing="7"><text x="72" y="79" font-size="30">BILLIARDS</text><text x="73" y="111" font-size="18" letter-spacing="8" opacity=".78">CLUB</text></g>
+</svg>

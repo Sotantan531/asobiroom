@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071a1a">
+  <meta name="description" content="asobiroom BILLIARDS CLUB — ショット時に見やすい俯瞰視点へ切り替わる3Dビリヤード。8ボール・9ボール、CPU戦・ローカル2人対戦、スピンとキュー操作。">
+  <title>BILLIARDS CLUB | asobiroom</title>
+  <link rel="icon" href="./asobiroom-icon.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="https://asobiroom.net/" title="asobiroom ホームへ">
+        <img src="./asobiroom-icon.png" alt="" width="38" height="38">
+        <span class="brand-type"><strong>asobiroom</strong><small>BILLIARDS CLUB</small></span>
+      </a>
+      <div class="topbar-right">
+        <span class="private-badge"><span class="status-dot"></span> LOCAL GAME</span>
+        <button class="icon-button" id="musicToggle" aria-label="BGMを切り替え" title="BGM"><span>♫</span><span class="toggle-label">BGM ON</span></button>
+        <button class="icon-button" id="soundToggle" aria-label="効果音を切り替え" title="効果音"><span>◖))</span><span class="toggle-label">SOUND ON</span></button>
+        <button class="icon-button" id="rulesButton" aria-label="ルールを開く"><span class="rules-question">?</span><span class="toggle-label">RULES</span></button>
+      </div>
+    </header>
+
+    <main class="game-shell">
+      <section class="arena" aria-label="3Dビリヤード台">
+        <div class="arena-head">
+          <div class="arena-title"><span class="eyebrow">TABLE NO. 01 / ASOBIROOM</span><h1>BILLIARDS <span>CLUB.</span></h1></div>
+          <div class="game-badge"><span id="gameModeBadge">9-BALL</span><span class="badge-separator"></span><span id="matchKindBadge">SOLO VS CPU</span></div>
+        </div>
+
+        <div class="hud-row">
+          <div class="player-chip active" id="p1Chip"><div class="player-number">01</div><div class="player-label"><small>PLAYER ONE</small><strong id="p1Name">あなた</strong><span id="p1Group">–</span></div><div class="turn-indicator">●</div></div>
+          <div class="versus-badge">VS</div>
+          <div class="player-chip" id="p2Chip"><div class="player-number">02</div><div class="player-label"><small>PLAYER TWO</small><strong id="p2Name">CPU</strong><span id="p2Group">–</span></div><div class="turn-indicator">●</div></div>
+        </div>
+
+        <div class="world-wrap" id="worldWrap">
+          <canvas id="gameCanvas" aria-label="3Dビリヤードのプレイ画面。ドラッグして狙う向きを変えます"></canvas>
+          <div class="table-edge-overlay" aria-hidden="true"></div>
+          <div class="view-chip"><span class="view-circle">◉</span> <span id="viewModeLabel">PLAYER VIEW</span> <span class="view-divider">/</span> <span id="viewDetailLabel">SHORT AIM GUIDE</span></div>
+          <div class="live-chip"><span class="pulse-dot"></span><span id="stageLabel">READY TO BREAK</span></div>
+          <div class="ball-in-hand" id="ballInHand" hidden><span>✋ フリーボール</span><small>台をタップして手球を置いてね</small></div>
+          <div class="shot-message" id="shotMessage" aria-live="polite"></div>
+          <div class="pocket-flash" id="pocketFlash" aria-live="polite"><span class="flash-spark">✦</span><strong>POCKET!</strong><small id="pocketText">NICE SHOT</small></div>
+          <div class="cue-move-label" id="cueMoveLabel">← DRAG TO AIM →</div>
+        </div>
+
+        <div class="match-footer">
+          <div class="remaining"><span class="tiny-circle"></span><span id="remainingLabel">9 BALLS ON TABLE</span></div>
+          <div class="message-strip" id="statusMessage" aria-live="polite">コイントスで先攻を決めよう。</div>
+          <button id="menuButton" class="small-restart mode-button" title="対戦を終了して8ボール・9ボールの選択に戻る">‹ <span>モード変更</span><span class="mobile-mode-label">モード</span></button>
+          <button id="restartButton" class="small-restart">↻ <span>NEW RACK</span></button>
+        </div>
+        <div class="scene-hint" id="sceneHint" role="status">画面を左右にドラッグして狙う</div>
+      </section>
+
+      <aside class="control-panel" aria-label="ショット操作">
+        <div class="panel-heading"><span class="eyebrow">YOUR CUE / CONTROLS</span><h2>ショットコントロール</h2><span id="turnTag" class="turn-tag">あなたのターン</span></div>
+
+        <div class="control-main">
+          <div class="control-aim">
+            <div class="control-header"><span class="control-index">01</span><div><strong>向きの調整</strong><small>画面をドラッグ / ボタンで微調整</small></div></div>
+            <div class="direction-row">
+              <button class="aim-arrow" id="aimLeft" aria-label="左に向ける">‹</button>
+              <div class="angle-readout"><span id="aimAngle">0.0°</span><small>AIM ANGLE</small></div>
+              <button class="aim-arrow" id="aimRight" aria-label="右に向ける">›</button>
+            </div>
+          </div>
+
+          <div class="control-spin">
+            <div class="control-header"><span class="control-index">02</span><div><strong>手球の打点</strong><small>ドラッグしてスピンをかける</small></div></div>
+            <div class="spin-row">
+              <div id="spinPad" class="spin-pad" role="slider" aria-label="手球の打点" aria-valuetext="センター" tabindex="0">
+                <div class="spin-gloss"></div>
+                <div class="spin-cross x-axis"></div><div class="spin-cross y-axis"></div>
+                <div class="spin-dot" id="spinDot"></div>
+              </div>
+              <div class="spin-description"><b id="spinName">センター</b><span id="spinDetail">自然な転がり</span><button id="spinReset" class="text-reset">中心に戻す ↺</button></div>
+            </div>
+          </div>
+
+          <div class="control-call" id="callPanel" hidden>
+            <div class="control-header"><span class="control-index">03</span><div><strong>コールショット</strong><small>狙う球とポケットを指定</small></div></div>
+            <label class="select-label">ボール <select id="callBall" aria-label="コールするボール"></select></label>
+            <label class="select-label">ポケット <select id="callPocket" aria-label="コールするポケット">
+              <option value="0">左奥</option><option value="1">右奥</option><option value="2">左中央</option><option value="3">右中央</option><option value="4">左手前</option><option value="5">右手前</option>
+            </select></label>
+          </div>
+        </div>
+
+        <div class="power-section" id="powerSection">
+          <div class="power-caption"><div class="control-header"><span class="control-index">↧</span><div><strong>キューを引いてショット</strong><small>下に引っ張って、指を放して打つ</small></div></div><div class="power-count"><b id="powerCount">0</b><span>% POWER</span></div></div>
+          <div class="power-interaction" id="powerInteraction">
+            <div class="power-track" id="powerTrack" role="slider" aria-label="ショットパワー。下に引いて放すと打ちます" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+              <div class="power-marks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="power-fill" id="powerFill"></div><div class="power-knob" id="powerKnob"><span></span><span></span><span></span></div>
+              <div class="power-ghost">PULL ↓</div>
+            </div>
+            <div class="power-help"><span>SOFT</span><span>MEDIUM</span><span>POWER</span></div>
+          </div>
+          <div class="cue-warning" id="cueWarning"></div>
+        </div>
+        <div class="panel-bottom"><span>● PHYSICS ENABLED</span><span>SHORT AIM GUIDE</span><span>3D / PLAYER VIEW</span></div>
+      </aside>
+    </main>
+    <footer class="site-footer"><span>© asobiroom BILLIARDS CLUB</span><span>MADE FOR THE LOVE OF PLAY</span></footer>
+  </div>
+
+  <div class="overlay" id="startOverlay" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+    <div class="start-card">
+      <div class="start-top"><div class="little-rack">⑧ <span>⑨</span></div><span>ASOBIROOM / NEW GAME</span></div>
+      <div class="intro-text"><span class="eyebrow">WELCOME TO THE CLUB</span><h2 id="startTitle">狙いを定めて、<br><em>一球に集中。</em></h2><p>短い点線が狙う方向をサポート。近いプレイヤー視点から、自分でキューを引く緊張感を楽しもう。</p></div>
+      <div class="setup-label">01 <span>GAME RULE</span></div>
+      <div class="choice-grid" id="ruleChoice"><button class="choice-card selected" data-mode="9"><span class="ball-icon ball-nine">9</span><strong>9-BALL</strong><small>最小番号から当てて9番を落とせ！</small></button><button class="choice-card" data-mode="8"><span class="ball-icon ball-eight">8</span><strong>8-BALL</strong><small>自分のグループを落として8番へ。</small></button></div>
+      <div class="setup-label">02 <span>PLAY MODE</span></div>
+      <div class="choice-grid compact" id="playerChoice"><button class="choice-card selected" data-player="cpu"><span class="choice-emoji">♟</span><strong>CPUと対戦</strong><small>一人でも気軽に遊べる</small></button><button class="choice-card" data-player="local"><span class="choice-emoji">☻ ☻</span><strong>友達と対戦</strong><small>同じ端末で交代プレイ</small></button></div>
+      <div class="difficulty-setting" id="difficultySetting"><label for="difficulty">CPU LEVEL</label><select id="difficulty"><option value="easy">BEGINNER / はじめて</option><option value="normal" selected>REGULAR / ふつう</option><option value="hard">EXPERT / つよい</option></select></div>
+      <button class="primary-button" id="startButton">コイントスしてスタート <span>↗</span></button>
+      <div class="setup-foot"><span>🎧 落ち着いたBGMとショットSE</span><span>WPAルール準拠・シングルラック</span></div>
+    </div>
+  </div>
+
+  <div class="overlay secondary-overlay" id="coinOverlay" hidden role="dialog" aria-modal="true" aria-label="コイントス">
+    <div class="coin-card"><span class="eyebrow">WHO BREAKS FIRST?</span><h2>コイントス</h2><div class="coin-object" id="coinObject" role="img" aria-label="コインの表面"><div class="coin-face coin-front"><span>★</span><small>表 / HEADS</small></div><div class="coin-face coin-back"><span>8</span><small>裏 / TAILS</small></div></div><div id="coinResult" class="coin-result">運命の一投を決めよう</div><p>表ならあなた、裏なら相手が先攻になります。</p></div>
+  </div>
+
+  <div class="overlay secondary-overlay" id="endOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="endTitle">
+    <div class="end-card"><div class="win-trophy">✦</div><span class="eyebrow">RACK FINISHED</span><h2 id="endTitle">WINNER!</h2><p id="endDetail"></p><div class="end-actions"><button class="primary-button" id="rematchButton">もう一戦！ ↗</button><button class="secondary-button" id="backToMenu">モードを選び直す</button></div></div>
+  </div>
+
+  <div class="overlay secondary-overlay" id="rulesOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="rules-card"><button class="close-button" id="closeRules" aria-label="ルールを閉じる">×</button><span class="eyebrow">RULE BOOK / WPA 2025</span><h2 id="rulesTitle">あそびかたとルール</h2>
+      <div class="rule-columns"><article><h3>① キューの操作</h3><p>画面を左右にドラッグして向きを調整。白玉の打点をずらすと上回転・引き球・左右のスピンがかかります。パワーゲージを下に引いて放すとショットします。短い点線は最初の接触方向だけを示し、衝突後のコースは予測しません。</p></article>
+      <article><h3>② 9ボール</h3><p>必ず台に残る最小番号の球に最初に当てます。合法ショットで9番を落としたら勝ち。ファウル後は相手が手球を自由に置きます。9番をファウル中に落とした場合はスポットに戻ります。</p></article>
+      <article><h3>③ 8ボール</h3><p>ブレイク後、コールした球とポケットが一致したときに無地・ストライプが確定。自分のグループをすべて落とした後、8番をコールしたポケットに沈めて勝利。早い8番や誤ったポケットは敗北です。</p></article>
+      <article><h3>④ ファウルとコール</h3><p>手球スクラッチ、誤球への初接触、接触後にポケットもクッション到達もない場合はファウル。ブレイク以外の8ボールでは球とポケットを選択してください。CPU戦と同じ端末の2人戦に対応します。</p></article></div>
+      <p class="rules-note">WPA 2025.09.15 の基本ルールに基づくカジュアル版です。3ボール・ブレイク規定、プッシュアウトや競技会の選択権・細かな器具ファウルなどは簡略化しています。球の挙動はリアルタイム3Dの近似物理です。</p>
+      <a href="https://wpapool.com/wp-content/uploads/2025/10/2025.09.15-WPA-Rules-NP.pdf" target="_blank" rel="noopener noreferrer" class="official-link">WPA 公式ルールを見る ↗</a>
+    </div>
+  </div>
+  <!-- 共通プロフィールへのプレイ履歴を記録する（通信できなくてもゲームは遊べます）。 -->
+  <script src="../asobi-config.js"></script>
+  <script src="../asobi-player.js"></script>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
