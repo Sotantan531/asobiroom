@@ -19,8 +19,6 @@
     { id: 'neon', name: 'ネオン' }, { id: 'royal', name: 'ロイヤル' },
     { id: 'rainbow', name: 'レインボー' }, { id: 'pixel', name: 'ピクセル' }
   ]);
-  // Workerが受け取れるアバターは旧8種。新しいアイコンでもオンラインの記録送信は続ける。
-  const SERVER_AVATARS = new Set(AVATARS.slice(0, 8));
   const blank = () => ({ id: crypto.randomUUID(), name: 'ゲスト', avatar: '🐣', frame: 'classic', public: false, xp: 0, starts: 0, clears: 0, games: {}, recent: [], claimed: {} });
   let state;
   try {
@@ -29,6 +27,7 @@
     if (!Array.isArray(state.recent)) state.recent = [];
     if (!state.games || typeof state.games !== 'object') state.games = {};
     if (!state.claimed || typeof state.claimed !== 'object') state.claimed = {};
+    if (!AVATARS.includes(state.avatar)) state.avatar = '🐣';
     if (!FRAMES.some(frame => frame.id === state.frame)) state.frame = 'classic';
   } catch { state = blank(); }
   let pending = [];
@@ -115,7 +114,8 @@
       state.xp += 10;
     } else { state.clears++; state.xp += 25; }
     if (state.public) {
-      pending.push({ id: crypto.randomUUID(), playerId: state.id, name: publicName(state.name), avatar: SERVER_AVATARS.has(state.avatar) ? state.avatar : '🐣', game, action });
+      // Store avatar and frame in one validated string for the existing D1 schema.
+      pending.push({ id: crypto.randomUUID(), playerId: state.id, name: publicName(state.name), avatar: state.avatar + '|' + state.frame, game, action });
       pending = pending.slice(-120);
     }
     save();

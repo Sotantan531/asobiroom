@@ -17,7 +17,7 @@
         <form id="arcadeProfileForm"><label class="arcade-label" for="arcadeName">ニックネーム</label><div class="arcade-name-row"><input id="arcadeName" maxlength="16" autocomplete="nickname" placeholder="16文字以内"><button type="submit">保存</button></div><p class="arcade-small" id="arcadeNameStatus" role="status" aria-live="polite">公開する場合は個人情報や不適切な言葉を使わないでね。</p></form>
         <div class="arcade-label">アバター（レベルで解放）</div><div class="arcade-avatars" id="arcadeAvatars"></div>
         <div class="arcade-label">アイコンのフレーム</div><p class="arcade-small arcade-frame-hint">好きな組み合わせを選んで、自分だけのアイコンにしよう。</p><div class="arcade-frames" id="arcadeFrames" role="group" aria-label="アイコンのフレームを選択"></div>
-        <label class="arcade-optin"><input type="checkbox" id="arcadePublic"><span>総合ランキングとプレイ速報に参加する<small>オンにするとニックネーム・アバター・これからのプレイ記録が公開されます。</small></span></label>
+        <label class="arcade-optin"><input type="checkbox" id="arcadePublic"><span>総合ランキングとプレイ速報に参加する<small>オンにするとニックネーム・アバター・フレーム・これからのプレイ記録が公開されます。</small></span></label>
         <p class="arcade-small">ログイン不要・端末ごとに保存。端末を変えると記録は引き継がれません。</p>
       </article>
       <article class="arcade-card"><div class="arcade-card-top"><h3>📅 今日のミッション</h3><span class="arcade-chip" id="arcadeMissionDate"></span></div><p class="arcade-muted">毎日0時（日本時間）に新しいミッション！ 達成したら受け取ろう。</p><div id="arcadeMissions" class="arcade-missions"></div></article>
@@ -31,6 +31,12 @@
   const $ = selector => hub.querySelector(selector);
   const number = value => Number(value || 0).toLocaleString('ja-JP');
   const node = (tag, className, value) => { const el = document.createElement(tag); if (className) el.className = className; if (value !== undefined) el.textContent = value; return el; };
+  const publicAvatar = (className, value) => {
+    const [emoji, frame] = typeof value === 'string' ? value.split('|') : [];
+    const icon = node('span', className, player.AVATARS.includes(emoji) ? emoji : '🐣');
+    icon.dataset.frame = player.FRAMES.some(item => item.id === frame) ? frame : 'classic';
+    return icon;
+  };
   const gameIcons = player.GAMES;
   let period = 'week', lastFeed = [], lastRanks = [], loading = false, pendingRefresh = false;
 
@@ -100,7 +106,7 @@
     if (!lastRanks.length) { area.append(node('p', 'arcade-empty', 'まだランクインした人はいません。最初の挑戦者になろう！')); return; }
     lastRanks.forEach((r, i) => {
       const row = node('div', 'arcade-rank');
-      row.append(node('span', 'arcade-rank-pos', i < 3 ? ['🥇', '🥈', '🥉'][i] : String(i + 1)), node('span', 'arcade-rank-avatar', r.avatar), node('strong', 'arcade-rank-name', player.publicName(r.name)), node('b', 'arcade-rank-xp', number(r.xp) + ' XP'));
+      row.append(node('span', 'arcade-rank-pos', i < 3 ? ['🥇', '🥈', '🥉'][i] : String(i + 1)), publicAvatar('arcade-rank-avatar', r.avatar), node('strong', 'arcade-rank-name', player.publicName(r.name)), node('b', 'arcade-rank-xp', number(r.xp) + ' XP'));
       area.append(row);
     });
   }
@@ -110,7 +116,7 @@
     for (const item of lastFeed) {
       const game = gameIcons[item.game]; if (!game) continue;
       const row = node('div', 'arcade-feed-item');
-      row.append(node('span', 'arcade-feed-icon', item.avatar || '🎮'));
+      row.append(publicAvatar('arcade-feed-icon', item.avatar));
       const copy = node('div', 'arcade-feed-copy');
       copy.append(node('strong', '', player.publicName(item.name)), node('span', '', game.icon + ' ' + game.name + (item.action === 'clear' ? 'をクリア！' : 'をプレイ！')));
       row.append(copy, node('time', '', new Date(item.created).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })));
