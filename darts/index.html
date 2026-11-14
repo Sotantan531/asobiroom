@@ -1,1 +1,80 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" type="image/png" href="asobiroom-icon.png"><title>FLIGHTLINE DARTS | asobiroom</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="layout.css"><link rel="stylesheet" href="../game-home.css"></head><body><header><div class="brand"><img src="asobiroom-icon.png" alt="" width="40" height="40"><div class="brand-type"><span class="publisher">asobiroom<span> のゲーム</span></span><strong>FLIGHTLINE <i>DARTS</i></strong></div></div><nav><button id="ranking">ランキング</button><button id="help">ⓘ　遊び方</button></nav></header><main><div class="title"><div><small><b></b> DARTS ARENA</small><h1>ゲームアリーナ<span>.</span></h1></div><button id="settings">☷　ゲーム設定</button></div><div class="layout"><section class="arena"><div class="rail"><strong><em></em> LIVE BOARD</strong><button id="logOpen">投球記録</button><span id="round"></span></div><div class="stage" id="stage"><span class="corner tl"></span><span class="corner tr"></span><svg id="board" viewBox="-222 -221 444 444" aria-label="ダーツボード"></svg><div id="award" role="status"></div><div id="out"></div><div id="flash"></div><div class="swipe" id="swipeHint" aria-live="polite">狙う方向にスワイプして投げる</div></div><div class="foot"><strong id="turn"></strong><span id="ammo"></span></div></section><aside><section class="card"><div class="cap">MATCH SCORE <span>◉</span></div><div class="mode"><small>ゲームモード</small><h2 id="mode"></h2></div><div id="scores"></div><div id="marks"></div></section><section class="card log"><div class="cap">THROW LOG <span>≡</span></div><div class="logbody"><h3>投球記録</h3><div id="history"></div></div></section></aside></div><footer>ASOBIROOM <b>／</b> FLIGHTLINE DARTS</footer></main><dialog id="modal"><div id="content"></div></dialog><a class="asobi-home-link" href="/" aria-label="asobiroom ホームへ戻る">⌂ ホームへ</a><script src="../asobi-config.js"></script><script src="../asobi-player.js"></script><script src="../asobi-activity.js"></script><script src="board.js"></script><script src="workshop.js"></script><script src="rival.js"></script><script src="flight.js"></script><script src="modes.js"></script><script src="ranking.js"></script><script src="game.js"></script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <link rel="icon" type="image/png" href="asobiroom-icon.png">
+  <title>FLIGHTLINE DARTS | asobiroom</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="layout.css?v=20261114d">
+  <link rel="stylesheet" href="../game-home.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="asobiroom-icon.png" alt="" width="40" height="40">
+      <div class="brand-type">
+        <span class="publisher">asobiroom<span> のゲーム</span></span>
+        <strong>FLIGHTLINE <i>DARTS</i></strong>
+      </div>
+    </div>
+    <nav>
+      <button id="ranking">ランキング</button>
+      <button id="help">ⓘ　遊び方</button>
+    </nav>
+  </header>
+  <main>
+    <div class="title">
+      <div>
+        <a class="asobi-home-link" href="/" aria-label="asobiroom ホームへ戻る">⌂ ホームへ</a>
+        <small><b></b> DARTS ARENA</small>
+        <h1>ゲームアリーナ<span>.</span></h1>
+      </div>
+      <button id="settings">☷　ゲーム設定</button>
+    </div>
+    <div class="layout">
+      <section class="arena">
+        <div class="rail">
+          <strong><em></em> LIVE BOARD</strong>
+          <button id="logOpen">投球記録</button>
+          <span id="round"></span>
+        </div>
+        <div class="stage" id="stage">
+          <span class="corner tl"></span><span class="corner tr"></span>
+          <svg id="board" viewBox="-222 -221 444 444" aria-label="ダーツボード"></svg>
+          <div id="award" role="status"></div>
+          <div id="out"></div>
+          <div id="flash"></div>
+          <div class="swipe" id="swipeHint" aria-live="polite">狙う方向にスワイプして投げる</div>
+        </div>
+        <div class="foot">
+          <strong id="turn"></strong><span id="ammo"></span>
+        </div>
+      </section>
+      <aside>
+        <section class="card">
+          <div class="cap">MATCH SCORE <span>◉</span></div>
+          <div class="mode"><small>ゲームモード</small><h2 id="mode"></h2></div>
+          <div id="scores"></div><div id="marks"></div>
+        </section>
+        <section class="card log">
+          <div class="cap">THROW LOG <span>≡</span></div>
+          <div class="logbody"><h3>投球記録</h3><div id="history"></div></div>
+        </section>
+      </aside>
+    </div>
+    <footer>ASOBIROOM <b>／</b> FLIGHTLINE DARTS</footer>
+  </main>
+  <dialog id="modal"><div id="content"></div></dialog>
+  <script src="../asobi-config.js"></script>
+  <script src="../asobi-player.js"></script>
+  <script src="../asobi-activity.js"></script>
+  <script src="board.js"></script>
+  <script src="workshop.js"></script>
+  <script src="rival.js"></script>
+  <script src="flight.js"></script>
+  <script src="modes.js"></script>
+  <script src="ranking.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

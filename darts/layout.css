@@ -64,3 +64,11 @@ header nav{display:flex;align-items:center;gap:5px}
 .chooser input{display:block;width:100%;padding:6px;border:1px solid #a1afa3;border-radius:5px}
 @media(max-width:480px),(max-height:540px){header nav button{font-size:11px;padding:4px 6px}.title{z-index:1}}
 @media(max-height:420px) and (orientation:landscape){.title{right:calc(env(safe-area-inset-right) + 170px)}}
+/* 戻るリンクはタイトルの前に通常配置する。固定ボタンがロゴに重ならない。 */
+.title>div{min-width:0}
+.title .asobi-home-link{position:static;display:flex;width:max-content;max-width:100%;margin:0 0 7px;padding:6px 11px;box-shadow:none;background:#102b48;border:1px solid #385a72;color:#fff;font-size:12px;line-height:1.25}
+@media(max-width:760px),(max-height:920px),(orientation:portrait){.title .asobi-home-link{margin-bottom:5px;padding:5px 10px;font-size:11px}}
+/* iOSの画面上端のぼかし帯がタイトルを覆わない位置にヘッダーを置く。 */
+@supports(-webkit-touch-callout:none){
+ @media(max-width:760px) and (orientation:portrait){body{padding-top:calc(env(safe-area-inset-top,0px) + 44px)}}
+}
