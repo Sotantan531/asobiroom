@@ -265,6 +265,13 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   body > main > .hero h1 { font-size: 23px; }
   #shelf > .card h3 { font-size: 13px; }
 }
+/* iOSの画面上端に描かれるスクロールエッジのぼかし帯から操作部分を離す。 */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 700px) {
+    body > header.asobi-site-header { padding-top: 51px; }
+    .asobi-dashboard { top: calc(96px + env(safe-area-inset-top, 0px)); }
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   body, #shelf > .card { transition: none; }
