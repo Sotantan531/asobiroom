@@ -29,6 +29,7 @@
     <div class="asobi-menu-section-label">PLAY</div>
     <nav class="asobi-menu-nav" aria-label="ゲームとランキング">
       <a class="asobi-menu-main-link" href="/#shelf"><span>▦</span> すべてのゲーム <b aria-hidden="true">›</b></a>
+      <a class="asobi-menu-main-link" href="/games.html"><span>📖</span> ゲームの遊び方 <b aria-hidden="true">›</b></a>
       <div class="asobi-menu-games" aria-label="各ゲーム">
         <a href="/zero-dive/">🌊 深海ゼロダイブ</a>
         <a href="/darts/">🎯 FLIGHTLINE DARTS</a>

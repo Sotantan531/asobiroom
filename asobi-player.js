@@ -41,7 +41,16 @@
   const day = (timestamp = Date.now()) => new Date(timestamp + 9 * 3600000).toISOString().slice(0, 10);
   const level = () => Math.floor(Math.sqrt(Math.max(0, Number(state.xp) || 0) / 50)) + 1;
   const threshold = n => 50 * (n - 1) ** 2;
-  const sanitize = value => String(value || '').trim().replace(/[<>\u0000-\u001f\u007f]/g, '').slice(0, 16) || 'ゲスト';
+  const normalizeName = value => typeof value === 'string' ? value.normalize('NFKC').trim() : '';
+  // 公開される表示名には、連絡先・URL・脅迫表現などを登録させない。
+  // フロント側だけでなく Worker も同じ条件で検査する。
+  const prohibitedName = /(?:https?:\/\/|www\.|[^\s@]+@[^\s@]+\.[^\s@]+|(?:\d[\s()-]?){9,}|死\s*ね|し\s*ね|シ\s*ネ|殺\s*す|こ\s*ろ\s*す|コ\s*ロ\s*ス|自殺\s*しろ|kill\s*yourself|\bkys\b|fuck|nigg)/iu;
+  const isPublicNameAllowed = value => {
+    const name = normalizeName(value);
+    return name.length > 0 && name.length <= 16 && !/[\p{Cc}\p{Cf}<>]/u.test(name) && !prohibitedName.test(name);
+  };
+  const publicName = value => isPublicNameAllowed(value) ? normalizeName(value) : '非公開ユーザー';
+  state.name = publicName(state.name);
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem(QUEUE, JSON.stringify(pending)); } catch { /* memory-only */ }
     dispatchEvent(new CustomEvent('asobi:player-updated'));
@@ -106,14 +115,17 @@
       state.xp += 10;
     } else { state.clears++; state.xp += 25; }
     if (state.public) {
-      pending.push({ id: crypto.randomUUID(), playerId: state.id, name: sanitize(state.name), avatar: SERVER_AVATARS.has(state.avatar) ? state.avatar : '🐣', game, action });
+      pending.push({ id: crypto.randomUUID(), playerId: state.id, name: publicName(state.name), avatar: SERVER_AVATARS.has(state.avatar) ? state.avatar : '🐣', game, action });
       pending = pending.slice(-120);
     }
     save();
     void flush();
   }
   function update(values) {
-    if ('name' in values) state.name = sanitize(values.name);
+    if ('name' in values) {
+      if (!isPublicNameAllowed(values.name)) return false;
+      state.name = normalizeName(values.name);
+    }
     if ('avatar' in values && AVATARS.includes(values.avatar) && level() >= LEVELS[AVATARS.indexOf(values.avatar)]) state.avatar = values.avatar;
     if ('frame' in values && FRAMES.some(frame => frame.id === values.frame)) state.frame = values.frame;
     if ('public' in values) {
@@ -122,6 +134,7 @@
     }
     save();
     if (state.public) void flush();
+    return true;
   }
   async function community(period = 'week') {
     const url = API + '?period=' + encodeURIComponent(period);
@@ -129,7 +142,7 @@
     if (!response.ok) throw Error('community API failed');
     return response.json();
   }
-  window.asobiPlayer = { GAMES, AVATARS, LEVELS, FRAMES, get: snapshot, level, missions, claim, achievements, record, update, community, flush, day };
+  window.asobiPlayer = { GAMES, AVATARS, LEVELS, FRAMES, get: snapshot, level, missions, claim, achievements, record, update, community, flush, day, isPublicNameAllowed, publicName };
   addEventListener('online', flush);
   if (pending.length) void flush();
 })();

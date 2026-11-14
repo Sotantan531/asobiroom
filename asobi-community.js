@@ -14,7 +14,7 @@
       <article class="arcade-card arcade-profile" id="arcadeProfile"><div class="arcade-card-top"><h3>🪪 マイプロフィール</h3><span class="arcade-chip">この端末に保存</span></div>
         <div class="arcade-identity"><span class="arcade-avatar" id="arcadeAvatar">🐣</span><div class="arcade-identity-meta"><span class="arcade-level" id="arcadeLevel">LEVEL 1</span><strong id="arcadeDisplayName">ゲスト</strong><span id="arcadeXp">0 XP</span></div></div>
         <div class="arcade-xpbar" role="progressbar" aria-label="次のレベルまでの経験値" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="arcadeXpBar"><span id="arcadeXpFill"></span></div><p class="arcade-small" id="arcadeNextLevel">次のレベルまで 50 XP</p>
-        <form id="arcadeProfileForm"><label class="arcade-label" for="arcadeName">ニックネーム</label><div class="arcade-name-row"><input id="arcadeName" maxlength="16" autocomplete="nickname" placeholder="16文字以内"><button type="submit">保存</button></div></form>
+        <form id="arcadeProfileForm"><label class="arcade-label" for="arcadeName">ニックネーム</label><div class="arcade-name-row"><input id="arcadeName" maxlength="16" autocomplete="nickname" placeholder="16文字以内"><button type="submit">保存</button></div><p class="arcade-small" id="arcadeNameStatus" role="status" aria-live="polite">公開する場合は個人情報や不適切な言葉を使わないでね。</p></form>
         <div class="arcade-label">アバター（レベルで解放）</div><div class="arcade-avatars" id="arcadeAvatars"></div>
         <div class="arcade-label">アイコンのフレーム</div><p class="arcade-small arcade-frame-hint">好きな組み合わせを選んで、自分だけのアイコンにしよう。</p><div class="arcade-frames" id="arcadeFrames" role="group" aria-label="アイコンのフレームを選択"></div>
         <label class="arcade-optin"><input type="checkbox" id="arcadePublic"><span>総合ランキングとプレイ速報に参加する<small>オンにするとニックネーム・アバター・これからのプレイ記録が公開されます。</small></span></label>
@@ -22,8 +22,8 @@
       </article>
       <article class="arcade-card"><div class="arcade-card-top"><h3>📅 今日のミッション</h3><span class="arcade-chip" id="arcadeMissionDate"></span></div><p class="arcade-muted">毎日0時（日本時間）に新しいミッション！ 達成したら受け取ろう。</p><div id="arcadeMissions" class="arcade-missions"></div></article>
       <article class="arcade-card"><div class="arcade-card-top"><h3>🏆 実績コレクション</h3><span class="arcade-chip" id="arcadeAchievementCount">0 / 7</span></div><p class="arcade-muted">遊びながらトロフィーを集めよう。未獲得の実績もチェック！</p><div class="arcade-achievements" id="arcadeAchievements"></div></article>
-      <article class="arcade-card" id="arcadeRankings"><div class="arcade-card-top"><h3>🥇 みんなの総合ランキング</h3><button type="button" class="arcade-reload" id="arcadeReload">↻ 更新</button></div><div class="arcade-periods" role="group" aria-label="ランキング期間"><button type="button" data-period="week" aria-pressed="true">今週</button><button type="button" data-period="month" aria-pressed="false">今月</button><button type="button" data-period="all" aria-pressed="false">累計</button></div><div id="arcadeLeaderboard" class="arcade-leaderboard" aria-live="polite">読み込み中…</div><p class="arcade-small">4ゲーム共通のXP順位。公開参加者のみ、集計開始後の記録が対象です。</p></article>
-      <article class="arcade-card"><div class="arcade-card-top"><h3>📡 みんなのプレイ速報</h3><span class="arcade-live">● LIVE</span></div><div class="arcade-feed" id="arcadeFeed" aria-live="polite">読み込み中…</div><p class="arcade-small">公開に同意した人の最近のプレイのみ表示します。</p></article>
+      <article class="arcade-card" id="arcadeRankings"><div class="arcade-card-top"><h3>🥇 みんなの総合ランキング</h3><button type="button" class="arcade-reload" id="arcadeReload">↻ 更新</button></div><div class="arcade-periods" role="group" aria-label="ランキング期間"><button type="button" data-period="week" aria-pressed="true">今週</button><button type="button" data-period="month" aria-pressed="false">今月</button><button type="button" data-period="all" aria-pressed="false">累計</button></div><div id="arcadeLeaderboard" class="arcade-leaderboard" aria-live="polite">読み込み中…</div><p class="arcade-small">4ゲーム共通のXP順位。公開参加者のみ、集計開始後の記録が対象です。</p><p class="arcade-small"><a href="/contact.html">不適切な名前の通報・削除依頼はこちら</a></p></article>
+      <article class="arcade-card"><div class="arcade-card-top"><h3>📡 みんなのプレイ速報</h3><span class="arcade-live">● LIVE</span></div><div class="arcade-feed" id="arcadeFeed" aria-live="polite">読み込み中…</div><p class="arcade-small">公開に同意した人の最近のプレイのみ表示します。</p><p class="arcade-small"><a href="/contact.html">表示内容を通報する</a></p></article>
       <article class="arcade-card arcade-pwa"><div class="arcade-card-top"><h3>📱 ホーム画面から遊ぼう</h3><span class="arcade-chip">APP MODE</span></div><div class="arcade-app-mark">🚪</div><p>asobiroomをホーム画面に追加すると、アプリのようにすぐ開けるよ。</p><button type="button" class="arcade-install" id="arcadeInstall">ホーム画面に追加する方法</button><p class="arcade-small" id="arcadeInstallHelp">iPhoneはSafariの「共有」→「ホーム画面に追加」。Androidはブラウザのメニューから追加できます。</p><p class="arcade-small">ゲームの利用にはインターネット接続が必要な場合があります。</p></article>
     </div><p class="arcade-disclaimer">※ XPと実績はブラウザに保存されます。ランキングは自己申告のプレイイベントによるカジュアルな集計で、厳密な競技記録ではありません。</p>`;
   // ゲーム一覧を主役に。プレイヤー機能は作品棚の下にまとめる。
@@ -100,7 +100,7 @@
     if (!lastRanks.length) { area.append(node('p', 'arcade-empty', 'まだランクインした人はいません。最初の挑戦者になろう！')); return; }
     lastRanks.forEach((r, i) => {
       const row = node('div', 'arcade-rank');
-      row.append(node('span', 'arcade-rank-pos', i < 3 ? ['🥇', '🥈', '🥉'][i] : String(i + 1)), node('span', 'arcade-rank-avatar', r.avatar), node('strong', 'arcade-rank-name', r.name), node('b', 'arcade-rank-xp', number(r.xp) + ' XP'));
+      row.append(node('span', 'arcade-rank-pos', i < 3 ? ['🥇', '🥈', '🥉'][i] : String(i + 1)), node('span', 'arcade-rank-avatar', r.avatar), node('strong', 'arcade-rank-name', player.publicName(r.name)), node('b', 'arcade-rank-xp', number(r.xp) + ' XP'));
       area.append(row);
     });
   }
@@ -112,7 +112,7 @@
       const row = node('div', 'arcade-feed-item');
       row.append(node('span', 'arcade-feed-icon', item.avatar || '🎮'));
       const copy = node('div', 'arcade-feed-copy');
-      copy.append(node('strong', '', item.name || 'ゲスト'), node('span', '', game.icon + ' ' + game.name + (item.action === 'clear' ? 'をクリア！' : 'をプレイ！')));
+      copy.append(node('strong', '', player.publicName(item.name)), node('span', '', game.icon + ' ' + game.name + (item.action === 'clear' ? 'をクリア！' : 'をプレイ！')));
       row.append(copy, node('time', '', new Date(item.created).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })));
       area.append(row);
     }
@@ -136,7 +136,12 @@
       if (pendingRefresh || period !== requestedPeriod) { pendingRefresh = false; void refresh(); }
     }
   }
-  $('#arcadeProfileForm').addEventListener('submit', event => { event.preventDefault(); player.update({ name: $('#arcadeName').value }); $('#arcadeName').blur(); });
+  $('#arcadeProfileForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const saved = player.update({ name: $('#arcadeName').value });
+    $('#arcadeNameStatus').textContent = saved ? 'ニックネームを保存しました。' : '16文字以内で、URL・連絡先・不適切な言葉を含まない名前にしてね。';
+    if (saved) $('#arcadeName').blur();
+  });
   $('#arcadePublic').addEventListener('change', event => player.update({ public: event.target.checked }));
   hub.querySelectorAll('[data-period]').forEach(button => button.addEventListener('click', () => {
     period = button.dataset.period;
