@@ -8,7 +8,13 @@ const DELTA_KEY = /^(?:plays|finished|wins|answered|correct|best|s[0-9]|q(?:[1-9
 const QUESTION_COUNT = 152;
 const ACTIVITY_KEYS = Object.freeze({ visit: 'site_visit', darts: 'darts_play', 'dobon-quiz': 'dobon_play', 'sector-09': 'sector_play' });
 const GAMES = new Set(['zero-dive', 'darts', 'dobon-quiz', 'sector-09']);
-const AVATARS = new Set(['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑']);
+const AVATARS = new Set(['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲']);
+const FRAMES = new Set(['classic', 'sunshine', 'ocean', 'cherry', 'mint', 'cosmic', 'neon', 'royal', 'rainbow', 'pixel']);
+const avatarOK = value => {
+  if (typeof value !== 'string' || value.length > 32) return false;
+  const [avatar, frame, ...unexpected] = value.split('|');
+  return !unexpected.length && AVATARS.has(avatar) && (frame === undefined || FRAMES.has(frame));
+};
 const DAY_MS = 86400000;
 
 function json(value, status = 200) {
@@ -94,7 +100,7 @@ async function community(request, env, url) {
   if (request.method === 'POST') {
     const data = await payload(request);
     if (!data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).sort().join(',') !== 'action,avatar,game,id,name,playerId'
-      || !idOK(data.id) || !idOK(data.playerId) || !nameOK(data.name) || !AVATARS.has(data.avatar)
+      || !idOK(data.id) || !idOK(data.playerId) || !nameOK(data.name) || !avatarOK(data.avatar)
       || !GAMES.has(data.game) || !['start', 'clear'].includes(data.action)) return json({ error: 'input' }, 400);
     const now = Date.now();
     const dayStart = jstDayStart(now);
