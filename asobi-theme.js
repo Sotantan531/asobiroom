@@ -133,4 +133,6 @@
     header.append(menu);
   }
   updateTheme();
+  // Keep the original saved-page layout offscreen until this real layout is ready.
+  document.documentElement.classList.remove('asobi-initializing');
 })();
