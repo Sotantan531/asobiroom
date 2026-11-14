@@ -694,6 +694,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
     <section id="diveLeaderboard" style="margin:15px auto;padding:14px;max-width:380px;border-radius:16px;background:rgba(3,45,71,.78);color:#effaff;text-align:left">
       <h2 style="font-size:18px;margin:0 0 10px">🏆 みんなのランキング</h2>
       <p style="font-size:12px;margin:0 0 8px">名前を登録した場合だけ、ニックネームと点数が公開されます。</p>
+      <p style="font-size:12px;margin:0 0 8px"><a href="/contact.html" style="color:#b9ecff">不適切な名前の通報・削除依頼</a></p>
       <label for="diveRankName" style="font-size:12px">ランキング表示名</label>
       <input id="diveRankName" maxlength="16" placeholder="ニックネーム（16文字以内）" style="box-sizing:border-box;width:100%;padding:9px;margin:5px 0 8px;border-radius:7px;border:1px solid #9bd8e8">
       <button type="button" id="diveRankSubmit" style="padding:9px;border-radius:8px">今回の記録を登録</button>
@@ -1198,7 +1199,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
       if(!response.ok)throw Error('rank');
       const data=await response.json();rankList.replaceChildren();
       for(const [i,item] of data.entries()){
-        const row=document.createElement('li');row.textContent=`${item.name} — ${item.score}点（${item.correct}問正解）`;
+        const row=document.createElement('li');row.textContent=`${window.asobiPlayer?.publicName(item.name)||'非公開ユーザー'} — ${item.score}点（${item.correct}問正解）`;
         rankList.append(row);
       }
       rankStatus.textContent=data.length?'上位20件を表示しています。':'まだランキングの記録がありません。';
@@ -1208,7 +1209,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
   $('#diveRankSubmit').onclick=async()=>{
     if(!window.ASOBIROOM_API_BASE){rankStatus.textContent='ランキングは準備中です。';return}
     const name=rankName.value.trim();
-    if(!name||name.length>16){rankStatus.textContent='16文字以内の名前を入力してね。';return}
+    if(!window.asobiPlayer?.isPublicNameAllowed(name)){rankStatus.textContent='16文字以内で、URL・連絡先・不適切な言葉を含まない名前にしてね。';return}
     const button=$('#diveRankSubmit');button.disabled=true;rankStatus.textContent='送信中…';
     try{
       const res=await fetch(asobiApi('/api/zero-ranking'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentResultId,name,score,correct})});
