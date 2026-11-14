@@ -61,12 +61,17 @@ body > header, body > main { max-width: 1240px; margin-inline: auto; }
 body > main { padding: 20px clamp(16px, 3vw, 30px) 42px; }
 body > header {
   min-height: 78px;
-  padding: 14px 154px 14px clamp(16px, 3vw, 30px);
+  padding: 14px clamp(16px, 3vw, 30px);
   display: flex;
   align-items: center;
   gap: clamp(12px, 2vw, 26px);
   border-bottom: 1px solid var(--as-line);
 }
+body > header.asobi-site-header { position: sticky; top: 0; z-index: 40; background: var(--as-bg); }
+.asobi-menu-trigger{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:0;border:1px solid var(--as-line);border-radius:12px;background:var(--as-surface);color:var(--as-text);cursor:pointer}
+.asobi-menu-trigger:hover,.asobi-menu-trigger[aria-expanded="true"]{background:var(--as-soft);border-color:var(--as-red)}
+.asobi-menu-bars{display:grid;gap:4px;width:21px}
+.asobi-menu-bars i{display:block;height:2.5px;background:currentColor;border-radius:4px}
 .asobi-brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--as-text); font-weight: 900; font-size: 25px; letter-spacing: -.06em; white-space: nowrap; }
 .asobi-brand:hover { color: var(--as-text); }
 .asobi-brand .brand-mark { width: 43px; height: 43px; border-radius: 13px; box-shadow: 0 3px 0 rgba(16, 43, 72, .1); }
@@ -109,6 +114,7 @@ body > main > .hero .hero-mark { width: clamp(72px, 9vw, 113px); border: 0; bord
 .asobi-games-heading small { display: block; margin-top: 3px; color: var(--as-muted); font-size: 11px; font-weight: 600; }
 .asobi-games-heading .arcade-random { width: auto!important; flex: none; color: var(--as-navy)!important; background: var(--as-yellow)!important; border: 1px solid #e7bd35!important; box-shadow: 0 4px 0 rgba(116, 83, 17, .12)!important; border-radius: 11px!important; padding: 11px 16px!important; font-size: 12px; }
 .asobi-games-heading .arcade-random:hover { filter: brightness(.97); }
+#arcadeRandom { display:none!important; }
 .filters { margin: 0 0 13px; gap: 7px; }
 .filters button { border: 1px solid var(--as-line); color: var(--as-muted); background: var(--as-surface); border-radius: 10px; padding: 8px 15px; font-size: 12px; font-weight: 800; }
 .filters button[aria-pressed="true"] { color: #fff; background: var(--as-navy); border-color: var(--as-navy); }
@@ -226,14 +232,15 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   .arcade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
-  /* 記録メニューが右上を占めるので、外観切替は次の行へ移す。 */
-  body > header.asobi-site-header { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; justify-items: start; min-height: 86px; padding: 9px 14px 8px; gap: 3px; }
-  body > header.asobi-site-header .asobi-brand { max-width: calc(100% - 128px); }
-  .asobi-brand { font-size: 19px; gap: 7px; }
-  .asobi-brand .brand-mark { width: 36px; height: 36px; border-radius: 10px; }
+  /* ロゴ・テーマ・三本線を1行に収め、スクロール時も自然な高さを保つ。 */
+  body > header.asobi-site-header { display:flex;align-items:center;min-height:62px;padding:9px 13px;gap:7px; }
+  .asobi-brand { font-size: clamp(15px, 4.8vw, 20px); gap: 7px; min-width:0; }
+  .asobi-brand .brand-mark { width: 35px; height: 35px; border-radius: 10px; flex:none; }
   .asobi-top-links { display: none; }
-  .asobi-theme-control { margin-left: 0; padding: 5px 5px 5px 7px; }
-  .asobi-theme-select { font-size: 11px; max-width: 61px; }
+  .asobi-theme-control { margin-left:auto; padding:5px 4px;gap:2px; }
+  .asobi-theme-symbol { font-size: 13px; }
+  .asobi-theme-select { font-size: 11px; max-width: 55px; }
+  .asobi-menu-trigger{width:40px;height:40px;border-radius:11px}
   body > main { padding: 13px 13px 30px; }
   body > main > .hero { min-height: 138px; border-radius: 17px; padding: 18px 17px; }
   body > main > .hero h1 { font-size: clamp(23px, 5.7vw, 32px); }
@@ -258,20 +265,31 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   .arcade-heading h2 { font-size: 23px; }
 }
 @media (max-width: 370px) {
-  .asobi-brand { font-size: 16px; }
+  .asobi-brand { font-size: 15px; }
   .asobi-theme-symbol { display: none; }
   .asobi-theme-control { padding-inline: 4px; }
   body > main > .hero .hero-mark { width: 58px; }
   body > main > .hero h1 { font-size: 23px; }
   #shelf > .card h3 { font-size: 13px; }
 }
-/* iOSの画面上端に描かれるスクロールエッジのぼかし帯から操作部分を離す。 */
-@supports (-webkit-touch-callout: none) {
-  @media (max-width: 700px) {
-    body > header.asobi-site-header { padding-top: 51px; }
-    .asobi-dashboard { top: calc(96px + env(safe-area-inset-top, 0px)); }
-  }
-}
+/* プロフィールのアイコンとフレーム。どの端末でも既存プロフィールデータを維持。 */
+.arcade-frames{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:9px 0 16px}
+.arcade-frame-option{display:grid;justify-items:center;gap:6px;min-width:0;padding:9px 3px 8px;background:var(--as-surface);border:1px solid var(--as-line);border-radius:11px;color:var(--as-text);font-weight:800;font-size:10px;cursor:pointer}
+.arcade-frame-option:hover{background:var(--as-soft)}
+.arcade-frame-option[aria-pressed="true"]{outline:2px solid var(--as-red);outline-offset:1px;border-color:var(--as-red)}
+.arcade-frame-preview{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--as-soft);font-size:22px}
+:where(.arcade-avatar,.asobi-menu-profile-avatar,.arcade-frame-preview)[data-frame]{--frame-ring:#dae3e8;--frame-glow:transparent;border:4px solid var(--frame-ring);box-shadow:0 2px 9px var(--frame-glow);background-clip:padding-box}
+[data-frame="sunshine"]{--frame-ring:#f2b918;--frame-glow:#f2b91877}
+[data-frame="ocean"]{--frame-ring:#32b3d1;--frame-glow:#32b3d188}
+[data-frame="cherry"]{--frame-ring:#ff78a7;--frame-glow:#ff78a788}
+[data-frame="mint"]{--frame-ring:#57c99e;--frame-glow:#57c99e88}
+[data-frame="cosmic"]{--frame-ring:#7a70d5;--frame-glow:#7a70d588}
+[data-frame="neon"]{--frame-ring:#47df67;--frame-glow:#47df6799}
+[data-frame="royal"]{--frame-ring:#d39a40;--frame-glow:#d39a4099}
+[data-frame="rainbow"]{--frame-ring:#ef82b2;--frame-glow:#73bbee99;border-style:double!important;border-width:6px!important}
+[data-frame="pixel"]{--frame-ring:#4a6795;--frame-glow:#7ca2eb77;border-radius:5px!important}
+#arcadeProfile,#arcadeRankings,#arcadeMissions,#shelf{scroll-margin-top:88px}
+@media(max-width:390px){.arcade-frames{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   body, #shelf > .card { transition: none; }

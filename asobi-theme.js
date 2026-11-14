@@ -75,11 +75,6 @@
       sub.textContent = '4つのゲームから、お気に入りを見つけよう。';
       titleGroup.append(shelfTitle, sub);
       heading.append(titleGroup);
-      const random = document.querySelector('#arcadeRandom');
-      if (random) {
-        random.textContent = '🎲 おまかせで遊ぶ';
-        heading.append(random);
-      }
       const filters = main.querySelector('.filters');
       if (filters) filters.before(heading); else shelf.before(heading);
     }
@@ -126,5 +121,16 @@
   });
   control.append(symbol, select);
   header.append(control);
+  if (shelf) {
+    const menu = document.createElement('button');
+    menu.type = 'button';
+    menu.id = 'asobiMenuTrigger';
+    menu.className = 'asobi-menu-trigger';
+    menu.setAttribute('aria-label', 'サイトメニューを開く');
+    menu.setAttribute('aria-controls', 'asobiSiteDrawer');
+    menu.setAttribute('aria-expanded', 'false');
+    menu.innerHTML = '<span aria-hidden="true" class="asobi-menu-bars"><i></i><i></i><i></i></span>';
+    header.append(menu);
+  }
   updateTheme();
 })();

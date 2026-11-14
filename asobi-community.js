@@ -11,17 +11,18 @@
   hub.innerHTML = `
     <div class="arcade-heading"><div><span class="arcade-kicker">ASOBIROOM / PLAYERS LOUNGE</span><h2>遊ぶほど、ひろがる。</h2><p>4つのゲームがつながる、あなただけのゲーム記録。</p></div><button class="arcade-random" type="button" id="arcadeRandom">🎲 なにして遊ぶ？</button></div>
     <div class="arcade-grid">
-      <article class="arcade-card arcade-profile"><div class="arcade-card-top"><h3>🪪 マイプロフィール</h3><span class="arcade-chip">この端末に保存</span></div>
+      <article class="arcade-card arcade-profile" id="arcadeProfile"><div class="arcade-card-top"><h3>🪪 マイプロフィール</h3><span class="arcade-chip">この端末に保存</span></div>
         <div class="arcade-identity"><span class="arcade-avatar" id="arcadeAvatar">🐣</span><div class="arcade-identity-meta"><span class="arcade-level" id="arcadeLevel">LEVEL 1</span><strong id="arcadeDisplayName">ゲスト</strong><span id="arcadeXp">0 XP</span></div></div>
         <div class="arcade-xpbar" role="progressbar" aria-label="次のレベルまでの経験値" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="arcadeXpBar"><span id="arcadeXpFill"></span></div><p class="arcade-small" id="arcadeNextLevel">次のレベルまで 50 XP</p>
         <form id="arcadeProfileForm"><label class="arcade-label" for="arcadeName">ニックネーム</label><div class="arcade-name-row"><input id="arcadeName" maxlength="16" autocomplete="nickname" placeholder="16文字以内"><button type="submit">保存</button></div></form>
         <div class="arcade-label">アバター（レベルで解放）</div><div class="arcade-avatars" id="arcadeAvatars"></div>
+        <div class="arcade-label">アイコンのフレーム</div><p class="arcade-small arcade-frame-hint">好きな組み合わせを選んで、自分だけのアイコンにしよう。</p><div class="arcade-frames" id="arcadeFrames" role="group" aria-label="アイコンのフレームを選択"></div>
         <label class="arcade-optin"><input type="checkbox" id="arcadePublic"><span>総合ランキングとプレイ速報に参加する<small>オンにするとニックネーム・アバター・これからのプレイ記録が公開されます。</small></span></label>
         <p class="arcade-small">ログイン不要・端末ごとに保存。端末を変えると記録は引き継がれません。</p>
       </article>
       <article class="arcade-card"><div class="arcade-card-top"><h3>📅 今日のミッション</h3><span class="arcade-chip" id="arcadeMissionDate"></span></div><p class="arcade-muted">毎日0時（日本時間）に新しいミッション！ 達成したら受け取ろう。</p><div id="arcadeMissions" class="arcade-missions"></div></article>
       <article class="arcade-card"><div class="arcade-card-top"><h3>🏆 実績コレクション</h3><span class="arcade-chip" id="arcadeAchievementCount">0 / 7</span></div><p class="arcade-muted">遊びながらトロフィーを集めよう。未獲得の実績もチェック！</p><div class="arcade-achievements" id="arcadeAchievements"></div></article>
-      <article class="arcade-card"><div class="arcade-card-top"><h3>🥇 みんなの総合ランキング</h3><button type="button" class="arcade-reload" id="arcadeReload">↻ 更新</button></div><div class="arcade-periods" role="group" aria-label="ランキング期間"><button type="button" data-period="week" aria-pressed="true">今週</button><button type="button" data-period="month" aria-pressed="false">今月</button><button type="button" data-period="all" aria-pressed="false">累計</button></div><div id="arcadeLeaderboard" class="arcade-leaderboard" aria-live="polite">読み込み中…</div><p class="arcade-small">4ゲーム共通のXP順位。公開参加者のみ、集計開始後の記録が対象です。</p></article>
+      <article class="arcade-card" id="arcadeRankings"><div class="arcade-card-top"><h3>🥇 みんなの総合ランキング</h3><button type="button" class="arcade-reload" id="arcadeReload">↻ 更新</button></div><div class="arcade-periods" role="group" aria-label="ランキング期間"><button type="button" data-period="week" aria-pressed="true">今週</button><button type="button" data-period="month" aria-pressed="false">今月</button><button type="button" data-period="all" aria-pressed="false">累計</button></div><div id="arcadeLeaderboard" class="arcade-leaderboard" aria-live="polite">読み込み中…</div><p class="arcade-small">4ゲーム共通のXP順位。公開参加者のみ、集計開始後の記録が対象です。</p></article>
       <article class="arcade-card"><div class="arcade-card-top"><h3>📡 みんなのプレイ速報</h3><span class="arcade-live">● LIVE</span></div><div class="arcade-feed" id="arcadeFeed" aria-live="polite">読み込み中…</div><p class="arcade-small">公開に同意した人の最近のプレイのみ表示します。</p></article>
       <article class="arcade-card arcade-pwa"><div class="arcade-card-top"><h3>📱 ホーム画面から遊ぼう</h3><span class="arcade-chip">APP MODE</span></div><div class="arcade-app-mark">🚪</div><p>asobiroomをホーム画面に追加すると、アプリのようにすぐ開けるよ。</p><button type="button" class="arcade-install" id="arcadeInstall">ホーム画面に追加する方法</button><p class="arcade-small" id="arcadeInstallHelp">iPhoneはSafariの「共有」→「ホーム画面に追加」。Androidはブラウザのメニューから追加できます。</p><p class="arcade-small">ゲームの利用にはインターネット接続が必要な場合があります。</p></article>
     </div><p class="arcade-disclaimer">※ XPと実績はブラウザに保存されます。ランキングは自己申告のプレイイベントによるカジュアルな集計で、厳密な競技記録ではありません。</p>`;
@@ -36,6 +37,7 @@
   function render() {
     const me = player.get();
     $('#arcadeAvatar').textContent = me.avatar;
+    $('#arcadeAvatar').dataset.frame = me.frame;
     $('#arcadeDisplayName').textContent = me.name;
     $('#arcadeLevel').textContent = 'LEVEL ' + me.level;
     $('#arcadeXp').textContent = number(me.xp) + ' XP · ' + number(me.starts) + ' プレイ';
@@ -55,6 +57,18 @@
       button.setAttribute('aria-pressed', String(emoji === me.avatar));
       button.addEventListener('click', () => player.update({ avatar: emoji }));
       $('#arcadeAvatars').append(button);
+    });
+    $('#arcadeFrames').replaceChildren();
+    player.FRAMES.forEach(frame => {
+      const button = node('button', 'arcade-frame-option');
+      button.type = 'button';
+      button.setAttribute('aria-pressed', String(frame.id === me.frame));
+      button.setAttribute('aria-label', frame.name + 'のフレームを選択');
+      const preview = node('span', 'arcade-frame-preview', me.avatar);
+      preview.dataset.frame = frame.id;
+      button.append(preview, node('small', '', frame.name));
+      button.addEventListener('click', () => player.update({ frame: frame.id }));
+      $('#arcadeFrames').append(button);
     });
     $('#arcadeMissionDate').textContent = player.day().replaceAll('-', '/');
     $('#arcadeMissions').replaceChildren();

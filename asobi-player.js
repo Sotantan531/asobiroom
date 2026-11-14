@@ -10,9 +10,18 @@
     'dobon-quiz': { name: 'ドボンクイズ', icon: '💣', href: '/dobon-quiz/' },
     'sector-09': { name: '隔離区画09', icon: '👁️', href: '/sector-09/' }
   });
-  const AVATARS = ['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑'];
-  const LEVELS = [1, 1, 1, 2, 3, 4, 6, 10];
-  const blank = () => ({ id: crypto.randomUUID(), name: 'ゲスト', avatar: '🐣', public: false, xp: 0, starts: 0, clears: 0, games: {}, recent: [], claimed: {} });
+  const AVATARS = ['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲'];
+  const LEVELS = [1, 1, 1, 2, 3, 4, 6, 10, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 5, 5, 6, 8];
+  const FRAMES = Object.freeze([
+    { id: 'classic', name: 'ベーシック' }, { id: 'sunshine', name: 'サンシャイン' },
+    { id: 'ocean', name: 'オーシャン' }, { id: 'cherry', name: 'チェリー' },
+    { id: 'mint', name: 'ミント' }, { id: 'cosmic', name: 'コスモ' },
+    { id: 'neon', name: 'ネオン' }, { id: 'royal', name: 'ロイヤル' },
+    { id: 'rainbow', name: 'レインボー' }, { id: 'pixel', name: 'ピクセル' }
+  ]);
+  // Workerが受け取れるアバターは旧8種。新しいアイコンでもオンラインの記録送信は続ける。
+  const SERVER_AVATARS = new Set(AVATARS.slice(0, 8));
+  const blank = () => ({ id: crypto.randomUUID(), name: 'ゲスト', avatar: '🐣', frame: 'classic', public: false, xp: 0, starts: 0, clears: 0, games: {}, recent: [], claimed: {} });
   let state;
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
@@ -20,6 +29,7 @@
     if (!Array.isArray(state.recent)) state.recent = [];
     if (!state.games || typeof state.games !== 'object') state.games = {};
     if (!state.claimed || typeof state.claimed !== 'object') state.claimed = {};
+    if (!FRAMES.some(frame => frame.id === state.frame)) state.frame = 'classic';
   } catch { state = blank(); }
   let pending = [];
   try {
@@ -96,7 +106,7 @@
       state.xp += 10;
     } else { state.clears++; state.xp += 25; }
     if (state.public) {
-      pending.push({ id: crypto.randomUUID(), playerId: state.id, name: sanitize(state.name), avatar: state.avatar, game, action });
+      pending.push({ id: crypto.randomUUID(), playerId: state.id, name: sanitize(state.name), avatar: SERVER_AVATARS.has(state.avatar) ? state.avatar : '🐣', game, action });
       pending = pending.slice(-120);
     }
     save();
@@ -105,6 +115,7 @@
   function update(values) {
     if ('name' in values) state.name = sanitize(values.name);
     if ('avatar' in values && AVATARS.includes(values.avatar) && level() >= LEVELS[AVATARS.indexOf(values.avatar)]) state.avatar = values.avatar;
+    if ('frame' in values && FRAMES.some(frame => frame.id === values.frame)) state.frame = values.frame;
     if ('public' in values) {
       state.public = !!values.public;
       if (!state.public) pending = [];
@@ -118,7 +129,7 @@
     if (!response.ok) throw Error('community API failed');
     return response.json();
   }
-  window.asobiPlayer = { GAMES, AVATARS, LEVELS, get: snapshot, level, missions, claim, achievements, record, update, community, flush, day };
+  window.asobiPlayer = { GAMES, AVATARS, LEVELS, FRAMES, get: snapshot, level, missions, claim, achievements, record, update, community, flush, day };
   addEventListener('online', flush);
   if (pending.length) void flush();
 })();
