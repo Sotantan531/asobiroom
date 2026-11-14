@@ -1,5 +1,5 @@
 /* PWA の最小限のキャッシュ。常にネットワークを優先し、ゲーム記録・広告はキャッシュしない。 */
-const CACHE = 'asobiroom-shell-v2';
+const CACHE = 'asobiroom-shell-v3';
 const SHELL = ['/', '/asobi-config.js', '/asobi-player.js', '/asobi-activity.js', '/asobi-community.js', '/asobi-community.css', '/asobi-theme.css', '/asobi-theme.js', '/home-dashboard.js', '/home-dashboard.css', '/manifest.webmanifest', '/icon-192.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -14,7 +14,10 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     try {
-      const response = await fetch(request);
+      // 古いHTML/CSS/JSが端末のHTTPキャッシュに残っても最新版を確認する。
+      const response = await fetch(request, {
+        cache: ['document', 'script', 'style'].includes(request.destination) ? 'no-cache' : 'default'
+      });
       if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
       return response;
     } catch {
