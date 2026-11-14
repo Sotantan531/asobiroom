@@ -29,6 +29,9 @@
   const shelf = main?.querySelector('#shelf');
 
   if (shelf) {
+    // 更新前のコミュニティ JS が端末にキャッシュされていてもゲームを必ず先にする。
+    const lounge = main.querySelector('#asobiCommunity');
+    if (lounge) main.append(lounge);
     header.classList.add('asobi-site-header');
     const mark = header.querySelector('.brand-mark');
     const brand = document.createElement('a');
