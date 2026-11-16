@@ -10,7 +10,7 @@
     'dobon-quiz': { name: 'ドボンクイズ', icon: '💣', href: '/dobon-quiz/' },
     'sector-09': { name: '隔離区画01', icon: '👁️', href: '/sector-01/' },
     billiards: { name: 'BILLIARDS CLUB', icon: '🎱', href: '/billiards/' },
-    bowling: { name: 'STRIKE LANES', icon: '🎳', href: '/bowling/' }
+    bowling: { name: 'ポケット・ボウリング', icon: '🎳', href: '/bowling/' }
   });
   const AVATARS = ['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲'];
   const LEVELS = [1, 1, 1, 2, 3, 4, 6, 10, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 5, 5, 6, 8];
