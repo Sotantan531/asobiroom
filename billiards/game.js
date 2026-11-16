@@ -23,6 +23,7 @@ const ui={
   viewMode:$('viewModeLabel'),viewDetail:$('viewDetailLabel')
 };
 
+let online=null;
 let selection={mode:'9',opponent:'cpu',difficulty:'normal',assist:false,camera:'player'};
 let physics=null,rules=null,started=false,matchToken=0,cpuThinking=false;
 let aim=0,power=0,spin={x:0,y:0},shotBefore=[],shotCall=null,spinDrag=false,powerDrag=false;
@@ -675,7 +676,7 @@ function activePlayerName(index){
   return index===0?'あなた':selection.opponent==='cpu'?'CPU': 'プレイヤー2';
 }
 function isOwnTurn(){
-  return started&&physics&&!physics.inShot&&rules?.winner===null&&!(selection.opponent==='cpu'&&rules.turn===1)&&!cpuThinking&&!coinQueued&&ui.rules.hidden&&ui.end.hidden;
+  return (!online?.active||online.canPlay())&&started&&physics&&!physics.inShot&&rules?.winner===null&&!(selection.opponent==='cpu'&&rules.turn===1)&&!cpuThinking&&!coinQueued&&ui.rules.hidden&&ui.end.hidden;
 }
 function targetCueAngle(){
   if(!physics||!rules)return 0;
@@ -733,6 +734,7 @@ function refreshUI(){
   }
   ui.warning.textContent=human?'':physics.inShot?'球の転がりを上から確認中':'順番を待ってね';
   ui.powerTrack.style.opacity=human?1:.42;
+  if(online?.active){ui.p1Name.textContent=online.state.players[0];ui.p2Name.textContent=online.state.players[1];ui.opponent.textContent='ONLINE MATCH';ui.turnTag.textContent=rules.turn===online.seat?'あなたのターン':'相手のターン';}
   updateCallOptions();
 }
 function finishMatch(result){
@@ -746,6 +748,7 @@ function finishMatch(result){
   refreshUI();
 }
 function shotSettled(log){
+  if(online?.active){setStatus('サーバーの判定を確認中…');return;}
   if(!physics||!rules)return;
   const result=rules.finishShot(log,shotBefore,shotCall);
   result.spot.forEach(id=>physics.spotBall(id));
@@ -804,6 +807,7 @@ function commitShot(force){
   if(rules.mode==='8'&&!rules.breaking&&!rules.targets(physics.balls).includes(shotCall.ball)){
     ui.warning.textContent='先に狙うボールを指定してね';return false;
   }
+  if(online?.active){online.move({angle:aim,power:force,spinX:spin.x,spinY:spin.y,x:cue.x,z:cue.z,call:shotCall});setPower(0);return true;}
   const struck=physics.shoot(aim,force,spin.x,spin.y);
   if(struck){rules.ballInHand=null;setPower(0);ui.warning.textContent='';ui.hand.hidden=true;refreshUI();}
   return struck;
@@ -1145,3 +1149,20 @@ try{
   $('startButton').disabled=true;
 }
 
+
+// Online matches use server physics and rules; local animation is reconciled after every shot.
+let onlineShot=-1;
+online=new window.AsobiOnline('billiards',{
+ start(s){selection.mode=s.options.mode;selection.opponent='local';ui.start.hidden=true;ui.coin.hidden=true;ui.end.hidden=true;initMatch(s.turn);onlineShot=-1;},
+ state(s){
+  if(s.pending){
+   if(onlineShot!==s.pending.id){onlineShot=s.pending.id;physics.inShot=false;physics.balls=structuredClone(s.pending.balls);Object.assign(rules,s.rules);const m=s.pending.move;setAim(m.angle);setSpin(m.spinX,m.spinY);physics.shoot(m.angle,m.power,m.spinX,m.spinY);syncMeshes();refreshUI();}
+   return;
+  }
+  physics.inShot=false;physics.balls=structuredClone(s.balls);Object.assign(rules,s.rules);setPower(0);setSpin(0,0);setAim(targetCueAngle());syncMeshes();refreshUI();setStatus(s.message||'対戦相手と接続しました');
+  if(s.phase==='ended'){started=false;ui.end.hidden=false;$('endTitle').textContent=s.winner===online.seat?'YOU WIN!':'MATCH ENDED';$('endDetail').textContent=(s.winner>=0?s.players[s.winner]+'の勝利。 ':'')+(s.message||'対戦終了');}
+ },
+ leave(){matchToken++;started=false;cpuThinking=false;if(physics)physics.inShot=false;ui.end.hidden=true;ui.coin.hidden=true;ui.start.hidden=false;}
+});
+const onlineButton=document.createElement('button');onlineButton.className='primary-button';onlineButton.textContent='オンライン対戦 · ランダム / プライベート';onlineButton.style.marginBottom='12px';$('startButton').before(onlineButton);onlineButton.onclick=()=>online.open();
+for(const id of ['restartButton','menuButton','rematchButton','backToMenu'])$(id).addEventListener('click',e=>{if(online.active){e.stopImmediatePropagation();online.open();}},true);
