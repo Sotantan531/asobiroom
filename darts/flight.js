@@ -125,7 +125,7 @@ function releaseSpeed(samples){
 function installThrow(){
   const stage=$('stage');
   stage.onpointerdown=e=>{
-    if(over||busy||aiTurn()||gesture||e.button!==0)return;
+    if((online?.active&&!online.canPlay())||over||busy||aiTurn()||gesture||e.button!==0)return;
     $('swipeHint').textContent='狙う方向にスワイプして投げる';unlockSound();const p=boardPoint(e);gesture={id:e.pointerId,samples:[p]};stage.setPointerCapture(e.pointerId);hold(p);
   };
   stage.onpointermove=e=>{

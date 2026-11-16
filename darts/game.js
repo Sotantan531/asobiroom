@@ -3,6 +3,7 @@ const $=id=>document.getElementById(id), nums=[20,1,18,4,13,6,10,15,2,17,3,19,7,
 const levels=[['C',2,42,1.4],['CC',4,52,1.8],['B',6,62,2.2],['BB',8,72,2.6],['A',10,82,3],['AA',14,105,3.85],['SA',18,132,4.85]];
 let mode='501',level=2,round,player,scores,marks,darts,log,points,startScore,over,timer,gesture,busy;
 let countedDartsMatch=false;
+let online=null;
 const is01=()=>!isNaN(Number(mode)), cap=()=>cricket()?20:is01()?(+mode>=701?20:15):8;
 function polar(r,a){return [r*Math.sin(a),-r*Math.cos(a)]}
 const rad=Math.PI/10;
@@ -47,7 +48,7 @@ function advance(){
  arcadeCue('turn');if(complete)round++;player=solo()?0:1-player;startScore=scores[player];darts=[];busy=false;
  $('pins').innerHTML='';$('flash').textContent='';render();if(aiTurn())timer=setTimeout(cpu,450);
 }
-function play(x,y){if(over)return;if(!countedDartsMatch){countedDartsMatch=true;window.asobiActivity?.play('darts')}rankedThrows[player]++;let h=hit(x,y),label=h.label,bust=false,win=false;h.available=(marks[player][h.n]||0)<3||(marks[1-player][h.n]||0)<3;darts.push(h);if(is01()){scores[player]-=pointsOf(h);if(scores[player]<0||(scores[player]===0&&!finishes(h))||(scores[player]===1&&rules.out!=='open')){scores[player]=startScore;bust=true;label+=' · BUST'}else win=scores[player]===0}
+function play(x,y){if(online?.active){if(online.canPlay())online.move({x,y});return;}if(over)return;if(!countedDartsMatch){countedDartsMatch=true;window.asobiActivity?.play('darts')}rankedThrows[player]++;let h=hit(x,y),label=h.label,bust=false,win=false;h.available=(marks[player][h.n]||0)<3||(marks[1-player][h.n]||0)<3;darts.push(h);if(is01()){scores[player]-=pointsOf(h);if(scores[player]<0||(scores[player]===0&&!finishes(h))||(scores[player]===1&&rules.out!=='open')){scores[player]=startScore;bust=true;label+=' · BUST'}else win=scores[player]===0}
  else if(cricket()){if(targets.includes(h.n)){let old=marks[player][h.n]||0;marks[player][h.n]=Math.min(3,old+h.m);if((marks[1-player][h.n]||0)<3)scores[mode==='cut'?1-player:player]+=Math.max(0,old+h.m-3)*h.n;win=targets.every(n=>marks[player][n]===3)&&(mode==='cut'?scores[player]<=scores[1-player]:scores[player]>=scores[1-player])}}
  else {const gain=trainingScore(h,x,y);scores[player]+=gain;label+=' +'+gain}
  lightHit(h);impactSound(h);
@@ -80,3 +81,18 @@ function openKit(){
   $('kitBack').onclick=()=>setup(true);
 }
 installThrow();reset();
+
+function onlineText(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+online=new window.AsobiOnline('darts',{
+ start(s){clearTimeout(timer);closeModal();rules={entry:s.options.mode,opponent:'online',out:s.options.out,bull:s.options.bull,bonus:[0,0]};reset();},
+ state(s){
+  clearTimeout(timer);cancelAnimationFrame(flightFrame);const d=s.darts;mode=s.options.mode;player=s.turn;scores=[...d.scores];marks=structuredClone(d.marks);round=d.round;first=d.first;startScore=d.start;darts=Array.from({length:d.count},()=>({}));busy=false;gesture=null;over=s.phase==='ended';
+  if(s.last&&s.last.id!==onlineLast){onlineLast=s.last.id;const h=hit(s.last.x,s.last.y);lightHit(h);impactSound(h);log.push(['R'+round+' · '+labelFor(s.last.player),h.label+(s.last.bust?' · BUST':'')]);$('flash').textContent=h.label+(s.last.bust?' · BUST':'');}
+  $('moving').innerHTML='';$('pins').innerHTML='';render();$('swipeHint').textContent=over?'対戦終了':s.turn===online.seat?'狙う方向にスワイプして投げる':'相手の投球を待っています';
+  if(over)show('<h2>'+ (s.winner<0?'引き分け':onlineText(s.players[s.winner])+'の勝利！')+'</h2><p>'+onlineText(s.message||'対戦終了')+'</p><div class="buttons"><button id="onlineAgain">オンライン対戦へ</button></div>');
+  if(over)$('onlineAgain').onclick=async()=>{closeModal();await online.leave();online.open();};
+ },leave(){clearTimeout(timer);rules.opponent='cpu';reset();}
+});
+let onlineLast=-1;
+const onlineButton=document.createElement('button');onlineButton.textContent='オンライン対戦';$('settings').before(onlineButton);onlineButton.onclick=()=>{if($('modal').open)closeModal();online.open();};
+$('settings').addEventListener('click',e=>{if(online.active){e.stopImmediatePropagation();online.open();}},true);

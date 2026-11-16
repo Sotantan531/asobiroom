@@ -26,7 +26,7 @@ const cricket=()=>mode==='cr'||mode==='cut';
 const matchPlay=()=>['medley','series'].includes(rules.entry);
 const solo=()=>rules.opponent==='solo';
 const aiTurn=()=>player===1&&rules.opponent==='cpu';
-const labelFor=p=>rules.opponent==='local'?'P'+(p+1):p?'CPU':'あなた';
+const labelFor=p=>rules.opponent==='online'?onlineText(online?.state?.players[p]||'プレイヤー'):rules.opponent==='local'?'P'+(p+1):p?'CPU':'あなた';
 const effectiveLevel=()=>mode==='ladder'?Math.min(6,level+Math.floor((round-1)/2)):level;
 function currentMode(){
  if(rules.entry==='medley')return leg===1?'cr':'501';
