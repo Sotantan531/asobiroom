@@ -11,7 +11,7 @@ let rollingSound;
 function rollSound(){if(!audioCtx||!enabled)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='triangle';o.frequency.value=62;g.gain.value=.055;o.connect(g);g.connect(master);o.start();rollingSound={o,g};}
 function stopRoll(){if(!rollingSound)return;rollingSound.g.gain.setTargetAtTime(.0001,audioCtx.currentTime,.08);rollingSound.o.stop(audioCtx.currentTime+.4);rollingSound=null;}
 const opts={mode:'solo',camera:'follow',assist:false,bumpers:false,volume:.42};
-try{const saved=JSON.parse(localStorage.getItem('asobiroom-bowling-options')||'{}');for(const k of ['camera','assist','bumpers','volume'])if(k in saved)opts[k]=saved[k];if(!['follow','wide','fixed'].includes(opts.camera))opts.camera='follow';opts.volume=clamp(Number(opts.volume)||.42,0,1);}catch{}
+try{const saved=JSON.parse(localStorage.getItem('asobiroom-bowling-options')||'{}');for(const k of ['camera','assist','bumpers','volume'])if(k in saved)opts[k]=saved[k];if(!['follow','wide','fixed'].includes(opts.camera))opts.camera='follow';opts.volume=clamp(Number.isFinite(Number(opts.volume))?Number(opts.volume):.42,0,1);}catch{}
 let physics,view,cards=[new Scorecard()],turn=0,state='menu',position=0,gesture=null,shotStart=0,finishTimer=0,frameTimer=0,accumulator=0,lastFrame=performance.now(),strikes=0,spares=0,consecutive=0,practiceRolls=0,awardTimer;
 let best=0;try{best=Number(localStorage.getItem('asobiroom-bowling-best'))||0;}catch{}$('best').textContent=best||'—';
 function show(html){$('modalContent').innerHTML=html;if(!$('modal').open)$('modal').showModal();}
