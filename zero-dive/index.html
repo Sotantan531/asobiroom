@@ -1480,11 +1480,11 @@ function setupArchive(questions, scenes, getStats, showArea) {
     }else if(kind==='go'){
       note(ctx,560,0,.085,{type:'square',vol:.045});note(ctx,840,.08,.10,{type:'triangle',vol:.055});noise(ctx,0,.075,.015);
     }else if(kind==='correct'){
-      [523.25,659.25,783.99,1046.5].forEach((f,i)=>note(ctx,f,i*.09,.31,{type:'triangle',vol:.075}));
-      note(ctx,1568,.29,.34,{type:'sine',vol:.045});noise(ctx,.24,.25,.025);
+      [523.25,659.25,783.99,1046.5].forEach((f,i)=>note(ctx,f,i*.09,.31,{type:'triangle',vol:.0375}));
+      note(ctx,1568,.29,.34,{type:'sine',vol:.0225});noise(ctx,.24,.25,.0125);
     }else if(kind==='wrong'){
-      note(ctx,630,0,.22,{endFreq:350,type:'sawtooth',vol:.045});
-      note(ctx,270,.15,.36,{endFreq:160,type:'triangle',vol:.075});
+      note(ctx,630,0,.22,{endFreq:350,type:'sawtooth',vol:.0225});
+      note(ctx,270,.15,.36,{endFreq:160,type:'triangle',vol:.0375});
     }else if(kind==='dive'){
       note(ctx,240,0,.58,{endFreq:90,type:'sawtooth',vol:.025});
       note(ctx,620,0,.52,{endFreq:230,type:'sine',vol:.055});
@@ -1506,7 +1506,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
       mod.type='sine';mod.frequency.value=7.5;mg.gain.value=190;
       mod.connect(mg);mg.connect(osc.frequency);
       const now=ctx.currentTime;
-      g.gain.setValueAtTime(.0001,now);g.gain.linearRampToValueAtTime(.052,now+.05);
+      g.gain.setValueAtTime(.0001,now);g.gain.linearRampToValueAtTime(.026,now+.05);
       osc.connect(g);g.connect(ctx.destination);osc.start(now);mod.start(now);
       this.osc=osc;this.mod=mod;this.gain=g;
     },
