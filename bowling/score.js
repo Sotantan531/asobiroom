@@ -6,7 +6,7 @@ export function totals(frames){const rolls=frames.flat(),out=[];let cursor=0,tot
  if(add===null)known=false;else total+=add;out.push(known?total:null);
  }return out;}
 export class Scorecard{
- constructor(){this.frames=[[]];this.done=false;}
+ constructor(){this.frames=[[]];this.splits={};this.done=false;}
  get frame(){return this.frames.length-1;}get current(){return this.frames.at(-1);}
  get needsFreshRack(){const f=this.current;return !f.length||(this.frame===9&&(f.at(-1)===10||(f.length===2&&f[0]+f[1]===10)));}
  get remaining(){return this.needsFreshRack?10:10-this.current.slice(this.frame===9&&this.current[0]===10?1:0).reduce((a,b)=>a+b,0);}
@@ -26,3 +26,5 @@ export function swipeShot(samples,width,height){
  if(speed<.00032)return null;
  return {angle:Math.max(-.11,Math.min(.11,initial*.13)),spin:Math.max(-1,Math.min(1,bend*5)),speed:Math.max(5.2,Math.min(9.6,5+speed*1500))};
 }
+
+export function isSplit(ids){const up=new Set(ids);if(up.has(1)||up.size<2)return false;const rows=[[1],[2,3],[4,5,6],[7,8,9,10]];for(const row of rows){const occupied=row.map((id,i)=>up.has(id)?i:-1).filter(i=>i>=0);if(occupied.length>1&&occupied.at(-1)-occupied[0]+1>occupied.length)return true;}for(let r=0;r<3;r++)for(let c=0;c<=r;c++)if(!up.has(rows[r][c])&&up.has(rows[r+1][c])&&up.has(rows[r+1][c+1]))return true;return false;}
