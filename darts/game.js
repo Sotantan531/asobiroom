@@ -88,7 +88,7 @@ online=new window.AsobiOnline('darts',{
  state(s){
   clearTimeout(timer);cancelAnimationFrame(flightFrame);const d=s.darts;mode=s.options.mode;player=s.turn;scores=[...d.scores];marks=structuredClone(d.marks);round=d.round;first=d.first;startScore=d.start;darts=Array.from({length:d.count},()=>({}));busy=false;gesture=null;over=s.phase==='ended';
   if(s.last&&s.last.id!==onlineLast){onlineLast=s.last.id;const h=hit(s.last.x,s.last.y);lightHit(h);impactSound(h);log.push(['R'+round+' · '+labelFor(s.last.player),h.label+(s.last.bust?' · BUST':'')]);$('flash').textContent=h.label+(s.last.bust?' · BUST':'');}
-  $('moving').innerHTML='';$('pins').innerHTML='';render();$('swipeHint').textContent=over?'対戦終了':s.turn===online.seat?'狙う方向にスワイプして投げる':'相手の投球を待っています';
+  $('moving').innerHTML='';$('pins').innerHTML=(d.hits||[]).filter(h=>Math.hypot(h.x,h.y)<204).map(h=>dartImage([h.x,h.y,depth],[.02,.1,1],s.turn!==online.seat)).join('');render();$('swipeHint').textContent=over?'対戦終了':s.turn===online.seat?'狙う方向にスワイプして投げる':'相手の投球を待っています';
   if(over)show('<h2>'+ (s.winner<0?'引き分け':onlineText(s.players[s.winner])+'の勝利！')+'</h2><p>'+onlineText(s.message||'対戦終了')+'</p><div class="buttons"><button id="onlineAgain">オンライン対戦へ</button></div>');
   if(over)$('onlineAgain').onclick=async()=>{closeModal();await online.leave();online.open();};
  },leave(){clearTimeout(timer);rules.opponent='cpu';reset();}
