@@ -118,6 +118,9 @@
       <div class="setup-label">02 <span>PLAY MODE</span></div>
       <div class="choice-grid compact" id="playerChoice"><button class="choice-card selected" data-player="cpu"><span class="choice-emoji">♟</span><strong>CPUと対戦</strong><small>一人でも気軽に遊べる</small></button><button class="choice-card" data-player="local"><span class="choice-emoji">☻ ☻</span><strong>友達と対戦</strong><small>同じ端末で交代プレイ</small></button></div>
       <div class="difficulty-setting" id="difficultySetting"><label for="difficulty">CPU LEVEL</label><select id="difficulty"><option value="easy">BEGINNER / はじめて</option><option value="normal" selected>REGULAR / ふつう</option><option value="hard">EXPERT / つよい</option></select></div>
+      <div class="billiards-accessibility"><label><input id="aimAssistSetting" type="checkbox"> イージーガイド（衝突後の予測方向を短く表示）</label>
+        <label for="shotCameraSetting">ショット時の視点</label><select id="shotCameraSetting"><option value="player">プレイヤー視点</option><option value="close">低いキュー視点</option><option value="overhead">俯瞰視点</option></select>
+      </div>
       <button class="primary-button" id="startButton">コイントスしてスタート <span>↗</span></button>
       <div class="setup-foot"><span>🎧 落ち着いたBGMとショットSE</span><span>WPAルール準拠・シングルラック</span></div>
     </div>
@@ -147,3 +150,4 @@
   <script type="module" src="./game.js"></script>
 </body>
 </html>
+

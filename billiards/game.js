@@ -23,13 +23,13 @@ const ui={
   viewMode:$('viewModeLabel'),viewDetail:$('viewDetailLabel')
 };
 
-let selection={mode:'9',opponent:'cpu',difficulty:'normal'};
+let selection={mode:'9',opponent:'cpu',difficulty:'normal',assist:false,camera:'player'};
 let physics=null,rules=null,started=false,matchToken=0,cpuThinking=false;
 let aim=0,power=0,spin={x:0,y:0},shotBefore=[],shotCall=null,spinDrag=false,powerDrag=false;
 let currentCall={ball:null,pocket:0},lastMessageTimer=null,lastPocketTime=0;
 let cueVisible=true,coinQueued=false,sceneReady=false;
 
-let renderer,scene,camera,tableGroup,ballsGroup,cueGroup,environmentGroup,overheadFixturesGroup,aimGuide,guideEnd,ballMeshes=new Map();
+let renderer,scene,camera,tableGroup,ballsGroup,cueGroup,environmentGroup,overheadFixturesGroup,aimGuide,guideEnd,postHitGuide,ballMeshes=new Map();
 let cloth,playerShadow,headlamp,raycaster,aimCameraTarget=new THREE.Vector3(),cameraTarget=new THREE.Vector3();
 let softwareRenderer=false,softwareContext=null,softwareCanvas=null;
 let shotMarkersCanvas=null,shotMarkersContext=null;
@@ -239,6 +239,35 @@ function buildRoom(){
     shade.position.set(0,3,z);shade.rotation.z=Math.PI;overheadFixturesGroup.add(shade);
     meshBox(.016,.7,.016,0,3.4,z,new THREE.MeshStandardMaterial({color:0x7b8b80}),overheadFixturesGroup);
   }
+  // Pool-bar lounge: framed board, warm sconces, stools, cue rack and backbar.
+  const brass=new THREE.MeshStandardMaterial({color:0xb78f50,metalness:.65,roughness:.34});
+  const oak=new THREE.MeshStandardMaterial({color:0x40271a,roughness:.68});
+  const black=new THREE.MeshStandardMaterial({color:0x121c1b,roughness:.84});
+  const cream=new THREE.MeshStandardMaterial({color:0xf3d89c,emissive:0x5d3510,emissiveIntensity:.16});
+  // Back-wall sign with illuminated framing.
+  meshBox(3.5,1.0,.10,0,1.9,-8.76,oak,environmentGroup);
+  meshBox(3.28,.80,.12,0,1.9,-8.68,black,environmentGroup);
+  for(const yy of [1.48,2.32])meshBox(3.5,.035,.13,0,yy,-8.65,brass,environmentGroup);
+  for(const xx of [-1.75,1.75])meshBox(.035,.84,.13,xx,1.9,-8.65,brass,environmentGroup);
+  for(const x of [-5.5,5.5]){
+    // Cue storage mounted on the wall.
+    meshBox(.8,.075,.18,x,.12,-8.68,oak,environmentGroup);
+    meshBox(.8,.075,.18,x,2.3,-8.68,oak,environmentGroup);
+    for(let i=0;i<5;i++){
+      const cue=new THREE.Mesh(new THREE.CylinderGeometry(.012,.023,2.12,8),i%2?brass:oak);
+      cue.position.set(x+(i-2)*.14,1.19,-8.59);environmentGroup.add(cue);
+    }
+  }
+  for(const x of [-6.7,6.7]){
+    meshBox(1.2,.12,.65,x,-.03,-3.4,oak,environmentGroup);
+    for(const z of [-3.65,-3.15])for(const dx of [-.43,.43])meshBox(.07,.82,.07,x+dx,-.48,z,brass,environmentGroup);
+    for(const dx of [-.9,.9]){
+      const seat=new THREE.Mesh(new THREE.CylinderGeometry(.27,.27,.12,24),black);
+      seat.position.set(x+dx,-.18,-2.75);environmentGroup.add(seat);
+      const stand=new THREE.Mesh(new THREE.CylinderGeometry(.035,.05,.68,12),brass);
+      stand.position.set(x+dx,-.58,-2.75);environmentGroup.add(stand);
+    }
+  }
 }
 
 function buildTable(){
@@ -293,6 +322,8 @@ function buildAimGuide(){
   guideEnd.rotation.x=-Math.PI/2;
   guideEnd.visible=false;
   scene.add(guideEnd);
+  postHitGuide=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]),new THREE.LineDashedMaterial({color:0x87e2fa,dashSize:.045,gapSize:.032,transparent:true,opacity:.77,depthWrite:false}));
+  postHitGuide.visible=false;postHitGuide.frustumCulled=false;scene.add(postHitGuide);
 }
 
 function getAimGuide(){
@@ -310,14 +341,26 @@ function getAimGuide(){
     if(contact>R && contact<distance){distance=contact;hit=true;}
   }
   const start=.11;
-  return {x1:c.x+dx*start,z1:c.z+dz*start,x2:c.x+dx*distance,z2:c.z+dz*distance,hit};
+  return {x1:c.x+dx*start,z1:c.z+dz*start,x2:c.x+dx*distance,z2:c.z+dz*distance,hit,dx,dz};
 }
 
 function updateAimGuide(){
   const g=getAimGuide();
   aimGuide.visible=!!g;
   guideEnd.visible=!!g?.hit;
+  postHitGuide.visible=!!(g?.hit&&selection.assist);
   if(!g)return;
+  if(postHitGuide.visible){
+    const target=physics.active.filter(b=>b.id!==0&&!b.pocketed).map(b=>({b,d:Math.hypot(b.x-g.x2,b.z-g.z2)})).sort((a,b)=>a.d-b.d)[0];
+    if(target){
+      const nx=(target.b.x-g.x2)/(target.d||1),nz=(target.b.z-g.z2)/(target.d||1),dot=g.dx*nx+g.dz*nz;
+      const tx=g.dx-nx*dot,tz=g.dz-nz*dot,tlen=Math.hypot(tx,tz);
+      const ax=tlen>.1?tx/tlen:g.dx,az=tlen>.1?tz/tlen:g.dz;
+      const a=postHitGuide.geometry.attributes.position;
+      a.setXYZ(0,g.x2,.047,g.z2);a.setXYZ(1,g.x2+ax*.38,.047,g.z2+az*.38);
+      a.needsUpdate=true;postHitGuide.computeLineDistances();
+    }
+  }
   const position=aimGuide.geometry.attributes.position;
   position.setXYZ(0,g.x1,.035,g.z1);
   position.setXYZ(1,g.x2,.035,g.z2);
@@ -375,8 +418,9 @@ function idealAimCamera(){
   if(!physics||physics.cue.pocketed)return;
   const c=physics.cue,dx=-Math.sin(aim),dz=-Math.cos(aim);
   const portrait=ui.world.clientWidth<580;
-  const behind=portrait?1.02:1.23;
-  const eye=portrait?.76:.91;
+  if(selection.camera==='overhead')return idealShotCamera();
+  const behind=selection.camera==='close'?(portrait?.65:.78):(portrait?1.02:1.23);
+  const eye=selection.camera==='close'?(portrait?.40:.49):(portrait?.76:.91);
   return {
     position:new THREE.Vector3(c.x-dx*behind,eye+.12,c.z-dz*behind),
     look:new THREE.Vector3(c.x+dx*1.52,.078,c.z+dz*1.52)
@@ -675,8 +719,8 @@ function refreshUI(){
   ui.p1Group.textContent=rules.mode==='9'?'9-BALL':rules.groupLabel(0);
   ui.p2Group.textContent=rules.mode==='9'?'9-BALL':rules.groupLabel(1);
   ui.stage.textContent=physics.inShot?'BALLS IN MOTION':cpuThinking?'CPU THINKING':rules.breaking?'BREAK SHOT':rules.ballInHand?'BALL IN HAND':'READY TO SHOOT';
-  ui.viewMode.textContent=physics.inShot?'TOP VIEW':'PLAYER VIEW';
-  ui.viewDetail.textContent=physics.inShot?'BALL NUMBERS':'SHORT AIM GUIDE';
+  ui.viewMode.textContent=physics.inShot||selection.camera==='overhead'?'TOP VIEW':selection.camera==='close'?'CUE VIEW':'PLAYER VIEW';
+  ui.viewDetail.textContent=physics.inShot?'BALL NUMBERS':selection.assist?'CONTACT ASSIST':'SHORT AIM GUIDE';
   ui.remaining.textContent=active.length+' BALL'+(active.length===1?'':'S')+' ON TABLE';
   const human=isOwnTurn();
   ui.turnTag.textContent=player===0?'あなたのターン':selection.opponent==='cpu'?'CPUのターン':'プレイヤー2のターン';
@@ -792,42 +836,86 @@ async function coinToss(){
   initMatch(breaker);
 }
 
-// CPU evaluates ghost-ball potting lines and legal first-ball contacts.
+// CPU shot planner: unobstructed direct shots, cushion banks/kicks and legal combinations.
 const lineClear=(from,to,ignoreIds,all)=>{
   const vx=to.x-from.x,vz=to.z-from.z,lenSq=vx*vx+vz*vz;
   if(lenSq<.0001)return true;
   for(const b of all){
     if(b.pocketed||ignoreIds.includes(b.id))continue;
-    const t=clamp(((b.x-from.x)*vx+(b.z-from.z)*vz)/lenSq,0,1);
-    const nx=from.x+vx*t,nz=from.z+vz*t;
-    if(Math.hypot(b.x-nx,b.z-nz)<R*2.14)return false;
+    const t=((b.x-from.x)*vx+(b.z-from.z)*vz)/lenSq;
+    if(t<=.025||t>=.975)continue;
+    if(Math.hypot(b.x-(from.x+vx*t),b.z-(from.z+vz*t))<R*2.08)return false;
   }
   return true;
 };
+const ghostAt=(ball,destination)=>{
+  const dx=destination.x-ball.x,dz=destination.z-ball.z,d=Math.hypot(dx,dz);
+  return d>.001?{x:ball.x-dx/d*2.02*R,z:ball.z-dz/d*2.02*R}:null;
+};
+const onTable=p=>Math.abs(p.x)<TABLE.halfW-R*.75&&Math.abs(p.z)<TABLE.halfL-R*.75;
 function evaluateCpuShot(){
-  const cue=physics.cue,valid=rules.targets(physics.balls),choices=[];
+  const cue=physics.cue,valid=rules.targets(physics.balls),all=physics.balls,choices=[];
+  const add=(ball,pocket,ghost,score,dist,type)=>{
+    if(!ghost||!onTable(ghost))return;
+    const cueDist=Math.hypot(ghost.x-cue.x,ghost.z-cue.z);
+    if(cueDist<.02)return;
+    choices.push({id:ball.id,pocket:pocket.index,ghost,score:score-cueDist*.33,dist:dist+cueDist,clean:type==='direct',type});
+  };
   for(const id of valid){
     const ball=physics.find(id);if(!ball||ball.pocketed)continue;
     for(const p of POCKETS){
-      const pdx=p.x-ball.x,pdz=p.z-ball.z,pdist=Math.hypot(pdx,pdz);
-      if(pdist<.001)continue;
-      const gx=ball.x-(pdx/pdist)*2.04*R,gz=ball.z-(pdz/pdist)*2.04*R;
-      const ghost={x:gx,z:gz};
-      const cueDist=Math.hypot(gx-cue.x,gz-cue.z);
-      if(cueDist<2*R)continue;
-      const clearCue=lineClear(cue,ghost,[0,id],physics.balls);
-      const clearPocket=lineClear(ball,p,[0,id],physics.balls);
-      const toCueX=(ball.x-cue.x)/Math.max(.01,Math.hypot(ball.x-cue.x,ball.z-cue.z));
-      const toCueZ=(ball.z-cue.z)/Math.max(.01,Math.hypot(ball.x-cue.x,ball.z-cue.z));
-      const toPocketX=pdx/pdist,toPocketZ=pdz/pdist;
-      const straightness=toCueX*toPocketX+toCueZ*toPocketZ;
-      choices.push({id,pocket:p.index,ghost,score:(clearCue?7:0)+(clearPocket?5:0)+straightness*3-pdist*.5-cueDist*.38,clean:clearCue&&clearPocket,dist:cueDist+pdist});
+      const dist=Math.hypot(p.x-ball.x,p.z-ball.z),ghost=ghostAt(ball,p);
+      if(ghost&&lineClear(ball,p,[id,0],all)){
+        if(lineClear(cue,ghost,[0,id],all)){
+          const vx=ball.x-cue.x,vz=ball.z-cue.z;
+          const cut=(vx*(p.x-ball.x)+vz*(p.z-ball.z))/(Math.hypot(vx,vz)*dist||1);
+          add(ball,p,ghost,11+cut*3-dist*.52,dist,'direct');
+        }
+        // Kick: reflect the ghost position across one cushion.
+        for(const axis of ['x','z'])for(const side of [-1,1]){
+          const rail=side*(axis==='x'?TABLE.halfW-R:TABLE.halfL-R);
+          const mirror={...ghost,[axis]:2*rail-ghost[axis]};
+          const denom=mirror[axis]-cue[axis];if(Math.abs(denom)<.001)continue;
+          const t=(rail-cue[axis])/denom;if(t<=.05||t>=.95)continue;
+          const hit={x:cue.x+(mirror.x-cue.x)*t,z:cue.z+(mirror.z-cue.z)*t};
+          if(Math.abs(axis==='x'?hit.z:hit.x)>(axis==='x'?TABLE.halfL:TABLE.halfW)-.20)continue;
+          if(lineClear(cue,hit,[0,id],all)&&lineClear(hit,ghost,[0,id],all))add(ball,p,hit,3.3-dist*.4,dist+2,'kick');
+        }
+      }
+      // Bank: reflect the pocket and use the reflected trajectory for the object ball.
+      for(const axis of ['x','z'])for(const side of [-1,1]){
+        const rail=side*(axis==='x'?TABLE.halfW-R:TABLE.halfL-R);
+        const mirror={...p,[axis]:2*rail-p[axis]},denom=mirror[axis]-ball[axis];
+        if(Math.abs(denom)<.001)continue;
+        const t=(rail-ball[axis])/denom;if(t<=.04||t>=.95)continue;
+        const hit={x:ball.x+(mirror.x-ball.x)*t,z:ball.z+(mirror.z-ball.z)*t};
+        if(Math.abs(axis==='x'?hit.z:hit.x)>(axis==='x'?TABLE.halfL:TABLE.halfW)-.20)continue;
+        const bankGhost=ghostAt(ball,hit);
+        if(bankGhost&&lineClear(ball,hit,[id,0],all)&&lineClear(hit,p,[id,0],all)&&lineClear(cue,bankGhost,[0,id],all))
+          add(ball,p,bankGhost,5-dist*.37,dist+1.3,'bank');
+      }
+      // 9-ball combinations retain legal first contact, including a 9-ball finish.
+      if(rules.mode==='9')for(const second of all){
+        if(second.pocketed||second.id===0||second.id===id)continue;
+        if(!lineClear(second,p,[0,id,second.id],all))continue;
+        const firstTarget=ghostAt(second,p),comboGhost=firstTarget&&ghostAt(ball,firstTarget);
+        if(comboGhost&&onTable(comboGhost)&&lineClear(ball,firstTarget,[0,id,second.id],all)&&lineClear(cue,comboGhost,[0,id,second.id],all))
+          add(ball,p,comboGhost,4.7-dist*.3,dist+1.2,'combo');
+      }
     }
   }
   choices.sort((a,b)=>b.score-a.score);
   if(choices.length)return choices[0];
-  const fallback=physics.find(valid[0])||physics.balls.find(b=>b.id>0&&!b.pocketed);
-  return {id:fallback?.id,pocket:0,ghost:{x:fallback?.x??0,z:fallback?.z??-1},score:0,clean:false,dist:3};
+  // Safety fallback: an unblocked legal contact, rather than a blocked pot.
+  for(const id of valid){
+    const ball=physics.find(id);if(!ball||ball.pocketed)continue;
+    for(let k=0;k<24;k++){
+      const angle=k*Math.PI/12,ghost={x:ball.x+Math.cos(angle)*2.02*R,z:ball.z+Math.sin(angle)*2.02*R};
+      if(onTable(ghost)&&lineClear(cue,ghost,[0,id],all))return {id,pocket:0,ghost,dist:Math.hypot(cue.x-ghost.x,cue.z-ghost.z),clean:false,type:'safety'};
+    }
+  }
+  const fallback=physics.find(valid[0])||all.find(b=>b.id>0&&!b.pocketed);
+  return {id:fallback?.id??1,pocket:0,ghost:{x:fallback?.x??0,z:fallback?.z??-1},dist:3,clean:false,type:'emergency'};
 }
 async function scheduleCpu(){
   if(selection.opponent!=='cpu'||rules?.turn!==1||rules.winner!==null)return;
@@ -852,13 +940,16 @@ async function scheduleCpu(){
   const cue=physics.cue;
   const dx=choice.ghost.x-cue.x,dz=choice.ghost.z-cue.z;
   const baseAngle=Math.atan2(-dx,-dz);
-  const noise=({easy:.125,normal:.054,hard:.018}[selection.difficulty]||.055)*(Math.random()+Math.random()+Math.random()-1.5)*1.5;
+  const precision=({easy:.049,normal:.019,hard:.005}[selection.difficulty]||.019);
+  const clutch=Math.random()<({easy:.24,normal:.47,hard:.72}[selection.difficulty]||.47);
+  const noise=precision*(clutch?.08:1)*(Math.random()+Math.random()+Math.random()-1.5)*1.5;
   setAim(baseAngle+noise);
   const strength=rules.breaking?(selection.difficulty==='easy'?.93:1.04):clamp(.28+choice.dist*.12,.33,.82);
-  const poor=selection.difficulty==='easy'?.12:selection.difficulty==='normal'?.05:.016;
+  const poor=selection.difficulty==='easy'?.065:selection.difficulty==='normal'?.025:.008;
   const pull=clamp(strength+(Math.random()-.5)*poor,.19,1);
-  setSpin((Math.random()-.5)*.30,choice.clean?.12:.01);
+  setSpin((Math.random()-.5)*.12,choice.clean?.10:0);
   currentCall={ball:choice.id,pocket:choice.pocket};
+  if(['kick','bank','combo'].includes(choice.type))setStatus('CPU: '+({kick:'クッション',bank:'バンク',combo:'コンビネーション'}[choice.type])+'ショットを狙っています…');
   if(rules.mode==='8'&&!rules.breaking){
     ui.callBall.value=String(choice.id);ui.callPocket.value=String(choice.pocket);
   }
@@ -892,6 +983,8 @@ for(const button of document.querySelectorAll('#playerChoice button')){
   });
 }
 $('difficulty').addEventListener('change',event=>{selection.difficulty=event.target.value;});
+$('aimAssistSetting').addEventListener('change',event=>{selection.assist=event.target.checked;refreshUI();});
+$('shotCameraSetting').addEventListener('change',event=>{selection.camera=event.target.value;refreshUI();});
 $('startButton').addEventListener('click',()=>coinToss().catch(error=>setStatus('開始できませんでした: '+error.message)));
 $('rematchButton').addEventListener('click',()=>coinToss());
 $('restartButton').addEventListener('click',()=>{if(coinQueued)return;coinToss();});
@@ -1051,3 +1144,4 @@ try{
   ui.sceneHint.textContent='3D表示を起動できませんでした。WebGL対応のブラウザで開いてください。';
   $('startButton').disabled=true;
 }
+
