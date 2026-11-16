@@ -36,6 +36,7 @@
         <a href="/dobon-quiz/">💣 ドボンクイズ</a>
         <a href="/sector-01/">👁️ 隔離区画01</a>
         <a href="/billiards/">🎱 BILLIARDS CLUB</a>
+        <a href="/bowling/">🎳 STRIKE LANES</a>
       </div>
       <a class="asobi-menu-main-link" href="/#arcadeRankings"><span>🏆</span> みんなのランキング <b aria-hidden="true">›</b></a>
       <a class="asobi-menu-main-link" href="/#arcadeMissions"><span>✨</span> 今日のミッション <b aria-hidden="true">›</b></a>
@@ -53,6 +54,7 @@
           <li><a href="/dobon-quiz/"><span class="game-name">💣 ドボンクイズ</span><span data-count="dobon-quiz">—</span></a></li>
           <li><a href="/sector-01/"><span class="game-name">👁️ 隔離区画01</span><span data-count="sector-09">—</span></a></li>
           <li><a href="/billiards/"><span class="game-name">🎱 BILLIARDS CLUB</span><span data-count="billiards">—</span></a></li>
+          <li><a href="/bowling/"><span class="game-name">🎳 STRIKE LANES</span><span data-count="bowling">—</span></a></li>
         </ul>
         <p class="asobi-dashboard-status" role="status" aria-live="polite">開くと最新の記録を取得します。</p>
         <p class="asobi-dashboard-note">訪問はタブごとに1回、プレイはゲーム開始時に加算。集計開始前の履歴は含みません。</p>
@@ -88,7 +90,7 @@
       const data = await activity.summary();
       drawer.querySelector('[data-count="visits"]').textContent = number(data.visits);
       
-      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards'])
+      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling'])
         drawer.querySelector(`[data-count="${key}"]`).textContent = number(data.games?.[key]);
       lastLoaded = Date.now();
       status.textContent = '集計更新：' + new Date(lastLoaded).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
@@ -131,7 +133,7 @@
   drawer.querySelector('#asobiStatsRefresh').addEventListener('click', refresh);
   drawer.querySelector('#asobiMenuRandom').addEventListener('click', () => {
     const games = player ? Object.values(player.GAMES) : [
-      { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }
+      { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }, { href: '/bowling/' }
     ];
     location.href = games[Math.floor(Math.random() * games.length)].href;
   });
