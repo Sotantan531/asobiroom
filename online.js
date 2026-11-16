@@ -20,16 +20,16 @@ window.AsobiOnline=class {
   try{
    const options={mode:this.find('.net-mode').value,out:this.find('.net-out').value,bull:this.find('.net-bull').value};const name=this.find('.net-name').value.trim()||'プレイヤー';
    let r;if(kind==='join'){this.code=this.find('.net-join').value.trim().toUpperCase();r=await this.request('/room',{type:'join',code:this.code,game:this.game,name});}else {r=await this.request('/match',{kind,game:this.game,name,options,token:this.token});this.token=r.token;this.code=r.code;}
-   if(gen!==this.generation)return;this.active=true;this.seat=r.seat;this.seq=-1;this.started=false;this.find('.net-settings').hidden=true;this.find('.net-code').textContent=this.code;this.find('[data-action="copy"]').hidden=false;this.find('[data-action="cancel"]').textContent='キャンセル';this.status('相手の参加を待っています…');this.poll(gen);
+   if(gen!==this.generation)return;this.active=true;this.waitStarted=Date.now();this.seat=r.seat;this.seq=-1;this.started=false;this.find('.net-settings').hidden=true;this.find('.net-code').textContent=this.code;this.find('[data-action="copy"]').hidden=false;this.find('[data-action="cancel"]').textContent='キャンセル';this.status('相手の参加を待っています…');this.poll(gen);
   }catch(e){this.status(e.message||'接続に失敗しました');}finally{this.busy=false;}
  }
- async poll(gen){if(!this.active||gen!==this.generation)return;try{const s=await this.request('/room',{type:'poll',code:this.code});if(gen!==this.generation)return;this.receive(s);}catch(e){this.bar.querySelector('span').textContent='再接続中…';this.status('再接続中… '+e.message);if(Date.now()-this.lastOK>45000){await this.leave();this.open();this.status('通信が途切れました。再度マッチしてください。');return;}}if(this.active&&gen===this.generation)this.timer=setTimeout(()=>this.poll(gen),900);}
+ async poll(gen){if(!this.active||gen!==this.generation)return;try{const s=await this.request('/room',{type:'poll',code:this.code});if(gen!==this.generation)return;if(s.phase==='waiting'&&Date.now()-this.waitStarted>120000){await this.leave();this.open();this.status('2分以内に相手が見つかりませんでした。もう一度マッチするか、部屋を作成してください。');return;}this.receive(s);}catch(e){this.bar.querySelector('span').textContent='再接続中…';this.status('再接続中… '+e.message);if(Date.now()-this.lastOK>45000){await this.leave();this.open();this.status('通信が途切れました。再度マッチしてください。');return;}}if(this.active&&gen===this.generation)this.timer=setTimeout(()=>this.poll(gen),900);}
  receive(s){this.state=s;this.seat=s.seat;if(s.phase==='waiting')return;
   if(!this.started){this.started=true;this.panel.hidden=true;this.bar.hidden=false;this.cb.start(s);}
   this.bar.querySelector('span').textContent=s.phase==='ended'?'対戦終了':s.pending?'ショット中':s.turn===this.seat?'オンライン · あなたのターン':'オンライン · 相手のターン';
   if(s.seq!==this.seq){this.seq=s.seq;this.cb.state(s);}
  }
- async move(move){if(!this.canPlay())return;this.sending=true;try{const s=await this.request('/room',{type:'move',code:this.code,seq:this.seq,move});this.receive(s);}catch(e){this.status(e.message);this.bar.querySelector('span').textContent=e.message;}finally{this.sending=false;}}
+ async move(move){if(!this.canPlay())return;this.sending=true;try{const s=await this.request('/room',{type:'move',code:this.code,seq:this.seq,move});if(s.phase==='waiting'&&Date.now()-this.waitStarted>120000){await this.leave();this.open();this.status('2分以内に相手が見つかりませんでした。もう一度マッチするか、部屋を作成してください。');return;}this.receive(s);}catch(e){this.status(e.message);this.bar.querySelector('span').textContent=e.message;}finally{this.sending=false;}}
  canPlay(){return this.active&&this.started&&!this.sending&&this.state?.phase==='playing'&&!this.state.pending&&this.state.turn===this.seat;}
  async leave(){const code=this.code;this.active=false;this.generation++;clearTimeout(this.timer);this.bar.hidden=true;this.find('.net-code').textContent='';this.find('[data-action="copy"]').hidden=true;this.started=false;this.cb.leave?.();if(code){try{await this.request('/room',{type:'leave',code});}catch{}}this.code=null;}
 };
