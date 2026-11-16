@@ -72,7 +72,7 @@
       heading.className = 'asobi-games-heading';
       const titleGroup = document.createElement('div');
       const sub = document.createElement('small');
-      sub.textContent = Object.keys(window.asobiPlayer?.GAMES || {}).length + 'つのゲームから、お気に入りを見つけよう。';
+      sub.textContent = (Object.keys(window.asobiPlayer?.GAMES || {}).length + 1) + 'つのゲームから、お気に入りを見つけよう。';
       titleGroup.append(shelfTitle, sub);
       heading.append(titleGroup);
       const filters = main.querySelector('.filters');

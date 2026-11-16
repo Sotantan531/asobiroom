@@ -37,6 +37,7 @@
         <a href="/sector-01/">👁️ 隔離区画01</a>
         <a href="/billiards/">🎱 BILLIARDS CLUB</a>
         <a href="/bowling/">🎳 ポケット・ボウリング</a>
+        <a href="/crystal-pop/">💎 クリスタル・ポップ</a>
       </div>
       <a class="asobi-menu-main-link" href="/#arcadeRankings"><span>🏆</span> みんなのランキング <b aria-hidden="true">›</b></a>
       <a class="asobi-menu-main-link" href="/#arcadeMissions"><span>✨</span> 今日のミッション <b aria-hidden="true">›</b></a>
@@ -135,6 +136,7 @@
     const games = player ? Object.values(player.GAMES) : [
       { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }, { href: '/bowling/' }
     ];
+    if (!games.some(g => g.href === '/crystal-pop/')) games.push({ href: '/crystal-pop/' });
     location.href = games[Math.floor(Math.random() * games.length)].href;
   });
   addEventListener('asobi:player-updated', syncProfile);
