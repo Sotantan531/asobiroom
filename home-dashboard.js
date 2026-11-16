@@ -133,6 +133,7 @@
   stats.addEventListener('toggle', () => { if (stats.open && Date.now() - lastLoaded > 30000) void refresh(); });
   drawer.querySelector('#asobiStatsRefresh').addEventListener('click', refresh);
   drawer.querySelector('#asobiMenuRandom').addEventListener('click', () => {
+    if (window.asobiCatalog) { close(); window.asobiCatalog.pick(); return; }
     const games = player ? Object.values(player.GAMES) : [
       { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }, { href: '/bowling/' }
     ];
