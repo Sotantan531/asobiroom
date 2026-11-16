@@ -8,7 +8,7 @@
     'zero-dive': { name: '深海ゼロダイブ', icon: '🌊', href: '/zero-dive/' },
     darts: { name: 'FLIGHTLINE DARTS', icon: '🎯', href: '/darts/' },
     'dobon-quiz': { name: 'ドボンクイズ', icon: '💣', href: '/dobon-quiz/' },
-    'sector-09': { name: '隔離区画01', icon: '👁️', href: '/sector-09/' },
+    'sector-09': { name: '隔離区画01', icon: '👁️', href: '/sector-01/' },
     billiards: { name: 'BILLIARDS CLUB', icon: '🎱', href: '/billiards/' }
   });
   const AVATARS = ['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲'];
