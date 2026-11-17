@@ -1,0 +1,14 @@
+export const LEVELS={easy:{speed:.205,window:.24,recharge:2.2,initial:[16.5,19]},normal:{speed:.36,window:.163,recharge:2.7,initial:[15,17.8]},hard:{speed:.49,window:.125,recharge:3.3,initial:[13.5,16.3]}};
+export function createGame(emit=()=>{},random=Math.random){
+ const s={phase:'menu',level:'normal',time:0,progress:0,needle:.02,direction:1,target:.5,look:0,lockCooldown:0,flashCooldown:0,flashTime:0,flashSide:0,scare:0,escape:0,enemies:[],success:false};
+ const rand=(a,b)=>a+random()*(b-a);
+ function start(level='normal'){Object.assign(s,{phase:'play',level:LEVELS[level]?level:'normal',time:0,progress:0,needle:.02,direction:1,target:rand(.18,.82),look:0,lockCooldown:0,flashCooldown:0,flashTime:0,flashSide:0,scare:0,escape:0,success:false});s.enemies=[-1,1].map((side,i)=>({side,distance:LEVELS[s.level].initial[i],stun:0,cadence:i*.8,reveal:0}));emit('start');return s;}
+ function look(side){if(s.phase!=='play'||![-1,0,1].includes(side))return;s.look=side;}
+ function action(){if(s.phase!=='play')return false;const cfg=LEVELS[s.level];if(s.look===0){if(s.lockCooldown>0)return false;s.lockCooldown=.38;if(Math.abs(s.needle-s.target)<=cfg.window/2){s.progress++;s.target=rand(.18,.82);emit('unlock');if(s.progress===10){s.phase='escape';s.escape=0;s.success=true;emit('escape');}}else{s.enemies.forEach(e=>e.distance-=.28);emit('miss');}return true;}
+ if(s.flashCooldown>0)return false;s.flashCooldown=cfg.recharge;s.flashTime=.59;s.flashSide=s.look;const enemy=s.enemies.find(e=>e.side===s.look);if(enemy&&enemy.distance<26){enemy.reveal=enemy.distance;enemy.distance=Math.min(29,enemy.distance+9.4);enemy.stun=1.35;emit('repel',s.look);}else emit('flash',s.look);return true;}
+ function update(seconds){if(!Number.isFinite(seconds)||seconds<0)return;const dt=Math.min(.05,seconds);if(s.phase==='scare'){s.scare+=dt;if(s.scare>=1.2){s.phase='end';emit('lose');}return;}if(s.phase==='escape'){s.escape+=dt;if(s.escape>=3.1){s.phase='end';emit('win');}return;}if(s.phase!=='play')return;s.time+=dt;s.flashTime=Math.max(0,s.flashTime-dt);s.flashCooldown=Math.max(0,s.flashCooldown-dt);s.lockCooldown=Math.max(0,s.lockCooldown-dt);s.needle+=dt*(.76+s.progress*.026)*s.direction;if(s.needle>1){s.needle=2-s.needle;s.direction=-1;}else if(s.needle<0){s.needle=-s.needle;s.direction=1;}
+ for(const e of s.enemies){if(e.stun>0)e.stun=Math.max(0,e.stun-dt);else{e.distance-=dt*LEVELS[s.level].speed*(e.side===1?1.07:1);e.cadence-=dt;if(e.cadence<=0){emit('step',{side:e.side,nearness:Math.max(0,1-e.distance/22)});e.cadence=rand(1.35,2.5)*(e.distance<9?.62:1);}}if(e.distance<=2.4){s.phase='scare';s.scare=.0001;s.flashTime=0;emit('caught');break;}}
+ }
+ function pause(){if(s.phase==='play'){s.phase='paused';emit('paused');}else if(s.phase==='paused'){s.phase='play';emit('resumed');}}
+ return {state:s,start,look,action,update,pause,home(){s.phase='menu';s.look=0;s.flashTime=0;s.scare=0;emit('home');}};
+}
