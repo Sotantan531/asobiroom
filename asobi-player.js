@@ -5,6 +5,7 @@
   const QUEUE = 'asobiroom-community-pending-v1';
   const API = window.asobiApi ? window.asobiApi('/api/community') : '/api/community';
   const GAMES = Object.freeze({
+    'homerun-impact': { name: 'ホームラン・インパクト', icon: '⚾', href: '/homerun-impact.html' },
     'zero-dive': { name: '深海ゼロダイブ', icon: '🌊', href: '/zero-dive/' },
     darts: { name: 'FLIGHTLINE DARTS', icon: '🎯', href: '/darts/' },
     'dobon-quiz': { name: 'ドボンクイズ', icon: '💣', href: '/dobon-quiz/' },
@@ -149,4 +150,5 @@
   addEventListener('online', flush);
   if (pending.length) void flush();
 })();
+
 

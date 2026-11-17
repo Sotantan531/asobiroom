@@ -8,6 +8,7 @@
   const WEIGHTS = ['⚡ 超軽量', '⚙️ 標準', '🔥 3D・リッチ'];
   const SORTS = { recommended: 'おすすめ順', newest: '新着順', light: '動作が軽い順', rich: 'リッチ・3D順', quick: 'サクッと遊べる順' };
   const games = [
+    { id: 'homerun-impact', title: 'ホームラン・インパクト', href: '/homerun-impact.html', genre: 'スポーツ・体感', description: '狙って、離して、かっ飛ばす。4つの球種に挑む10球のホームラン競争。', weight: 2, oneHand: true, minutes: 3, timeLabel: '約3分', publishedAt: '2026-11-17T00:00:00+09:00' },
     { id: 'zero-dive', title: '深海ゼロダイブ', href: '/zero-dive/', genre: 'パズル・脳トレ', description: '0の数を見極めて潜航。10問のクイズで深海の奥へ。', weight: 1, oneHand: true, minutes: 3, timeLabel: '約3〜5分', publishedAt: null },
     { id: 'darts', title: 'FLIGHTLINE DARTS', href: '/darts/', genre: 'スポーツ・体感', description: '狙いを定めてスワイプ。多彩なルールでダーツ対戦。', weight: 1, oneHand: true, minutes: 5, timeLabel: '約5〜10分', publishedAt: null },
     { id: 'dobon-quiz', title: 'ドボンクイズ', href: '/dobon-quiz/', genre: 'パズル・脳トレ', description: '制限時間は80秒。たった1つのドボンを避けよう。', weight: 0, oneHand: true, minutes: 80 / 60, timeLabel: '約80秒', publishedAt: null },
@@ -55,7 +56,7 @@
     if (!link) continue;
     let path;
     try { path = new URL(link.getAttribute('href'), root.location.href).pathname.replace(/\/?$/, '/'); } catch { continue; }
-    const game = games.find(game => game.href === path);
+    const game = games.find(game => game.href.replace(/\/$/, '') === path.replace(/\/$/, ''));
     if (!game) continue;
     cards.set(game.id, card);
     card.dataset.game = game.id;
@@ -181,3 +182,4 @@
   if (headingCount) headingCount.textContent = cards.size + 'つのゲームから、お気に入りを見つけよう。';
   render();
 })(typeof window === 'undefined' ? globalThis : window);
+

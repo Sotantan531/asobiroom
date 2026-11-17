@@ -9,3 +9,8 @@
 .logoPanel:has(.asobi-unified-brand){min-width:0!important}
 .logoPanel .asobi-unified-brand{width:auto!important;max-width:100%!important;text-align:left!important;z-index:4!important}
 @media(max-width:460px){.asobi-unified-brand{gap:6px!important;padding:1px!important}.asobi-unified-brand img{width:29px!important;height:29px!important}.asobi-unified-brand .asobi-brand-name{font-size:16px!important}.asobi-unified-brand .asobi-brand-tagline{font-size:7px!important}}
+
+
+.asobi-unified-brand .asobi-brand-tagline{font-size:10px!important;letter-spacing:.025em!important;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.asobi-brand-light .asobi-brand-name{color:#243130!important}.asobi-brand-light .asobi-brand-tagline{color:#586563!important}
+@media(max-width:460px){.asobi-unified-brand .asobi-brand-name{font-size:17px!important}.asobi-unified-brand .asobi-brand-tagline{font-size:8px!important;max-width:175px}}

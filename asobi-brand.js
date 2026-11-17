@@ -1,8 +1,10 @@
 /* asobiroom common game brand. Include in every future game's HTML. */
 (() => {
   'use strict';
+  const titles={'zero-dive':'深海ゼロダイブ','darts':'FLIGHTLINE DARTS','dobon-quiz':'ドボンクイズ','sector-01':'隔離区画 01 · 石像の庭園','billiards':'BILLIARDS CLUB','bowling':'ポケット・ボウリング','crystal-pop':'クリスタル・ポップ'};
+  const gameTitle=titles[location.pathname.split('/')[1]]||'PLAY SOMETHING GOOD.';
   const artwork = '/icon-192.png';
-  const markup = `<img src="${artwork}" alt="" width="34" height="34" decoding="async"><span class="asobi-brand-copy"><strong class="asobi-brand-name">asobiroom</strong><small class="asobi-brand-tagline">PLAY SOMETHING GOOD.</small></span>`;
+  const markup = `<img src="${artwork}" alt="" width="34" height="34" decoding="async"><span class="asobi-brand-copy"><strong class="asobi-brand-name">asobiroom</strong><small class="asobi-brand-tagline">${gameTitle}</small></span>`;
 
   function install(node, preserveLongPress = false) {
     if (!node || node.classList.contains('asobi-unified-brand')) return;
@@ -12,6 +14,7 @@
       node.replaceWith(brand);
     }
     brand.classList.add('asobi-unified-brand');
+    if(location.pathname.startsWith('/darts/'))brand.classList.add('asobi-brand-light');
     brand.innerHTML = markup;
     brand.setAttribute('aria-label', 'asobiroom ホームへ戻る');
     brand.title = 'asobiroom ホームへ';
@@ -74,3 +77,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
+
