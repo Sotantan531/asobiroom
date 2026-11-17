@@ -2,7 +2,7 @@
 export function createManorRenderer(canvas){
 const PI=Math.PI;let gl=null;try{gl=canvas.getContext('webgl',{alpha:false,antialias:false,powerPreference:'high-performance'});}catch{}
 const VS=`attribute vec3 aP;attribute vec3 aN;attribute vec3 aC;attribute float aE;uniform mat4 uPV;uniform mat4 uModel;varying vec3 vP;varying vec3 vN;varying vec3 vC;varying float vE;void main(){vec4 world=uModel*vec4(aP,1.);vP=world.xyz;vN=normalize(mat3(uModel)*aN);vC=aC;vE=aE;gl_Position=uPV*world;}`;
-const FS=`precision mediump float;varying vec3 vP,vN,vC;varying float vE;uniform vec3 uEye;uniform vec3 uForward;uniform float uFlash,uTime,uGhost;void main(){vec3 n=normalize(vN);vec3 toEye=uEye-vP;float dst=length(toEye);float warm=.0;float lampX=(floor(abs(vP.x)/7.0+.5))*7.0;float lx=abs(abs(vP.x)-lampX);float ly=abs(vP.y-2.55);float lz=min(abs(vP.z+1.12),abs(vP.z-5.95));float ld=sqrt(lx*lx+ly*ly+lz*lz);warm=1.05/(1.0+ld*ld*.37)*(1.0+.12*sin(uTime*4.0+lampX));float central=0.38/(1.0+length(vP-vec3(0.,3.1,-6.7))*0.38);float ambient=.072+warm*.25+central*.12;vec3 base=vC*(ambient+max(dot(n,normalize(vec3(.4,.82,.27))),0.)*(warm*.55+central*.7));vec3 towards=normalize(vP-uEye);float cone=pow(max(dot(towards,normalize(uForward)),0.),10.);float flashAtt=1.0/(1.0+dst*dst*.008);float lit=uFlash*2.8*cone*flashAtt*max(dot(n,normalize(toEye)),0.22);vec3 col=base+vC*lit+vec3(.93,.65,.32)*vC*(warm*.06)+vC*vE;float fogStrength=.038+(1.0-uFlash)*.034;float fog=exp(-dst*dst*fogStrength*fogStrength);vec3 fogColor=vec3(.008,.009,.012);col=mix(fogColor,col,clamp(fog,.0,1.));if(uGhost>0.5){col=mix(fogColor,col,clamp(fog+.20,0.,1.));}col*=.94+.06*sin(dot(vP,vec3(283.1,321.7,199.3)));col=col/(col+vec3(.72));col=pow(clamp(col,0.,1.),vec3(.90));gl_FragColor=vec4(col,1.);}`;
+const FS=`precision mediump float;varying vec3 vP,vN,vC;varying float vE;uniform vec3 uEye;uniform vec3 uForward;uniform float uFlash,uTime,uGhost;void main(){vec3 n=normalize(vN);vec3 toEye=uEye-vP;float dst=length(toEye);float warm=.0;float lampX=(floor(abs(vP.x)/5.0+.5))*5.0;float lx=abs(abs(vP.x)-lampX);float ly=abs(vP.y-2.55);float lz=min(abs(vP.z-1.58),abs(vP.z-3.42));float ld=sqrt(lx*lx+ly*ly+lz*lz);warm=1.05/(1.0+ld*ld*.37)*(1.0+.12*sin(uTime*4.0+lampX));float central=0.38/(1.0+length(vP-vec3(0.,3.1,-6.7))*0.38);float ambient=.072+warm*.25+central*.12;vec3 base=vC*(ambient+max(dot(n,normalize(vec3(.4,.82,.27))),0.)*(warm*.55+central*.7));vec3 towards=normalize(vP-uEye);float cone=pow(max(dot(towards,normalize(uForward)),0.),10.);float flashAtt=1.0/(1.0+dst*dst*.008);float lit=uFlash*2.8*cone*flashAtt*max(dot(n,normalize(toEye)),0.22);vec3 col=base+vC*lit+vec3(.93,.65,.32)*vC*(warm*.06)+vC*vE;float fogStrength=.038+(1.0-uFlash)*.034;float fog=exp(-dst*dst*fogStrength*fogStrength);vec3 fogColor=vec3(.008,.009,.012);col=mix(fogColor,col,clamp(fog,.0,1.));if(uGhost>0.5){col=mix(fogColor,col,clamp(fog+.20,0.,1.));}col*=.94+.06*sin(dot(vP,vec3(283.1,321.7,199.3)));col=col/(col+vec3(.72));col=pow(clamp(col,0.,1.),vec3(.90));gl_FragColor=vec4(col,1.);}`;
 function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s}
 let program;const loc={};if(gl){try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,VS));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program))}catch(e){console.error(e);throw e;}
 gl.useProgram(program);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);
@@ -10,30 +10,32 @@ Object.assign(loc,{P:gl.getAttribLocation(program,'aP'),N:gl.getAttribLocation(p
 function color(hex){if(Array.isArray(hex))return hex;const h=hex.replace('#','');return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]}
 class Mesh{constructor(){this.v=[];this.buffer=null;this.count=0}triangle(a,b,c,col,emit=0){const v=this.v,n=[(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]),(b[2]-a[2])*(c[0]-a[0])-(b[0]-a[0])*(c[2]-a[2]),(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])];const ll=Math.hypot(...n)||1;let co=color(col);for(const p of [a,b,c])v.push(...p,n[0]/ll,n[1]/ll,n[2]/ll,...co,emit)}quad(a,b,c,d,col,e=0){this.triangle(a,b,c,col,e);this.triangle(a,c,d,col,e)}box(x,y,z,w,h,d,col,e=0){const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;this.quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],col,e);this.quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],col,e);this.quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],col,e);this.quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],col,e);this.quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],col,e);this.quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],col,e)}cylinder(x,y,z,r,h,col,segments=9,e=0){for(let i=0;i<segments;i++){const a=i/segments*2*PI,b=(i+1)/segments*2*PI,p=t=>[x+Math.cos(t)*r,y,z+Math.sin(t)*r],q=t=>[x+Math.cos(t)*r,y+h,z+Math.sin(t)*r];this.quad(p(a),p(b),q(b),q(a),col,e);this.triangle([x,y+h,z],q(a),q(b),col,e);this.triangle([x,y,z],p(b),p(a),col,e)}}sphere(x,y,z,rx,ry,rz,col,e=0){const seg=12,steps=8;for(let i=0;i<steps;i++){let a=i/steps*PI,b=(i+1)/steps*PI;for(let j=0;j<seg;j++){let c=j*2*PI/seg,d=(j+1)*2*PI/seg;const p=(v,u)=>[x+Math.sin(v)*Math.cos(u)*rx,y+Math.cos(v)*ry,z+Math.sin(v)*Math.sin(u)*rz];const start=this.v.length;this.quad(p(a,c),p(b,c),p(b,d),p(a,d),col,e);for(let k=start;k<this.v.length;k+=10){const n=[(this.v[k]-x)/(rx*rx),(this.v[k+1]-y)/(ry*ry),(this.v[k+2]-z)/(rz*rz)],l=Math.hypot(...n)||1;this.v[k+3]=n[0]/l;this.v[k+4]=n[1]/l;this.v[k+5]=n[2]/l;}}}}build(){this.count=this.v.length/10;this.data=new Float32Array(this.v);if(!gl){this.v=[];return;}this.buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,this.buffer);gl.bufferData(gl.ARRAY_BUFFER,this.data,gl.STATIC_DRAW);}draw(){gl.bindBuffer(gl.ARRAY_BUFFER,this.buffer);for(let [id,size,offset] of [[loc.P,3,0],[loc.N,3,3],[loc.C,3,6],[loc.E,1,9]]){gl.enableVertexAttribArray(id);gl.vertexAttribPointer(id,size,gl.FLOAT,false,40,offset*4)}gl.drawArrays(gl.TRIANGLES,0,this.count)}}
 const main=new Mesh(),door=new Mesh(),ghost=new Mesh();
-const wall='#393642',timber='#34281d',darkWood='#1b1614',stone='#39342e',metal='#77716b',gold='#95744e';
-// Main hall and perpendicular wings are built out of real 3D wall, ceiling, and floor solids.
-main.box(0,-.14,-3.1,5.9,.28,20.2,'#2c241e');main.box(0,3.91,-3.1,5.9,.29,20.2,'#171615');main.box(0,1.95,-8.62,5.9,3.9,.3,wall);
-for(let side of [-1,1]){main.box(side*2.95,1.93,-4.6,.2,3.87,8.3,wall);main.box(side*2.85,1.35,-4.6,.16,1.8,8.2,'#3e342b');main.box(side*2.84,2.85,-4.6,.18,.16,8.2,'#1d1613');main.box(side*2.84,.72,-4.6,.18,.16,8.2,'#231812');main.box(side*2.84,3.7,-4.6,.24,.2,8.3,'#2d241d');for(let z=-8;z<-1;z+=1.38){main.box(side*2.75,1.6,z,.11,1.48,.08,'#796b56');main.box(side*2.75,2.0,z+.08,.13,.065,1.14,'#594a37');main.box(side*2.75,1.05,z+.08,.13,.065,1.14,'#594a37')}}
-main.box(0,-.16,2.5,69,.27,7.8,'#27232e');main.box(0,3.93,2.5,69,.3,7.8,'#171615');
-for(let side of [-1,1]){main.box(side*34.5,1.9,2.5,.28,3.8,7.8,wall)}
-for(let z of [-1.52,6.52]){const sections=z<0?[[-18.7,31.6],[18.7,31.6]]:[[0,69]];for(const [cx,wide] of sections){main.box(cx,1.94,z,wide,3.86,.23,wall);main.box(cx,1.45,z+(z<0?.13:-.13),wide,2.65,.13,'#554939');main.box(cx,.66,z+(z<0?.18:-.18),wide,.19,.18,'#201b16');main.box(cx,3.52,z+(z<0?.18:-.18),wide,.2,.18,'#211914')}for(let x=-34;x<=34;x+=2.4){if(z<0&&Math.abs(x)<3.2)continue;main.box(x,1.75,z+(z<0?.2:-.2),.14,2.9,.11,'#68513a');main.box(x+1.2,1.65,z+(z<0?.19:-.19),2.3,.13,.11,'#6b5138');main.box(x+1.2,2.65,z+(z<0?.19:-.19),2.3,.11,.11,'#6b5138')}}
-for(let i=-30;i<=30;i+=3){main.box(i,3.78,2.5,.2,.25,7.8,'#413326');main.box(i,.08,2.5,.06,.05,7.8,'#4c3c30')}
-// Floorboards, patterned runners, and furniture silhouettes.
-for(let x=-34;x<34;x+=1.2){main.box(x,.027,2.52,1.12,.025,7.73,(Math.floor((x+34)/1.2)%3===0)?'#453326':'#3e2e23');main.box(x,.04,2.52,.025,.01,7.72,'#180f0c')}
-for(let z=-8.3;z<4.3;z+=1.12){main.box(0,.05,z,2.1,.035,1.03,(Math.round(z*3)%2)?'#553b2b':'#482e26');main.box(0,.073,z,.035,.007,.96,'#b2845633')}
-for(let x=-33;x<33;x+=2.5){main.box(x,.052,2.5,2.3,.037,2.2,'#543326');main.box(x,.076,2.5,2.28,.005,.04,'#82603b')}
-// Wall sconces with real glowing geometry; repeated to establish deep perspective.
-for(let side of [-1,1])for(let x of [5,12,19,26,33]){let xx=side*x;for(let wallZ of [-1.39,6.39]){let sign=wallZ<0?1:-1;main.box(xx,2.49,wallZ+sign*.14,.22,.48,.19,'#756044');main.box(xx,2.49,wallZ+sign*.22,.12,.18,.12,'#bd9a61',1.6);main.cylinder(xx,2.39,wallZ+sign*.28,.11,.22,'#dfb871',8,1.5);main.box(xx,2.88,wallZ+sign*.24,.23,.11,.18,'#503a2b');}}
-// Frames and abandoned doors, complete with raised molding.
-for(let side of [-1,1])for(let x of [8.5,22.4]){let z=-1.35;main.box(side*x,1.59,z,.98,2.77,.08,'#181311');main.box(side*x,1.55,z+.07,.75,2.49,.06,'#3c271b');main.box(side*x,1.57,z+.11,.56,.88,.07,'#59422d');main.box(side*x,2.35,z+.11,.56,.37,.07,'#54412b');main.sphere(side*x+.26,1.4,z+.18,.045,.05,.045,'#cbab74',.25);main.box(side*x,3.04,z,.99,.15,.25,'#6a533d')}
-for(let z=-7.8;z<-.4;z+=1.4)for(let side of [-1,1]){main.box(side*2.62,2.18,z,.16,.8,.8,'#3c2e24');main.box(side*2.59,2.1,z,.17,.62,.63,'#695039')}
-// Ceiling beams and chandelier hanging over central entrance.
-for(let z=-7.8;z<5.9;z+=2.4)main.box(0,3.71,z,5.8,.27,.16,'#35261d');main.cylinder(0,3.04,-4.4,.037,.65,'#7e6951');main.cylinder(0,2.82,-4.4,.5,.07,'#705336',12);for(let j=0;j<7;j++){let a=j*2*PI/7;main.cylinder(Math.cos(a)*.42,2.72,-4.4+Math.sin(a)*.42,.055,.18,'#a57e4b',7,.65)}
-// Full depth exit portal: door is a separate animated 3D model.
-main.box(0,1.9,-8.42,2.88,3.48,.16,'#7a593b');main.box(0,1.91,-8.29,2.43,3.19,.08,'#1a1511');main.box(0,1.77,-8.65,2.1,3.05,.04,'#766d54',1.7);main.box(0,.15,-8.18,2.8,.27,.28,'#302119');
-// The door is authored with its hinge at x=-1.02 and swings inward toward the hall.
-door.box(1.03,1.7,0,2.05,3.19,.15,'#3d271b');door.box(1.03,3.1,.12,1.76,.11,.12,'#9a744b');door.box(1.03,.32,.12,1.76,.11,.12,'#8c6949');door.box(.15,1.72,.12,.12,2.9,.13,'#98724d');door.box(1.91,1.72,.12,.12,2.9,.13,'#98724d');for(let y of [.93,2.29]){door.box(1.02,y,.132,1.62,1.12,.09,'#513628');door.box(1.02,y,.186,1.38,.88,.055,'#2b1b15');door.box(1.02,y,.22,1.2,.7,.02,'#4e3021')}door.cylinder(1.7,1.56,.25,.066,.06,'#d6b373',10,1.2);door.box(1.65,1.56,.28,.4,.06,.08,'#ba9860',.75);door.box(1.68,1.38,.22,.27,.42,.14,'#6a6256');door.box(1.68,1.38,.31,.16,.23,.08,'#232125');
-
+// A sealed T-junction: 1.9m side corridors, a low 2.55m ceiling, no open background.
+const wood='#30272e',wall='#34313e',trim='#524654';
+main.box(0,-.1,2.5,49,.2,1.95,'#242029');main.box(0,2.67,2.5,49,.24,2.13,'#15131b');
+main.box(0,-.1,.35,2.5,.2,4.45,'#28212b');main.box(0,2.67,.35,2.65,.24,4.45,'#15131b');
+for(const side of [-1,1]){
+ main.box(side*1.30,1.3,-.05,.20,2.6,3.2,wall);
+ main.box(side*24.3,1.3,2.5,.25,2.6,2.1,wall);
+ for(const z of [1.47,3.53]){const sign=z<2.5?1:-1,start=side<0?-12.8:12.8;
+ main.box(start,1.3,z,23.0,2.6,.18,wall);main.box(start,.62,z+sign*.11,23,.12,.10,trim);main.box(start,2.4,z+sign*.10,23,.11,.12,trim);
+ for(let d=2;d<24;d+=1.25){main.box(side*d,1.15,z+sign*.10,.075,2.25,.08,trim);}
+ for(const d of [4,9,14,21]){main.box(side*d,1.95,z+sign*.15,.15,.33,.14,'#4b3e45');main.box(side*d,1.95,z+sign*.23,.065,.16,.05,'#ad917c',.45);}
+ }
+ for(let d=1.5;d<24;d+=.48){main.box(side*d,.015,2.5,.455,.025,1.9,'#3c2c32');main.box(side*d,.035,2.5,.012,.01,1.9,'#17141a');}
+ // Four distance landmarks: covered trunk, crowded bookcase, broken chair, junction pillar.
+ main.box(side*16,.42,3.22,1.3,.83,.42,wood);main.box(side*16,.88,3.18,1.42,.08,.52,'#62535c');
+ main.box(side*10,.95,1.76,.90,1.9,.46,'#211c29');for(let y=.28;y<1.9;y+=.38){main.box(side*10,y,1.99,.83,.055,.45,trim);for(let n=0;n<6;n++)main.box(side*(9.68+n*.12),y+.14,1.99,.07,.24,.14,n%2?'#56474f':'#3d3e46');}
+ main.box(side*5,.45,3.12,.60,.09,.60,wood);main.box(side*5,.95,3.36,.60,1.05,.075,trim);for(const dx of [-.23,.23])for(const dz of [-.23,.23])main.box(side*5+dx,.22,3.12+dz,.06,.44,.06,wood);
+ main.box(side*1.70,1.3,3.36,.24,2.6,.31,'#25202d');
+ for(const d of [6.8,12.8,19.5]){main.box(side*d,1.28,1.57,1.02,2.35,.09,'#16121c');main.box(side*d,1.26,1.64,.84,2.18,.06,wood);main.sphere(side*d+.24,1.15,1.72,.035,.035,.035,'#867471');}
+}
+for(let z=-1.5;z<1.5;z+=.45){main.box(0,.02,z,2.5,.04,.43,'#392b32');}
+main.box(0,1.3,-1.82,2.6,2.6,.20,wall);main.box(0,1.15,-1.65,1.85,2.3,.10,'#a28d87',.30);
+for(const x of [-.93,.93])main.box(x,1.16,-1.51,.14,2.35,.22,trim);main.box(0,2.30,-1.51,2.0,.15,.22,trim);
+// A solid door, with its hinge as the local origin.
+door.box(.82,1.10,0,1.63,2.18,.13,wood);for(const y of [.53,1.57]){door.box(.82,y,.09,1.37,.86,.08,'#55404a');door.box(.82,y,.14,1.17,.65,.035,'#2b2230');}
+door.box(1.42,1.05,.16,.16,.27,.12,'#958993');door.cylinder(1.42,1.20,.18,.055,.11,'#b4a5b4',10);
 // THE HOLLOW: a hollow-eyed, dislocated figure. No image planes or face sprites.
 const skin='#8f8a88',bone='#b3aa94',shadow='#111019';
 ghost.sphere(0,2.26,-.02,.29,.35,.24,skin);ghost.sphere(-.035,2.04,.05,.255,.23,.20,'#68606a');
@@ -86,8 +88,8 @@ function cpuScene(objects,eye,forward,flash,time,scare){
 let cpuLast=-1000,cpuKey='';function render(opts){const {time=0,yaw=0,reveal=null,menu=false,scare=0,escape=0,motion=1}=opts;
  const rect=canvas.getBoundingClientRect(),ratio=gl?Math.min(devicePixelRatio||1,1.5):Math.min(1,(menu?800:480)/Math.max(1,rect.width),(menu?550:360)/Math.max(1,rect.height));
  const w=Math.max(1,Math.round(rect.width*ratio)),h=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
- let eye=[0,1.68,2.5],forward=[Math.sin(yaw),-.018,-Math.cos(yaw)],objects=[{mesh:main,model:identity()},{mesh:door,model:matrixMultiply(translate(-1.02,0,-8.17),rotateY(escape*1.9))}],flash=reveal?2.6:0;
- if(menu){eye=[1.05,1.9,3.9];forward=[-.05,.01,-1];objects.push({mesh:ghost,model:matrixMultiply(translate(1.55,-.10,2.0),rotateY(-.10))});flash=.95;}
+ let eye=[0,1.68,2.5],forward=[Math.sin(yaw),-.018,-Math.cos(yaw)],objects=[{mesh:main,model:identity()},{mesh:door,model:matrixMultiply(translate(-.82,0,-1.49),rotateY(escape*1.9))}],flash=reveal?2.6:0;
+ if(menu){eye=[0,1.86,2.9];forward=[0,.01,-1];objects.push({mesh:ghost,model:matrixMultiply(translate(.70,-.10,1.1),rotateY(-.10))});flash=.95;}
  if(reveal){objects.push({mesh:ghost,model:matrixMultiply(translate(reveal.side*reveal.distance,0,2.5),rotateY(reveal.side===-1?PI/2:-PI/2))});}
  if(scare>0){const age=scare-.0001,rush=.64+.94*Math.exp(-age*10),shake=Math.exp(-age*5)*.03*motion;eye=[Math.sin(age*70)*shake,2.16+Math.cos(age*83)*shake,2.5];forward=[0,-.025,-1];objects=[{mesh:ghost,model:translate(0,0,2.5-rush-.15)}];flash=2.4;}
  if(!gl){const key=[w,h,Math.round(yaw*50),menu,Math.round(scare*12),Math.round(escape*30),reveal?reveal.side+':'+Math.round(reveal.distance*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
@@ -97,3 +99,4 @@ let cpuLast=-1000,cpuKey='';function render(opts){const {time=0,yaw=0,reveal=nul
 }
 return {render,gpu:!!gl,counts:{room:main.count,door:door.count,monster:ghost.count},dispose(){if(gl)for(const m of [main,door,ghost])gl.deleteBuffer(m.buffer);}};
 }
+
