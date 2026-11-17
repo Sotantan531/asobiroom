@@ -1,4 +1,4 @@
-import {createManorRenderer} from './scene.js?v=20261118manor';
+import {createManorRenderer} from './scene.js?v=20261118manor2';
 import {createGame,LEVELS} from './rules.js?v=20261118manor';
 import {createAudio} from './audio.js?v=20261118manor';
 const $=id=>document.getElementById(id),prefs={level:'normal',bob:1,sensitivity:100,sound:true};
@@ -27,5 +27,5 @@ let pointer=null;$('world').addEventListener('pointerdown',e=>{if(s.phase!=='pla
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&s.phase==='play')pause();});
 try{renderer=createManorRenderer($('world'));$('loading').textContent='';$('start').disabled=false;}catch(error){$('loading').textContent='3D空間を開始できませんでした。SafariまたはChromeで開き直してください。';$('start').disabled=true;console.error(error);}
 refreshSettings();
-function frame(now){const dt=last?Math.min(.05,(now-last)/1000):0;last=now;game.update(dt);uiClock+=dt;if(uiClock>.035){renderUI();uiClock=0;}if(now>noticeUntil)$('message').textContent='';const target=s.phase==='menu'?-.2:s.look*Math.PI/2;yaw+=(target-yaw)*Math.min(1,dt*8);const reveal=s.phase==='play'&&s.look!==0&&s.flashTime>.06&&s.flashSide===s.look?{side:s.look,distance:s.enemies.find(e=>e.side===s.look)?.reveal||29}:null;renderer?.render({time:now/1000,yaw:yaw+(s.phase==='play'?Math.sin(now*.0016)*.002*prefs.bob:0),reveal,menu:s.phase==='menu',scare:s.phase==='scare'?s.scare:0,escape:s.phase==='escape'?Math.min(1,s.escape/1.9):0,motion:prefs.bob});$('light-flash').style.opacity=reveal?Math.pow(s.flashTime/.59,4)*.23:0;requestAnimationFrame(frame);}
+function frame(now){const dt=last?Math.min(.25,(now-last)/1000):0;last=now;for(let remaining=dt;remaining>1e-7;remaining-=.05)game.update(Math.min(.05,remaining));uiClock+=dt;if(uiClock>.035){renderUI();uiClock=0;}if(now>noticeUntil)$('message').textContent='';const target=s.phase==='menu'?-.2:s.look*Math.PI/2;yaw+=(target-yaw)*Math.min(1,dt*8);const reveal=s.phase==='play'&&s.look!==0&&s.flashTime>.06&&s.flashSide===s.look?{side:s.look,distance:s.enemies.find(e=>e.side===s.look)?.reveal||29}:null;renderer?.render({time:now/1000,yaw:yaw+(s.phase==='play'?Math.sin(now*.0016)*.002*prefs.bob:0),reveal,menu:s.phase==='menu',scare:s.phase==='scare'?s.scare:0,escape:s.phase==='escape'?Math.min(1,s.escape/1.9):0,motion:prefs.bob});$('light-flash').style.opacity=reveal?Math.pow(s.flashTime/.59,4)*.23:0;requestAnimationFrame(frame);}
 requestAnimationFrame(frame);

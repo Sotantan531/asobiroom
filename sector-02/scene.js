@@ -84,13 +84,13 @@ function cpuScene(objects,eye,forward,flash,time,scare){
  }}ctx.putImageData(image,0,0);
 }
 let cpuLast=-1000,cpuKey='';function render(opts){const {time=0,yaw=0,reveal=null,menu=false,scare=0,escape=0,motion=1}=opts;
- const rect=canvas.getBoundingClientRect(),ratio=gl?Math.min(devicePixelRatio||1,1.5):Math.min(1,800/Math.max(1,rect.width),550/Math.max(1,rect.height));
+ const rect=canvas.getBoundingClientRect(),ratio=gl?Math.min(devicePixelRatio||1,1.5):Math.min(1,(menu?800:480)/Math.max(1,rect.width),(menu?550:360)/Math.max(1,rect.height));
  const w=Math.max(1,Math.round(rect.width*ratio)),h=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
  let eye=[0,1.68,2.5],forward=[Math.sin(yaw),-.018,-Math.cos(yaw)],objects=[{mesh:main,model:identity()},{mesh:door,model:matrixMultiply(translate(-1.02,0,-8.17),rotateY(escape*1.9))}],flash=reveal?2.6:0;
  if(menu){eye=[1.05,1.9,3.9];forward=[-.05,.01,-1];objects.push({mesh:ghost,model:matrixMultiply(translate(1.55,-.10,2.0),rotateY(-.10))});flash=.95;}
  if(reveal){objects.push({mesh:ghost,model:matrixMultiply(translate(reveal.side*reveal.distance,0,2.5),rotateY(reveal.side===-1?PI/2:-PI/2))});}
  if(scare>0){const age=scare-.0001,rush=.64+.94*Math.exp(-age*10),shake=Math.exp(-age*5)*.03*motion;eye=[Math.sin(age*70)*shake,2.16+Math.cos(age*83)*shake,2.5];forward=[0,-.025,-1];objects=[{mesh:ghost,model:translate(0,0,2.5-rush-.15)}];flash=2.4;}
- if(!gl){const key=[w,h,Math.round(yaw*1200),menu,Math.round(scare*24),Math.round(escape*30),reveal?reveal.side+':'+Math.round(reveal.distance*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
+ if(!gl){const key=[w,h,Math.round(yaw*50),menu,Math.round(scare*12),Math.round(escape*30),reveal?reveal.side+':'+Math.round(reveal.distance*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
  gl.viewport(0,0,w,h);gl.clearColor(.008,.009,.014,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);const pv=matrixMultiply(perspective(73*PI/180,w/h,.08,95),lookAt(eye,eye.map((x,k)=>x+forward[k])));
  gl.uniformMatrix4fv(loc.PV,false,pv);gl.uniform3fv(loc.Eye,eye);gl.uniform3fv(loc.Forward,forward);gl.uniform1f(loc.Flash,flash);gl.uniform1f(loc.Time,time);
  for(const o of objects){gl.uniformMatrix4fv(loc.Model,false,o.model);gl.uniform1f(loc.Ghost,o.mesh===ghost?1:0);o.mesh.draw();}frames++;
