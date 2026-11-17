@@ -1,3 +1,4 @@
+import {PIN_COM} from './physics.js?v=4';
 // Deterministic pinsetter choreography. Physics is paused while machinery owns bodies.
 export class Pinsetter {
  constructor(physics,onSound=()=>{}){this.p=physics;this.sound=onSound;this.active=false;this.t=0;this.table=1.65;this.sweepY=1.1;this.sweepZ=-17.65;this.returnT=-1;this.label='';}
@@ -10,8 +11,9 @@ export class Pinsetter {
  this.table=t<.65?1.65:t<1.45?lerp(1.65,.45,(t-.65)/.8):t<2.25?lerp(.45,1.65,(t-1.45)/.8):t<4.1?1.65:t<5?lerp(1.65,.45,(t-4.1)/.9):lerp(.45,1.65,(t-5)/.7);
  if(this.fresh&&t<4.1)this.table=1.65;
  if(t>=2.25&&t<3.45)for(const p of (this.fresh?this.p.pins.filter(p=>!p.removed):this.down)){const a=this.starts.get(p.id);p.body.position.z=Math.min(a.z,this.sweepZ-.2);p.body.position.y=a.y-(Math.max(0,-p.body.position.z-19.9)*1.3);}
- if(!this.fresh&&t>=1.45){for(const p of this.up){const a=this.starts.get(p.id);p.body.quaternion.set(0,0,0,1);p.body.position.set(a.x,.164+(t<5?Math.max(0,this.table-.45):0),a.z);p.body.velocity.setZero();p.body.angularVelocity.setZero();}}
+ if(!this.fresh&&t>=1.45){for(const p of this.up){const a=this.starts.get(p.id);p.body.quaternion.set(0,0,0,1);p.body.position.set(a.x,(PIN_COM+.004)+(t<5?Math.max(0,this.table-.45):0),a.z);p.body.velocity.setZero();p.body.angularVelocity.setZero();}}
  if(t>=3.45&&!this.loaded){if(this.fresh)this.p.rack();else for(const p of this.down){this.p.world.removeBody(p.body);p.removed=true;}this.loaded=true;}
- if(this.fresh&&this.loaded){for(const p of this.p.pins){p.body.position.y=.164+(t<5?Math.max(0,this.table-.45):0);p.body.sleep();}}
+ if(this.fresh&&this.loaded){for(const p of this.p.pins){p.body.position.y=(PIN_COM+.004)+(t<5?Math.max(0,this.table-.45):0);p.body.sleep();}}
  if(t>=5.7){this.active=false;this.returnT=0;this.table=1.65;this.sweepY=1.1;for(const p of this.p.pins.filter(p=>!p.removed)){p.body.sleep();}this.onDone();}}
 }
+

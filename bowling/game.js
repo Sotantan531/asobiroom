@@ -1,12 +1,12 @@
-import {Pinsetter} from './pinsetter.js?v=3';
-import {LanePhysics,oilGrip,PIN_Z,BALLS,OILS} from './physics.js?v=3';
-import {LaneView} from './view.js?v=3';
-import {Scorecard,totals,swipeShot,isSplit} from './score.js?v=3';
+import {Pinsetter} from './pinsetter.js?v=4';
+import {LanePhysics,oilGrip,PIN_Z,BALLS,OILS} from './physics.js?v=4';
+import {LaneView} from './view.js?v=4';
+import {Scorecard,totals,swipeShot,isSplit} from './score.js?v=4';
 const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let audioCtx,master,enabled=true,lastImpact=0;
 function unlock(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=.42;master.connect(audioCtx.destination);}audioCtx.resume().catch(()=>{});}
 function tone(f,t,d=.2,v=.09,type='sine'){if(!audioCtx||!enabled)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain(),now=audioCtx.currentTime+t;o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(v,now+.01);g.gain.exponentialRampToValueAtTime(.0001,now+d);o.connect(g);g.connect(master);o.start(now);o.stop(now+d+.02);}
-function impact(v){if(!audioCtx||!enabled||performance.now()-lastImpact<38)return;lastImpact=performance.now();const length=.10,buf=audioCtx.createBuffer(1,audioCtx.sampleRate*length,audioCtx.sampleRate),data=buf.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/data.length*6);const src=audioCtx.createBufferSource(),f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();src.buffer=buf;f.type='bandpass';f.frequency.value=650+Math.random()*800;f.Q.value=.7;g.gain.value=clamp(v*.045,.03,.26);src.connect(f);f.connect(g);g.connect(master);src.start();tone(190+Math.random()*80,0,.11,clamp(v*.025,.02,.15),'triangle');}
+function impact(v){if(!audioCtx||!enabled||performance.now()-lastImpact<38)return;lastImpact=performance.now();const length=.10,buf=audioCtx.createBuffer(1,audioCtx.sampleRate*length,audioCtx.sampleRate),data=buf.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/data.length*6);const src=audioCtx.createBufferSource(),f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();src.buffer=buf;f.type='bandpass';f.frequency.value=650+Math.min(900,v*95);f.Q.value=.7;g.gain.value=clamp(v*.045,.03,.26);src.connect(f);f.connect(g);g.connect(master);src.start();tone(170+Math.min(140,v*16),0,.11,clamp(v*.025,.02,.15),'triangle');}
 function fanfare(kind){const notes=kind==='strike'?[392,523,659,784,1047]:kind==='spare'?[392,523,784]:[330,392];notes.forEach((f,i)=>tone(f,i*.075,.32,.09,'triangle'));}
 let rollingSound;
 function rollSound(){if(!audioCtx||!enabled)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='triangle';o.frequency.value=62;g.gain.value=.055;o.connect(g);g.connect(master);o.start();rollingSound={o,g};}
@@ -46,8 +46,9 @@ $('modal').addEventListener('cancel',e=>{if(state==='menu'){e.preventDefault();}
 const wrap=$('viewport');function gestureDraw(){const line=$('gestureLine');line.setAttribute('points',gesture?gesture.samples.map(p=>p.x+','+p.y).join(' '):'');$('gesture').setAttribute('viewBox',`0 0 ${wrap.clientWidth} ${wrap.clientHeight}`);}
 const point=e=>{const r=wrap.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top,t:e.timeStamp};};wrap.onpointerdown=e=>{if(e.target.closest('button')||e.button!==0||state!=='ready'||$('modal').open)return;unlock();gesture={id:e.pointerId,samples:[point(e)]};wrap.setPointerCapture(e.pointerId);};wrap.onpointermove=e=>{if(gesture?.id!==e.pointerId)return;gesture.samples.push(point(e));if(gesture.samples.length>180)gesture.samples.splice(1,1);gestureDraw();};wrap.onpointerup=e=>{if(gesture?.id!==e.pointerId)return;gesture.samples.push(point(e));const shot=swipeShot(gesture.samples,wrap.clientWidth,wrap.clientHeight);gesture=null;gestureDraw();if(shot)bowl(shot);else setStatus('投球キャンセル。下から上へ、少し速くスワイプしてね。');};wrap.onpointercancel=wrap.onlostpointercapture=e=>{if(gesture?.id===e.pointerId){gesture=null;gestureDraw();}};
 try{physics=new LanePhysics(impact);machine=new Pinsetter(physics,machineSound);physics.machine=machine;view=new LaneView($('scene'),wrap);renderUI();setup();function frame(now){requestAnimationFrame(frame);const dt=Math.min(.1,(now-lastFrame)/1000);lastFrame=now;if(state==='rolling'){
- accumulator+=dt;let n=0;while(accumulator>=1/180&&n++<20){const done=physics.step(1/180);accumulator-=1/180;if(done){accumulator=0;settled();break;}}
+ accumulator+=dt;let n=0;while(accumulator>=1/120&&n++<12){const done=physics.step(1/120);accumulator-=1/120;if(done){accumulator=0;settled();break;}}
  if(physics.ball){const g=oilGrip(physics.ball.position.z,physics.ball.position.x,opts.oil);$('grip').textContent=physics.gutter?'GUTTER':g<.2?'OILED':g<.8?'TRANSITION':'DRY / HOOK';if(physics.hitTime!==null)stopRoll();}}
- machine.step(dt);$('machineStatus').textContent=machine.active?machine.label:'';$('machineStatus').classList.toggle('active',machine.active);view.render(physics,position,state,opts,dt);if(state==='rolling'&&physics.hitTime!==null&&Math.floor(now/200)!==Math.floor((now-dt*1000)/200))renderUI();}
+ machine.step(dt);$('machineStatus').hidden=true;view.render(physics,position,state,opts,dt);if(state==='rolling'&&physics.hitTime!==null&&Math.floor(now/200)!==Math.floor((now-dt*1000)/200))renderUI();}
  requestAnimationFrame(frame);
 }catch(e){console.error(e);setStatus('起動できませんでした。ページを再読み込みしてください。');show('<h2>3D描画を起動できませんでした</h2><p>WebGLが使えるブラウザーで開いてください。ブラウザーのハードウェアアクセラレーションと通信状態も確認してください。</p><div class="actions"><button id="reloadGame">再読み込み</button></div>');$('reloadGame').onclick=()=>location.reload();}
+
