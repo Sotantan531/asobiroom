@@ -31,7 +31,9 @@ for(const side of [-1,1]){
  for(const d of [6.8,12.8,19.5]){main.box(side*d,1.28,1.57,1.02,2.35,.09,'#16121c');main.box(side*d,1.26,1.64,.84,2.18,.06,wood);main.sphere(side*d+.24,1.15,1.72,.035,.035,.035,'#867471');}
 }
 for(let z=-1.5;z<1.5;z+=.45){main.box(0,.02,z,2.5,.04,.43,'#392b32');}
-main.box(0,1.3,-1.82,2.6,2.6,.20,wall);main.box(0,1.15,-1.65,1.85,2.3,.10,'#a28d87',.30);
+for(const x of [-1.11,1.11])main.box(x,1.3,-1.82,.38,2.6,.20,wall);main.box(0,2.49,-1.82,1.85,.22,.20,wall);
+// Real exterior geometry beyond the doorway.
+main.box(0,-.12,-11,18,.2,20,'#303b35',.18);main.box(0,-.005,-8,1.8,.06,13,'#62616a',.2);for(const x of [-1.16,1.16]){main.box(x,.22,-2.3,.22,.44,1.5,trim);for(let z=-4;z>-17;z-=2.7){main.cylinder(x*3,.9,z,.10,1.8,'#211e2a',8);main.sphere(x*3,2.2,z,.8,1.5,.8,'#202d29');}}main.sphere(-3,8,-22,1.1,1.1,1.1,'#b5bed5',.8);
 for(const x of [-.93,.93])main.box(x,1.16,-1.51,.14,2.35,.22,trim);main.box(0,2.30,-1.51,2.0,.15,.22,trim);
 // A solid door, with its hinge as the local origin.
 door.box(.82,1.10,0,1.63,2.18,.13,wood);for(const y of [.53,1.57]){door.box(.82,y,.09,1.37,.86,.08,'#55404a');door.box(.82,y,.14,1.17,.65,.035,'#2b2230');}
@@ -88,11 +90,12 @@ function cpuScene(objects,eye,forward,flash,time,scare){
 let cpuLast=-1000,cpuKey='';function render(opts){const {time=0,yaw=0,reveal=null,menu=false,scare=0,escape=0,motion=1}=opts;
  const rect=canvas.getBoundingClientRect(),ratio=gl?Math.min(devicePixelRatio||1,1.5):Math.min(1,(menu?800:480)/Math.max(1,rect.width),(menu?550:360)/Math.max(1,rect.height));
  const w=Math.max(1,Math.round(rect.width*ratio)),h=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
- let eye=[0,1.68,2.5],forward=[Math.sin(yaw),-.018,-Math.cos(yaw)],objects=[{mesh:main,model:identity()},{mesh:door,model:matrixMultiply(translate(-.82,0,-1.49),rotateY(escape*1.9))}],flash=reveal?2.6:0;
+ let eye=[0,1.68,2.5],forward=[Math.sin(yaw),-.018,-Math.cos(yaw)],objects=[{mesh:main,model:identity()},{mesh:door,model:matrixMultiply(translate(-.82,0,-1.49),rotateY(Math.min(1,escape/.30)*1.9))}],flash=reveal?2.6:0;
+ if(escape>0){const walk=Math.max(0,Math.min(1,(escape-.28)/.72));const ease=walk*walk*(3-2*walk);eye=[0,1.68+Math.sin(walk*32)*.035*motion,2.5-ease*9];forward=[0,-.018,-1];flash=.3;}
  if(menu){eye=[0,1.86,2.9];forward=[0,.01,-1];objects.push({mesh:ghost,model:matrixMultiply(translate(.70,-.10,1.1),rotateY(-.10))});flash=.95;}
- if(reveal){objects.push({mesh:ghost,model:matrixMultiply(translate(reveal.side*reveal.distance,0,2.5),rotateY(reveal.side===-1?PI/2:-PI/2))});}
+ if(reveal){objects.push({mesh:ghost,model:matrixMultiply(translate(reveal.side*reveal.distance,0,2.5),rotateY((reveal.side===-1?PI/2:-PI/2)+(reveal.turn||0)))});}
  if(scare>0){const age=scare-.0001,rush=.64+.94*Math.exp(-age*10),shake=Math.exp(-age*5)*.03*motion;eye=[Math.sin(age*70)*shake,2.16+Math.cos(age*83)*shake,2.5];forward=[0,-.025,-1];objects=[{mesh:ghost,model:translate(0,0,2.5-rush-.15)}];flash=2.4;}
- if(!gl){const key=[w,h,Math.round(yaw*50),menu,Math.round(scare*12),Math.round(escape*30),reveal?reveal.side+':'+Math.round(reveal.distance*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
+ if(!gl){const key=[w,h,Math.round(yaw*50),menu,Math.round(scare*12),Math.round(escape*30),reveal?reveal.side+':'+Math.round(reveal.distance*10)+':'+Math.round((reveal.turn||0)*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
  gl.viewport(0,0,w,h);gl.clearColor(.008,.009,.014,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);const pv=matrixMultiply(perspective(73*PI/180,w/h,.08,95),lookAt(eye,eye.map((x,k)=>x+forward[k])));
  gl.uniformMatrix4fv(loc.PV,false,pv);gl.uniform3fv(loc.Eye,eye);gl.uniform3fv(loc.Forward,forward);gl.uniform1f(loc.Flash,flash);gl.uniform1f(loc.Time,time);
  for(const o of objects){gl.uniformMatrix4fv(loc.Model,false,o.model);gl.uniform1f(loc.Ghost,o.mesh===ghost?1:0);o.mesh.draw();}frames++;
