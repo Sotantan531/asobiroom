@@ -2,12 +2,16 @@ const catalog={
  '01':{'301':'301','501':'501','701':'701','901':'901','1101':'1101','1501':'1501'},
  'CRICKET':{cr:'STANDARD CRICKET',cut:'CUT-THROAT'},
  'トレーニング':{cu:'COUNT-UP',eagle:'EAGLE’S EYE',center:'CENTER COUNT-UP',cc:'CRICKET COUNT-UP'},
- 'PARTY':{multi:'MULTIPLE COUNT-UP',jack:'BULL JACKPOT'},
+ 'PARTY':{balloon:'バルーンパニック',treasure:'トレジャーハント',territory:'陣取りダーツ',exact:'ぴったりチャレンジ',multi:'MULTIPLE COUNT-UP',jack:'BULL JACKPOT'},
  'AI':{ladder:'CPU LADDER',duel:'501 CPU DUEL'},
  'MATCH':{medley:'3 LEG MEDLEY',series:'501 BEST OF 3'}
 };
 const names=Object.assign({},...Object.values(catalog));
 const descriptions={
+ balloon:'1人1投ずつ交代。数字が大きいほど風船が膨らみ、割った人が負け！盤外は+14で危険。破裂までの容量は毎回ランダム。ひとりは割らずに続けた投数に挑戦。',
+ treasure:'8ラウンド。光るコインの数字はお宝、赤い×の数字は罠。お宝を探して得点、鍵では相手から最大30点奪えます。配置は毎ラウンド更新。ブルは確実に+30点。',
+ territory:'8ラウンド。数字を当てると自分の陣地に。Dは2、Tは3の攻撃力で相手の盾を削って奪おう。自分の陣地は盾3まで強化。最後に持つ数字の合計点で勝負。ブルは25点の陣地。',
+ exact:'各ラウンド共通のお題に3投合計を近づけよう。ぴったりなら150点、ずれ1点につき4点減点（近さ100点が基準）。ブルは50点。8ラウンドの合計で勝負。',
  cr:'15〜20とブルを3マーク。自分の陣地で加点し、全陣地を開いて同点以上なら勝利。',
  cut:'超過マークは相手に加点。全陣地を開き、同点以下で勝利。',
  eagle:'8ラウンド。アウターブル25点、インブル50点。ブル以外は0点。',
@@ -79,17 +83,17 @@ function selectField(id,label,choices,val){return '<label>'+label+'<select id="'
 function setup(resume=false){
  if(resume!==true)draft={...rules,bonus:[...rules.bonus],level};
  const cat=categoryOf(draft.entry);
- show('<h2>ゲーム設定</h2><div class="chooser">'+selectField('category','カテゴリー',Object.fromEntries(Object.keys(catalog).map(k=>[k,k])),cat)+selectField('gm','ゲーム',catalog[cat],draft.entry)+selectField('op','プレイ人数',{},'')+selectField('lv','CPUの難易度',Object.fromEntries(levels.map(([f,r],i)=>[i,f+' ／ Rt.'+r])),String(draft.level))+'</div><p id="modeInfo"></p><div class="setupLinks"><button id="ruleEdit">ルール・ハンデ</button><button id="kitOpen">ダーツ詳細設定</button></div><div class="buttons"><button onclick="closeModal()">戻る</button><button class="primary" id="start">対戦を開始</button></div>');
+ show('<h2>ゲーム設定</h2><div class="chooser">'+selectField('category','カテゴリー',Object.fromEntries(Object.keys(catalog).map(k=>[k,k])),cat)+selectField('gm','ゲーム',catalog[cat],draft.entry)+selectField('op','プレイ人数',{},'')+selectField('lv','CPUの難易度',Object.fromEntries(levels.map(([f,r],i)=>[i,f+' ／ Rt.'+r])),String(draft.level))+'</div><p id="modeInfo"></p><div class="boardThemePicker">'+boardThemeField()+'</div><div class="setupLinks"><button id="ruleEdit">ルール・ハンデ</button><button id="kitOpen">ダーツ詳細設定</button></div><div class="buttons"><button onclick="closeModal()">戻る</button><button class="primary" id="start">対戦を開始</button></div>');
  function sync(){
   draft.entry=$('gm').value;const c=categoryOf(draft.entry);
   const ops=c==='AI'?{cpu:'CPU対戦'}:c==='トレーニング'||c==='PARTY'?{cpu:'CPU対戦',local:'ローカル2人',solo:'ひとり'}:{cpu:'CPU対戦',local:'ローカル2人'};
   $('op').innerHTML=options(ops,draft.opponent);draft.opponent=$('op').value;
-  $('lv').disabled=draft.opponent!=='cpu';$('modeInfo').textContent=descriptions[draft.entry]||'持ち点をぴったり0にすると勝利。上がり方はルール設定で変更できます。';
+  $('lv').disabled=draft.opponent!=='cpu';$('ruleEdit').disabled=isPartyEntry(draft.entry);$('modeInfo').textContent=descriptions[draft.entry]||'持ち点をぴったり0にすると勝利。上がり方はルール設定で変更できます。';
  }
  $('category').onchange=()=>{$('gm').innerHTML=options(catalog[$('category').value],'');sync()};
  $('gm').onchange=sync;$('op').onchange=()=>{draft.opponent=$('op').value;sync()};$('lv').onchange=()=>draft.level=+$('lv').value;
- $('ruleEdit').onclick=ruleMenu;$('kitOpen').onclick=()=>openKit();sync();
- $('start').onclick=()=>{unlockSound();arcadeCue('start');rules={...draft,bonus:[...draft.bonus]};level=draft.level;closeModal();reset()};
+ wireBoardTheme();$('ruleEdit').onclick=ruleMenu;$('kitOpen').onclick=()=>openKit();sync();
+ $('start').onclick=()=>{unlockSound();arcadeCue('start');rules={...draft,bonus:isPartyEntry(draft.entry)?[0,0]:[...draft.bonus]};level=draft.level;closeModal();reset()};
 }
 function ruleMenu(){
  const zero=categoryOf(draft.entry)==='01'||['series','medley','duel'].includes(draft.entry);
@@ -97,3 +101,4 @@ function ruleMenu(){
  show('<h2>ルール・ハンデ</h2><div class="chooser">'+(zero?selectField('outRule','01の上がり方',{open:'オープンアウト',double:'ダブルアウト',master:'マスターアウト'},draft.out):'')+(bull?selectField('bullRule','ブルの配点',{fat:'内外とも50点',split:'セパレート（25 / 50）'},draft.bull):'')+[0,1].filter(p=>!p||draft.opponent!=='solo').map(p=>'<label>'+(p?(draft.opponent==='cpu'?'CPU':'P2'):'P1')+' のハンデ<select id="bonus'+p+'">'+options(Object.fromEntries([0,10,25,50,75,100,150,200].map(v=>[v,v+' 点'])),String(draft.bonus[p]))+'</select></label>').join('')+'</div><p>ハンデは01では開始点から引き、加点ゲームでは開始点に足します。カットスロートでは開始点から引きます。</p><div class="buttons"><button id="ruleBack">ゲーム設定に戻る</button></div>');
  $('ruleBack').onclick=()=>{if($('outRule'))draft.out=$('outRule').value;if($('bullRule'))draft.bull=$('bullRule').value;draft.bonus=draft.bonus.map((v,i)=>$('bonus'+i)?+$('bonus'+i).value:v);setup(true)};
 }
+

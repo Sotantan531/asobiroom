@@ -24,6 +24,7 @@ async function syncRanks(){
   return sending;
 }
 function recordResults(w){
+  if(partyMode()){partySaveRecord();rankMessage='パーティの記録をこの端末に保存しました。';return;}
   if(rules.bonus.some((v,i)=>v&&(!i||!solo()))){rankMessage='ハンデ戦はランキングの対象外です。';return}
   const board=rankKey();let added=false;
   for(let p=0;p<2;p++){
@@ -37,6 +38,7 @@ function recordResults(w){
   if(added){savePref('fl-pending',pending);syncRanks()}
 }
 function showRanking(){
+ if(partyMode()){partyRanking();return;}
  const key=rankKey(),numeric=is01(),reverse=numeric||mode==='cut';
  show('<h2>オンラインランキング</h2><p id="boardLabel"></p><div id="rankList" aria-live="polite">読み込み中…</div><p>ハンデなしの人間プレイヤーが対象です。<a href="/contact.html">不適切な名前の通報</a></p><div class="chooser"><label>P1 の登録名<input id="rankName0" maxlength="16"></label><label>P2 の登録名<input id="rankName1" maxlength="16"></label></div><div class="buttons"><button id="rankClose">ゲームに戻る</button></div>');
  $('boardLabel').textContent=names[mode]+' ／ '+(numeric?({open:'オープンアウト',master:'マスターアウト',double:'ダブルアウト'}[rules.out]+' ／ 上がりまでの投数'):mode==='cut'?'失点が少ない順':'得点が高い順')+(key.endsWith('-split')?' ／ セパレートブル':key.endsWith('-fat')?' ／ ブル50点':'');
@@ -61,3 +63,4 @@ function showRanking(){
 document.getElementById('ranking').onclick=showRanking;
 window.addEventListener('online',syncRanks);
 if(pending.length)syncRanks();
+

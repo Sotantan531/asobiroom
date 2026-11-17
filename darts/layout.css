@@ -77,3 +77,15 @@ header nav .asobi-home-link:hover{background:#214e71;color:#fff}
 .title{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px!important}.title>div{flex:1 1 180px;min-width:0}.title h1{font-size:clamp(18px,3.2vw,32px)!important;line-height:1.1;letter-spacing:-.04em!important;white-space:nowrap}.title button{font-size:12px!important;line-height:1.2!important;padding:8px 10px!important;min-height:36px;min-width:0!important;width:auto!important;white-space:nowrap!important;flex:0 0 auto!important;border-radius:9px!important}
 @media(max-width:600px){.title>div{flex-basis:100%;display:block!important}.title h1{font-size:22px!important}.title{margin-bottom:8px!important}.title button{font-size:11px!important;padding:7px 9px!important}header nav{gap:3px!important}header nav button{font-size:10px!important;padding:5px!important}}
 @media(max-height:540px) and (orientation:landscape){.title{position:static!important;height:auto!important}.title>div{flex:1 1 auto!important}.title h1{font-size:16px!important}.title button{min-height:28px;padding:4px 7px!important}}
+
+/* Party information occupies its own compact rail; art stays behind the playable board. */
+.arena.partyArena{grid-template-rows:auto auto minmax(0,1fr) auto}
+#partyHUD[hidden],#partyBackdrop[hidden]{display:none!important}
+#partyHUD{padding:8px 13px;background:linear-gradient(110deg,#243f43,#303b4e);border-bottom:1px solid #657f7a;color:#edf6ed;font-size:12px}
+.partyHeading{font-size:10px;letter-spacing:.12em;color:#f8ce86;font-weight:800}.partyInfo{display:flex;align-items:center;flex-wrap:wrap;gap:3px 12px}.partyInfo b{font-size:16px}.partyInfo span{font-size:11px;color:#c3d9d4}.partyMessage{margin-top:3px;font-size:11px;min-height:14px}.balloonMeter{height:5px;flex:1;min-width:70px;border-radius:8px;background:#111c25;overflow:hidden}.balloonMeter i{display:block;height:100%;background:linear-gradient(90deg,#81dfbe,#ffc269,#f479a3);transition:width .35s}
+#partyBackdrop{position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.22}#partyBackdrop svg{position:absolute;inset:0;width:100%;height:100%;filter:none;overflow:hidden}.balloonArt{transform-origin:0 0;transition:transform .5s}.exactGhost{position:absolute;right:2%;top:10%;font:bold clamp(70px,18vw,230px)/1 monospace;color:#f1d69f;transform:rotate(-12deg)}
+#board{z-index:1}#flash,#award,#out,.swipe{z-index:2;pointer-events:none}
+#board .led[data-party-owner="0"]{fill:#ed955d;stroke:#ffdcc1}#board .led[data-party-owner="1"]{fill:#4ca3d9;stroke:#c6edff}
+.boardThemePicker{padding:10px 0;border-top:1px solid #c7cfbf}.boardThemePicker label{margin:0;font-size:12px}.boardThemePicker select{padding:7px;margin-top:4px}#boardColorSample{height:8px;border-radius:5px;margin-top:7px;border:1px solid #748576}
+@media(max-width:600px),(max-height:540px){#partyHUD{padding:5px 9px}.partyHeading{font-size:9px}.partyInfo b{font-size:13px}.partyInfo span,.partyMessage{font-size:10px}.partyMessage{min-height:12px}.boardThemePicker{padding:5px 0}}
+@media(prefers-reduced-motion:reduce){.balloonArt,.balloonMeter i{transition:none}}

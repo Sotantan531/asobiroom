@@ -15,6 +15,8 @@ function targetCenter(n,m){
 }
 function cpu(){
   if(over||!aiTurn())return;
+  if($('modal').open){timer=setTimeout(cpu,250);return;}
+  if(partyMode()){const target=partyAim();cpuFlight(...groupAround(targetCenter(...target),scoringSpread[effectiveLevel()]));return;}
   // With split bull, T20 is the highest scoring standard target (60 > 50).
   // Bull-focused training modes still aim at bull by design.
   const preferT20=rules.bull==='split'&&!['eagle','center','jack'].includes(mode);
@@ -40,3 +42,4 @@ function cpu(){
   }
   cpuFlight(...groupAround(targetCenter(...target),spread));
 }
+

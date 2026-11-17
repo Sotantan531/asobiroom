@@ -11,20 +11,20 @@ const bands = [
 function drawBoard(){
   let svg='<defs><radialGradient id="rim"><stop offset=".8" stop-color="#171e24"/><stop offset=".96" stop-color="#2b373f"/><stop offset="1" stop-color="#10151a"/></radialGradient><pattern id="holes" width="4.1" height="3.7" patternUnits="userSpaceOnUse"><circle cx="1.2" cy="1.3" r=".88" fill="#041017" opacity=".5"/></pattern></defs>'+circle(205,'url(#rim)','#5d7380');
   nums.forEach((n,i)=>{
-    const ink=i%2?'#53dfb8':'#ff6855';
+    const paint=BOARD_THEMES[boardTheme],ink=i%2?paint.green:paint.red;
     svg+='<path class="led rim" data-n="'+n+'" style="--delay:'+i*22+'ms" fill="'+ink+'" d="'+wedge(194.8,200.8,i)+'"/>';
     for(let j=-2;j<=2;j++){
       const [x,y]=polar(198,(i+j*.15)*rad);
       svg+='<circle class="led lamp" data-n="'+n+'" cx="'+x+'" cy="'+y+'" r="1.65" fill="#c9e5ec" style="--delay:'+(i*24+j*8+16)+'ms"/>';
     }
     for(const [key,lo,hi,m] of bands){
-      const fill=m===1?(i%2?'#a9bdc0':'#30414b'):ink;
+      const fill=m===1?(i%2?paint.light:paint.dark):ink;
       svg+='<path id="led-'+key+n+'" class="led" data-n="'+n+'" data-score="'+n*m+'" style="--delay:'+(i*22+lo*.7)+'ms" fill="'+fill+'" stroke="#152028" stroke-width="1.4" d="'+wedge(lo,hi,i)+'"/>';
     }
     const [x,y]=polar(184,i*rad);
     svg+='<text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" fill="#f1f7f5" font-family="Arial" font-size="17" font-weight="700">'+n+'</text>';
   });
-  for(const [key,r,color] of [['SB',boardSize.bull,'#52ddb3'],['DB',boardSize.innerBull,'#313d48']])
+  for(const [key,r,color] of [['SB',boardSize.bull,BOARD_THEMES[boardTheme].green],['DB',boardSize.innerBull,BOARD_THEMES[boardTheme].red]])
     svg+='<circle class="led" id="led-'+key+'" data-n="25" data-score="50" r="'+r+'" fill="'+color+'" stroke="#152028"/>';
   $('board').innerHTML=svg+circle(170,'url(#holes)')+'<g id="pins"></g><g id="moving"></g>';
 }
@@ -102,3 +102,4 @@ function cricketLights(){
     else delete el.dataset.territory;
   });
 }
+

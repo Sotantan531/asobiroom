@@ -4,7 +4,7 @@ const levels=[['C',2,42,1.4],['CC',4,52,1.8],['B',6,62,2.2],['BB',8,72,2.6],['A'
 let mode='501',level=2,round,player,scores,marks,darts,log,points,startScore,over,timer,gesture,busy;
 let countedDartsMatch=false;
 let online=null;
-const is01=()=>!isNaN(Number(mode)), cap=()=>cricket()?20:is01()?(+mode>=701?20:15):8;
+const is01=()=>!isNaN(Number(mode)), cap=()=>mode==='balloon'?20:cricket()?20:is01()?(+mode>=701?20:15):8;
 function polar(r,a){return [r*Math.sin(a),-r*Math.cos(a)]}
 const rad=Math.PI/10;
 function wedge(inner,outer,i){let a=(i-.5)*rad,b=a+rad;return 'M'+polar(inner,a)+' L'+polar(outer,a)+' A'+outer+' '+outer+' 0 0 1 '+polar(outer,b)+' L'+polar(inner,b)+' A'+inner+' '+inner+' 0 0 0 '+polar(inner,a)+'Z'}
@@ -16,7 +16,7 @@ function beginLeg(){
  mode=currentMode();round=1;player=first;pot=50;
  scores=rules.bonus.map(v=>is01()?Math.max(2,+mode-v):mode==='cut'?-v:v);
  marks=[{},{}];darts=[];log=[];points=[];startScore=scores[player];over=false;busy=false;gesture=null;
- drawBoard();$('flash').textContent='';render();if(aiTurn())timer=setTimeout(cpu,550);
+ partyBegin();drawBoard();$('flash').textContent='';render();if(aiTurn())timer=setTimeout(cpu,550);
 }
 function render(){
  checkout();cricketLights();
@@ -27,6 +27,7 @@ function render(){
  $('ammo').textContent=Array.from({length:3},(_,i)=>i<darts.length?'●':'○').join('　')+'　 DARTS';
  $('scores').innerHTML=scores.slice(0,solo()?1:2).map((v,p)=>'<div class="score '+(p===player?'active':'')+'"><div class="who"><span class="pin">P'+(p+1)+'</span><div><small>'+(matchPlay()?legs[p]+' LEG':'PLAYER 0'+(p+1))+'</small><b>'+labelFor(p)+(p&&rules.opponent==='cpu'?' · '+levels[effectiveLevel()][0]:'')+'</b></div></div><strong>'+v+'</strong></div>').join('');
  $('marks').innerHTML=cricket()?'<div class="legend"><b>● '+labelFor(0)+'</b><b>● '+labelFor(1)+'</b></div>'+targets.map(n=>'<div class="markrow" data-territory="'+cricketState(n)+'"><span>'+mark(0,n)+'</span><b>'+(n===25?'BULL':n)+'</b><span>'+mark(1,n)+'</span></div>').join(''):'';
+ partyRender();
  $('history').innerHTML=log.length?log.slice(-4).reverse().map(t=>'<div class="record"><small>'+t[0]+'</small><b>'+t[1]+'</b></div>').join(''):'<div class="empty">最初の1投を投げよう。</div>';
 }
 function mark(p,n){return ['–','／','×','◎'][marks[p][n]||0]}
@@ -34,8 +35,8 @@ function end(w){
  window.asobiPlayer?.record('darts','clear');
  over=true;arcadeCue(w<0?"draw":"finish");recordResults(w);if(matchPlay()&&w>=0)legs[w]++;render();
  const more=matchPlay()&&Math.max(...legs)<2;
- const title=solo()?'練習終了':w<0?'引き分け':labelFor(w)+(more?' がレッグ獲得':'の勝利！');
- const result=solo()?scores[0]+' 点':labelFor(0)+' '+scores[0]+'　対　'+labelFor(1)+' '+scores[1];
+ const title=partyMode()?partyTitle(w):solo()?'練習終了':w<0?'引き分け':labelFor(w)+(more?' がレッグ獲得':'の勝利！');
+ const result=partyMode()?partyResult():solo()?scores[0]+' 点':labelFor(0)+' '+scores[0]+'　対　'+labelFor(1)+' '+scores[1];
  show('<h2>'+title+'</h2><small id="rankStatus"></small><p>'+names[mode]+' ／ '+round+' ラウンド<br>'+result+(matchPlay()?'<br>獲得レッグ　'+legs.join(' − '):'')+'</p><div class="buttons"><button onclick="setup()">設定変更</button><button class="primary" id="nextGame">'+(more?(w<0?'同じレッグを再戦':'次のレッグへ'):'もう一度遊ぶ')+'</button></div>');
  updateRankStatus();
  $('nextGame').onclick=()=>{closeModal();if(!more){reset();return}if(w>=0)leg++;first=1-first;beginLeg()};
@@ -48,7 +49,7 @@ function advance(){
  arcadeCue('turn');if(complete)round++;player=solo()?0:1-player;startScore=scores[player];darts=[];busy=false;
  $('pins').innerHTML='';$('flash').textContent='';render();if(aiTurn())timer=setTimeout(cpu,450);
 }
-function play(x,y){if(online?.active){if(online.canPlay())online.move({x,y});return;}if(over)return;if(!countedDartsMatch){countedDartsMatch=true;window.asobiActivity?.play('darts')}rankedThrows[player]++;let h=hit(x,y),label=h.label,bust=false,win=false;h.available=(marks[player][h.n]||0)<3||(marks[1-player][h.n]||0)<3;darts.push(h);if(is01()){scores[player]-=pointsOf(h);if(scores[player]<0||(scores[player]===0&&!finishes(h))||(scores[player]===1&&rules.out!=='open')){scores[player]=startScore;bust=true;label+=' · BUST'}else win=scores[player]===0}
+function play(x,y){if(online?.active){if(online.canPlay())online.move({x,y});return;}if(over)return;if(!countedDartsMatch){countedDartsMatch=true;window.asobiActivity?.play('darts')}rankedThrows[player]++;let h=hit(x,y),label=h.label,bust=false,win=false;h.available=(marks[player][h.n]||0)<3||(marks[1-player][h.n]||0)<3;darts.push(h);if(partyMode()){partyThrow(h,x,y);return;}if(is01()){scores[player]-=pointsOf(h);if(scores[player]<0||(scores[player]===0&&!finishes(h))||(scores[player]===1&&rules.out!=='open')){scores[player]=startScore;bust=true;label+=' · BUST'}else win=scores[player]===0}
  else if(cricket()){if(targets.includes(h.n)){let old=marks[player][h.n]||0;marks[player][h.n]=Math.min(3,old+h.m);if((marks[1-player][h.n]||0)<3)scores[mode==='cut'?1-player:player]+=Math.max(0,old+h.m-3)*h.n;win=targets.every(n=>marks[player][n]===3)&&(mode==='cut'?scores[player]<=scores[1-player]:scores[player]>=scores[1-player])}}
  else {const gain=trainingScore(h,x,y);scores[player]+=gain;label+=' +'+gain}
  lightHit(h);impactSound(h);
@@ -61,9 +62,9 @@ function play(x,y){if(online?.active){if(online.canPlay())online.move({x,y});ret
  if(turnDone){busy=true;timer=setTimeout(win?()=>end(player):advance,award?2350:900)}
  else if(aiTurn())timer=setTimeout(cpu,720);
 }
-function show(html){$('content').innerHTML=html;if(!$('modal').open)$('modal').showModal()}
+function show(html){gesture=null;$('content').innerHTML=html;if(!$('modal').open)$('modal').showModal()}
 function closeModal(){$('modal').close()}
-$('settings').onclick=()=>setup();const guide=["狙いたい方向に素早く払って離すと投球。離す直前の動きが遅いとキャンセルされ、残りの矢は減りません。離した位置から、速く払うほどその方向へ遠く飛びます。指に沿って矢を構え、指を離す瞬間の速さと角度で投げ分けます。01では上がれる手順の次の得点エリアが水色に光ります。PCではドラッグで投げられます。", "<b>01</b>　残りをぴったり0点にすると勝利。超えるとバーストし、そのターンの開始点に戻ります。ルール・ハンデで上がり方とブルの配点を変更できます。ダブルアウトはダブルかインブル、マスターアウトはダブル・トリプル・ブルで上がれます。", "<b>CRICKET</b>　15〜20とブルを各3マーク。相手が閉じるまで超過マークで加点。P1の陣地はオレンジ、P2の陣地は青。両者が3マークすると消灯します。全て閉じ、同点以上なら勝利。", "<b>COUNT-UP</b>　8ラウンドの合計点を競います。クリケット版は20から15、ブルの順に狙い、最終回は全対象が有効です。", "1ターン3投。上限ラウンドでは01は残りが少ない側、カットスロートは失点が少ない側、その他は得点が多い側の勝ちです。"];
+$('settings').onclick=()=>setup();const guide=["<b>PARTY</b>　設定のカテゴリーから6種類を選べます。バルーンは1投交代・割ったら負け。宝さがしはコインと罠、陣取りは数字の奪い合い、ぴったりは3投合計のお題です。詳しいルールはゲーム設定に表示。CPU・ローカル2人・ひとりに対応。ボード色はゲーム設定で保存できます。", "狙いたい方向に素早く払って離すと投球。離す直前の動きが遅いとキャンセルされ、残りの矢は減りません。離した位置から、速く払うほどその方向へ遠く飛びます。指に沿って矢を構え、指を離す瞬間の速さと角度で投げ分けます。01では上がれる手順の次の得点エリアが水色に光ります。PCではドラッグで投げられます。", "<b>01</b>　残りをぴったり0点にすると勝利。超えるとバーストし、そのターンの開始点に戻ります。ルール・ハンデで上がり方とブルの配点を変更できます。ダブルアウトはダブルかインブル、マスターアウトはダブル・トリプル・ブルで上がれます。", "<b>CRICKET</b>　15〜20とブルを各3マーク。相手が閉じるまで超過マークで加点。P1の陣地はオレンジ、P2の陣地は青。両者が3マークすると消灯します。全て閉じ、同点以上なら勝利。", "<b>COUNT-UP</b>　8ラウンドの合計点を競います。クリケット版は20から15、ブルの順に狙い、最終回は全対象が有効です。", "1ターン3投。上限ラウンドでは01は残りが少ない側、カットスロートは失点が少ない側、その他は得点が多い側の勝ちです。"];
 function helpPage(i){
   show('<h2>遊び方</h2><p>'+guide[i]+'</p><div class="guideNav"><button '+(i===0?'disabled':'')+' onclick="helpPage('+(i-1)+')">前へ</button><span>'+(i+1)+' / '+guide.length+'</span><button '+(i===guide.length-1?'disabled':'')+' onclick="helpPage('+(i+1)+')">次へ</button></div><div class="buttons"><button onclick="closeModal()">ゲームに戻る</button></div>');
 }
@@ -96,3 +97,4 @@ online=new window.AsobiOnline('darts',{
 let onlineLast=-1;
 const onlineButton=document.createElement('button');onlineButton.textContent='オンライン対戦';$('settings').before(onlineButton);onlineButton.onclick=()=>{if($('modal').open)closeModal();online.open();};
 $('settings').addEventListener('click',e=>{if(online.active){e.stopImmediatePropagation();online.open();}},true);
+
