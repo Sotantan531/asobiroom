@@ -4,7 +4,7 @@ export function createImpactFX(T,scene,camera,stage){
  const glowCanvas=canvas(64,(c,s)=>{const g=c.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,'#fff');g.addColorStop(.12,'#fff');g.addColorStop(.35,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,s,s)}),glow=new T.CanvasTexture(glowCanvas);
  function ring(color){return canvas(256,(c,s)=>{c.translate(128,128);c.strokeStyle=color;c.shadowColor=color;c.shadowBlur=9;c.lineWidth=2;for(let j=0;j<3;j++){c.beginPath();c.arc(0,0,90+j*12,.1+j,.1+j+Math.PI*1.7);c.stroke()}for(let i=0;i<64;i++){const a=i/64*Math.PI*2;c.lineWidth=i%8===0?4:1;c.beginPath();c.moveTo(Math.cos(a)*111,Math.sin(a)*111);c.lineTo(Math.cos(a)*(i%8===0?122:117),Math.sin(a)*(i%8===0?122:117));c.stroke()}const g=c.createRadialGradient(0,0,4,0,0,103);g.addColorStop(0,color+'88');g.addColorStop(.35,color+'08');g.addColorStop(.8,color+'05');g.addColorStop(1,color+'55');c.fillStyle=g;c.beginPath();c.arc(0,0,103,0,Math.PI*2);c.fill()}).toDataURL()}
  const cursor=document.getElementById('cursor'),target=document.getElementById('target');cursor.style.setProperty('--holo-normal',`url("${ring('#80efff')}")`);cursor.style.setProperty('--holo-strong',`url("${ring('#ff703e')}")`);
- cursor.insertAdjacentHTML('beforeend','<em class="holoTicks"></em><b class="holoCross"></b>');target.innerHTML='<i class="targetReference"></i><b class="targetCountdown"></b>';
+ cursor.insertAdjacentHTML('beforeend','<em class="batCursorArt"></em>');target.innerHTML='<i class="targetReference"></i><b class="targetCountdown"></b>';
  const focus=canvas(512,(c,s)=>{c.translate(s/2,s/2);for(let i=0;i<90;i++){const a=i/90*Math.PI*2,inner=145+Math.random()*70;c.strokeStyle='rgba(255,255,255,'+(.3+Math.random()*.6)+')';c.lineWidth=1+Math.random()*3;c.beginPath();c.moveTo(Math.cos(a)*inner,Math.sin(a)*inner);c.lineTo(Math.cos(a)*380,Math.sin(a)*380);c.stroke()}});focus.className='impactFocus';stage.append(focus);
  const N=160,pos=new Float32Array(N*3),vel=new Float32Array(N*3),col=new Float32Array(N*3),sizes=new Float32Array(N),alpha=new Float32Array(N),life=new Float32Array(N),maxLife=new Float32Array(N);let cursorIndex=0;
  const pg=new T.BufferGeometry();pg.setAttribute('position',new T.BufferAttribute(pos,3).setUsage(T.DynamicDrawUsage));pg.setAttribute('color',new T.BufferAttribute(col,3).setUsage(T.DynamicDrawUsage));pg.setAttribute('size',new T.BufferAttribute(sizes,1));pg.setAttribute('alpha',new T.BufferAttribute(alpha,1).setUsage(T.DynamicDrawUsage));
@@ -16,7 +16,7 @@ export function createImpactFX(T,scene,camera,stage){
  const halo=new T.Sprite(new T.SpriteMaterial({map:glow,color:0xffcc59,transparent:true,blending:T.AdditiveBlending,depthWrite:false,opacity:0}));halo.scale.set(.65,.65,.65);scene.add(halo);const right=new T.Vector3();
  function reset(){life.fill(0);alpha.fill(0);historyCount=0;trailFade=0;rm.uniforms.opacity.value=0;halo.material.opacity=0;shock.visible=false;slashLife=0;focusLife=0;focus.style.opacity=0;}
  return {reset,
- swing(strong){slashLife=.15;slashMat.color.setHex(strong?0xff364e:0x67eaff);slashMat.opacity=.65;},
+ swing(strong,aim){if(aim)slash.position.set(aim.x,aim.y,.05);slashLife=.15;slashMat.color.setHex(strong?0xff364e:0x67eaff);slashMat.opacity=.65;},
  hit(p,sweet,just,golden){goldTrail=golden;historyCount=0;trailFade=1;shock.position.copy(p);shock.quaternion.copy(camera.quaternion);shock.visible=true;shockAge=0;shockMaterial.uniforms.color.value.setHex(golden?0xffca64:0xb8f7ff);for(let i=0;i<28;i++){let a=Math.random()*Math.PI*2,z=Math.random()*2-1,v=2+Math.random()*5;particle(p,Math.cos(a)*v,Math.sin(a)*v+1,z*v,golden,.4+Math.random()*.45,.11+Math.random()*.09)}if(sweet&&just)focusLife=.13;rm.uniforms.color.value.setHex(golden?0xffa62e:0x8de9ff);},
  celebrate(p){for(let i=0;i<90;i++){const a=i/90*Math.PI*2,v=5+Math.random()*12;particle(p,Math.cos(a)*v,8+Math.random()*15,Math.sin(a)*v,true,1+Math.random(),.4+Math.random()*.4)}},
  update(dt,ball,active,strong,time){cursor.classList.toggle('strongSwing',strong);cursor.style.setProperty('--holo-turn',(time*18)+'deg');cursor.style.setProperty('--pulse',String(.85+.15*Math.sin(time*5)));
@@ -27,3 +27,4 @@ export function createImpactFX(T,scene,camera,stage){
  },target(progress,just){target.classList.toggle('justRing',just);target.style.setProperty('--target-size',(18+65*(1-progress))+'px');}
  };
 }
+
