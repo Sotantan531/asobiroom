@@ -69,7 +69,7 @@ function partyThrow(h,x,y){
   if(party.round!==round){party.round=round;party.turnTotals=[0,0];}party.turnTotals[player]+=h.v;const diff=Math.abs(party.goals[Math.min(7,round-1)]-party.turnTotals[player]);party.message='合計 '+party.turnTotals[player]+' / お題 '+party.goals[Math.min(7,round-1)];
   if(darts.length===3){const gain=diff===0?150:Math.max(0,100-diff*4);scores[player]+=gain;party.message=(diff===0?'ぴったり！':'ずれ '+diff+'点')+' +'+gain+'pt';award=diff===0;}label+=' / '+party.message;
  }
- lightHit(h);impactSound(h);if(loser)arcadeCue('bust');if(award){celebrate('NICE ONE');awardSound('NICE ONE');}
+ lightHit(h);impactSound(h);if(loser){note(110,30,0,.22,'sawtooth',.18);note(360,70,.015,.12,'triangle',.1);}if(award){celebrate('NICE ONE');awardSound('NICE ONE');}
  log.push(['R'+round+' · '+labelFor(player)+' · '+darts.length,label]);$('flash').textContent=party.message;render();
  const done=mode==='balloon'||darts.length===3;
  if(loser){busy=true;timer=setTimeout(()=>end(solo()?0:1-player),1100);}
