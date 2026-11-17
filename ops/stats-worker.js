@@ -6,8 +6,8 @@ const NUMERIC = '(?:301|501|701|901|1101|1501)';
 const BOARD = new RegExp('^(?:' + NUMERIC + '-(?:open|double|master)-(?:fat|split)|(?:cu|multi|jack|ladder)-(?:fat|split)|eagle|center|cr|cut|cc)$');
 const DELTA_KEY = /^(?:plays|finished|wins|answered|correct|best|s[0-9]|q(?:[1-9]|[1-9][0-9]{1,2})\.(?:tries|right))$/;
 const QUESTION_COUNT = 152;
-const ACTIVITY_KEYS = Object.freeze({ visit: 'site_visit', darts: 'darts_play', 'dobon-quiz': 'dobon_play', 'sector-09': 'sector_play', billiards: 'billiards_play', bowling: 'bowling_play' });
-const GAMES = new Set(['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling']);
+const ACTIVITY_KEYS = Object.freeze({ visit: 'site_visit', darts: 'darts_play', 'dobon-quiz': 'dobon_play', 'sector-09': 'sector_play', billiards: 'billiards_play', bowling: 'bowling_play', 'crystal-pop': 'crystal_pop_play', 'homerun-impact': 'homerun_impact_play', gunman: 'gunman_play' });
+const GAMES = new Set(['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman']);
 const AVATARS = new Set(['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲']);
 const FRAMES = new Set(['classic', 'sunshine', 'ocean', 'cherry', 'mint', 'cosmic', 'neon', 'royal', 'rainbow', 'pixel']);
 const avatarOK = value => {
@@ -91,9 +91,9 @@ async function activity(request, env) {
     return json({ saved: true });
   }
   if (request.method !== 'GET') return json({ error: 'method' }, 405);
-  const { results } = await env.DB.prepare("SELECT j.key AS metric,SUM(CAST(j.value AS INTEGER)) AS total FROM zero_events e,json_each(e.delta_json) j WHERE j.key IN ('plays','site_visit','darts_play','dobon_play','sector_play','billiards_play','bowling_play') GROUP BY j.key").all();
+  const { results } = await env.DB.prepare("SELECT j.key AS metric,SUM(CAST(j.value AS INTEGER)) AS total FROM zero_events e,json_each(e.delta_json) j WHERE j.key IN ('plays','site_visit','darts_play','dobon_play','sector_play','billiards_play','bowling_play','crystal_pop_play','homerun_impact_play','gunman_play') GROUP BY j.key").all();
   const totals = Object.fromEntries(results.map(row => [row.metric, row.total]));
-  return json({ visits: totals.site_visit || 0, games: { 'zero-dive': totals.plays || 0, darts: totals.darts_play || 0, 'dobon-quiz': totals.dobon_play || 0, 'sector-09': totals.sector_play || 0, billiards: totals.billiards_play || 0, bowling: totals.bowling_play || 0 } });
+  return json({ visits: totals.site_visit || 0, games: { 'zero-dive': totals.plays || 0, darts: totals.darts_play || 0, 'dobon-quiz': totals.dobon_play || 0, 'sector-09': totals.sector_play || 0, billiards: totals.billiards_play || 0, bowling: totals.bowling_play || 0, 'crystal-pop': totals.crystal_pop_play || 0, 'homerun-impact': totals.homerun_impact_play || 0, gunman: totals.gunman_play || 0 } });
 }
 
 async function community(request, env, url) {
@@ -164,3 +164,4 @@ export default {
     }
   }
 };
+
