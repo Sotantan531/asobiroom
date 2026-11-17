@@ -104,10 +104,10 @@ async function community(request, env, url) {
       || !GAMES.has(data.game) || !['start', 'clear'].includes(data.action)) return json({ error: 'input' }, 400);
     const now = Date.now();
     const dayStart = jstDayStart(now);
-    // 1 IDにつき1日60件まで。XPの値はクライアントから受け取らず固定値を付与する。
-    const row = await env.DB.prepare('SELECT count(*) AS total FROM community_events WHERE player_id=? AND created>=?')
-      .bind(data.playerId, dayStart).first();
-    if ((row?.total || 0) >= 60) return json({ error: 'daily_limit' }, 429);
+    // ゲームごとに1日60件、全体300件。別ゲームの利用で新しいゲームの速報を塞がない。
+    const row = await env.DB.prepare('SELECT count(*) AS total, sum(CASE WHEN game=? THEN 1 ELSE 0 END) AS game_total FROM community_events WHERE player_id=? AND created>=?')
+      .bind(data.game, data.playerId, dayStart).first();
+    if ((row?.total || 0) >= 300 || (row?.game_total || 0) >= 60) return json({ error: 'daily_limit' }, 429);
     await env.DB.prepare('INSERT OR IGNORE INTO community_events(id,player_id,name,avatar,game,action,xp,created) VALUES(?,?,?,?,?,?,?,?)')
       .bind(data.id, data.playerId, normalizeName(data.name), data.avatar, data.game, data.action, data.action === 'start' ? 10 : 25, now).run();
     return json({ saved: true });
@@ -164,4 +164,5 @@ export default {
     }
   }
 };
+
 
