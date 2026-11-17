@@ -181,7 +181,7 @@
   controls.querySelector('#catalogRandom').addEventListener('click', pick);
   root.asobiCatalog = { ...api, pick, getVisible: () => [...visible] };
   const headingCount = document.querySelector('.asobi-games-heading small');
-  if (headingCount) headingCount.textContent = cards.size + 'つのゲームから、お気に入りを見つけよう。';
+  if (headingCount) headingCount.textContent = cards.size + '本のゲームから、お気に入りを見つけよう。';
   render();
 })(typeof window === 'undefined' ? globalThis : window);
 
