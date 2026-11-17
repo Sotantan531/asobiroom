@@ -24,7 +24,7 @@ class CrystalGame {
  let adjacent=new Set;for(let i of hit)for(let j of this.near(i))if(this.board[j]?.stone||this.board[j]?.slime)adjacent.add(j);for(let j of adjacent)hit.add(j);
  for(let i of hit){let p=this.board[i];if(!p)continue;if(options.all){if(p.slime)this.slimeKilled=true;this.board[i]=null;this.score+=100;continue;}if(p.stone){p.stone--;this.events.push({type:'stone',at:i});if(p.stone<=0){this.board[i]=null;this.score+=150;}continue;}if(p.slime){this.slimeKilled=true;this.board[i]=null;this.score+=100;this.events.push({type:'slime',at:i});continue;}if(p.treasure)continue;if(p.chain){delete p.chain;this.events.push({type:'chain',at:i});this.score+=50;continue;}if(p.ice){p.ice--;this.events.push({type:'ice',at:i});this.score+=50;if(p.ice>0)continue;}if(created.has(i)){this.board[i]=created.get(i);this.events.push({type:'create',at:i});}else{this.board[i]=null;this.events.push({type:'pop',at:i,color:p.c});}this.score+=60*Math.max(1,this.combo);}
  }
- gravity(){// Pinned cells divide a column; loose pieces fall one cell at a time. Portals are one-way downward edges.
+ gravity(){this.fallOrigins=new Map(this.board.map((p,i)=>[p,i]).filter(([p])=>p)); // Pinned cells divide a column; loose pieces fall one cell at a time. Portals are one-way downward edges.
  let moved=true,steps=0,used=new Set;while(moved&&steps++<this.n*this.n*3){moved=false;for(let portal of this.portals||[]){let p=this.board[portal.from];if(p&&this.movable(portal.from)&&!used.has(p)&&!this.board[portal.to]){this.board[portal.to]=p;this.board[portal.from]=null;used.add(p);moved=true;this.events.push({type:'warp',at:portal.to,from:portal.from});}}for(let y=this.n-1;y>=0;y--)for(let x=0;x<this.n;x++){let i=y*this.n+x,p=this.board[i];if(!p)continue;if(p.treasure&&y===this.n-1){this.board[i]=null;this.score+=700;this.moves+=2;this.events.push({type:'treasure',at:i});moved=true;continue;}if(!this.movable(i))continue;let portal=this.portals?.find(v=>v.from===i);let to=portal&&!used.has(p)?portal.to:(y<this.n-1?i+this.n:-1);if(to>=0&&!this.board[to]){this.board[to]=p;this.board[i]=null;moved=true;if(portal&&to===portal.to){used.add(p);this.events.push({type:'warp',at:to,from:i});}}} }
  // Fill each empty segment from above, including cavities below pinned obstacles.
  for(let i=0;i<this.board.length;i++)if(!this.board[i])this.board[i]=this.piece();}
@@ -36,3 +36,4 @@ class CrystalGame {
 }
 if(typeof module!=='undefined')module.exports=CrystalGame;else root.CrystalGame=CrystalGame;
 })(typeof window!=='undefined'?window:globalThis);
+
