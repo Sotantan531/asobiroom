@@ -106,7 +106,7 @@
     } catch { /* retry next time online */ }
     finally { flushing = false; }
   }
-  function record(game, action = 'start') {
+  function record(game, action = 'start', localOnly = false) {
     if (!GAMES[game] || !['start', 'clear'].includes(action)) return;
     const time = Date.now();
     state.recent.push({ game, action, time });
@@ -117,7 +117,7 @@
       state.games[game] = (state.games[game] || 0) + 1;
       state.xp += 10;
     } else { state.clears++; state.xp += 25; }
-    if (state.public) {
+    if (state.public && !localOnly) {
       // Store avatar and frame in one validated string for the existing D1 schema.
       pending.push({ id: crypto.randomUUID(), playerId: state.id, name: publicName(state.name), avatar: state.avatar + '|' + state.frame, game, action });
       pending = pending.slice(-120);
