@@ -49,9 +49,9 @@ function partyRender(){
  }
  $('partyHUD').innerHTML='<div class="partyHeading">'+name+'</div><div class="partyInfo">'+info+'</div><div class="partyMessage">'+(status||'狙いを決めて、スワイプ！')+'</div>';
  $('partyBackdrop').innerHTML=art;
- // Treasure markers and territory shields sit on the inner single ring, away from the numbers.
+ // Treasure markers and territory shields sit on the outer single ring, away from the numbers.
  $('partyMarks')?.remove();let icons='';
- if(mode==='treasure'||mode==='territory')for(const n of nums){const [x,y]=targetCenter(n,1).map(v=>v*.53);let text='',color='#ffe19c';if(mode==='treasure'){const type=party.maps[r][n];text={trap:'×',steal:'鍵',gold:'80',coin:'20'}[type];color=type==='trap'?'#ff9c9c':type==='steal'?'#b5e7ff':'#ffe19c';}else{const v=party.owners[n];if(v){text='盾'+v.shield;color=v.owner?'#a7dbff':'#ffce9f';}}if(text)icons+='<g transform="translate('+x+','+y+')"><circle r="9" fill="#102535" opacity=".85"/><text y="3" text-anchor="middle" font-size="7" font-weight="800" fill="'+color+'">'+text+'</text></g>';}
+ if(mode==='treasure'||mode==='territory')for(const n of nums){const [x,y]=targetCenter(n,1).map(v=>v*.95);let text='',color='#ffe19c';if(mode==='treasure'){const type=party.maps[r][n];text={trap:'×',steal:'鍵',gold:'80',coin:'20'}[type];color=type==='trap'?'#ff9c9c':type==='steal'?'#b5e7ff':'#ffe19c';}else{const v=party.owners[n];if(v){text='盾'+v.shield;color=v.owner?'#a7dbff':'#ffce9f';}}if(text)icons+='<g transform="translate('+x+','+y+')"><circle r="12" fill="#102535" opacity=".85"/><text y="3" text-anchor="middle" font-size="10" font-weight="800" fill="'+color+'">'+text+'</text></g>';}
  if(icons)$('pins').insertAdjacentHTML('beforebegin','<g id="partyMarks" pointer-events="none">'+icons+'</g>');
 }
 function partyThrow(h,x,y){
