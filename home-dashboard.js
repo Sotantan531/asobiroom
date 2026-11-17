@@ -34,7 +34,7 @@
         <a href="/zero-dive/">🌊 深海ゼロダイブ</a>
         <a href="/darts/">🎯 FLIGHTLINE DARTS</a>
         <a href="/dobon-quiz/">💣 ドボンクイズ</a>
-        <a href="/sector-01/">👁️ 隔離区画01</a>
+        <a href="/sector-01/">👁️ 隔離区画01</a><a href="/sector-02/">🕯️ 隔離区画02</a>
         <a href="/billiards/">🎱 BILLIARDS CLUB</a>
         <a href="/bowling/">🎳 ポケット・ボウリング</a>
         <a href="/crystal-pop/">💎 クリスタル・ポップ</a>
@@ -55,7 +55,7 @@
           <li><a href="/zero-dive/"><span class="game-name">🌊 深海ゼロダイブ</span><span data-count="zero-dive">—</span></a></li>
           <li><a href="/darts/"><span class="game-name">🎯 FLIGHTLINE DARTS</span><span data-count="darts">—</span></a></li>
           <li><a href="/dobon-quiz/"><span class="game-name">💣 ドボンクイズ</span><span data-count="dobon-quiz">—</span></a></li>
-          <li><a href="/sector-01/"><span class="game-name">👁️ 隔離区画01</span><span data-count="sector-09">—</span></a></li>
+          <li><a href="/sector-02/"><span class="game-name">🕯️ 隔離区画02</span><span data-count="sector-02">—</span></a></li><li><a href="/sector-01/"><span class="game-name">👁️ 隔離区画01</span><span data-count="sector-09">—</span></a></li>
           <li><a href="/billiards/"><span class="game-name">🎱 BILLIARDS CLUB</span><span data-count="billiards">—</span></a></li>
           <li><a href="/bowling/"><span class="game-name">🎳 ポケット・ボウリング</span><span data-count="bowling">—</span></a></li>
           <li><a href="/crystal-pop/"><span class="game-name">💎 クリスタル・ポップ</span><span data-count="crystal-pop">—</span></a></li>
@@ -96,7 +96,7 @@
       const data = await activity.summary();
       drawer.querySelector('[data-count="visits"]').textContent = number(data.visits);
       
-      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman'])
+      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'sector-02', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman'])
         drawer.querySelector(`[data-count="${key}"]`).textContent = number(data.games?.[key]);
       lastLoaded = Date.now();
       status.textContent = '集計更新：' + new Date(lastLoaded).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
@@ -142,12 +142,13 @@
     const games = player ? Object.values(player.GAMES) : [
       { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }, { href: '/bowling/' }
     ];
-    for (const href of ['/crystal-pop/', '/homerun-impact.html', '/gunman.html']) if (!games.some(g => g.href === href)) games.push({ href });
+    for (const href of ['/crystal-pop/', '/homerun-impact.html', '/gunman.html', '/sector-02/']) if (!games.some(g => g.href === href)) games.push({ href });
     location.href = games[Math.floor(Math.random() * games.length)].href;
   });
   addEventListener('asobi:player-updated', syncProfile);
   syncProfile();
   activity.visit();
 })();
+
 
 

@@ -8,6 +8,7 @@
   const WEIGHTS = ['⚡ 超軽量', '⚙️ 標準', '🔥 3D・リッチ'];
   const SORTS = { recommended: 'おすすめ順', newest: '新着順', light: '動作が軽い順', rich: 'リッチ・3D順', quick: 'サクッと遊べる順' };
   const games = [
+    { id: 'sector-02', title: '隔離区画 02｜呪われた屋敷', href: '/sector-02/', genre: 'アクション・反射神経', description: '玄関は目の前。音とフラッシュを頼りに、10回の解錠で呪われた屋敷を脱出せよ。', weight: 2, oneHand: true, minutes: 3, timeLabel: '約2〜5分', publishedAt: '2026-11-18T04:15:00+09:00' },
     { id: 'gunman', title: '早撃ちガンマン', href: '/gunman.html', genre: 'アクション・反射神経', description: '鐘が鳴るまで撃つな。6つの決闘モードとオンライン対戦で荒野の名手へ。', weight: 0, oneHand: true, minutes: 2, timeLabel: '約1〜3分', publishedAt: '2026-11-17T17:00:00+09:00' },
     { id: 'homerun-impact', title: 'ホームラン・インパクト', href: '/homerun-impact.html', genre: 'スポーツ・体感', description: '狙って、離して、かっ飛ばす。4つの球種に挑む10球のホームラン競争。', weight: 2, oneHand: true, minutes: 3, timeLabel: '約3分', publishedAt: '2026-11-17T15:40:00+09:00' },
     { id: 'zero-dive', title: '深海ゼロダイブ', href: '/zero-dive/', genre: 'パズル・脳トレ', description: '0の数を見極めて潜航。10問のクイズで深海の奥へ。', weight: 1, oneHand: true, minutes: 3, timeLabel: '約3〜5分', publishedAt: null },
@@ -183,5 +184,6 @@
   if (headingCount) headingCount.textContent = cards.size + 'つのゲームから、お気に入りを見つけよう。';
   render();
 })(typeof window === 'undefined' ? globalThis : window);
+
 
 

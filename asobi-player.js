@@ -5,6 +5,7 @@
   const QUEUE = 'asobiroom-community-pending-v1';
   const API = window.asobiApi ? window.asobiApi('/api/community') : '/api/community';
   const GAMES = Object.freeze({
+    'sector-02': { name: '隔離区画02｜呪われた屋敷', icon: '🕯️', href: '/sector-02/' },
     gunman: { name: '早撃ちガンマン', icon: '🤠', href: '/gunman.html' },
     'homerun-impact': { name: 'ホームラン・インパクト', icon: '⚾', href: '/homerun-impact.html' },
     'zero-dive': { name: '深海ゼロダイブ', icon: '🌊', href: '/zero-dive/' },
@@ -151,6 +152,7 @@
   addEventListener('online', flush);
   if (pending.length) void flush();
 })();
+
 
 
 
