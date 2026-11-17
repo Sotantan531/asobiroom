@@ -1,0 +1,11 @@
+/* asobiroom 共通ゲームブランド v1 */
+.asobi-unified-brand{display:inline-flex!important;align-items:center!important;gap:9px!important;min-width:0!important;min-height:38px!important;color:#f5f8ff!important;text-decoration:none!important;line-height:1.1!important;cursor:pointer!important;border:0!important;background:transparent!important;box-shadow:none!important;padding:2px 4px!important;font-family:system-ui,'Noto Sans JP',sans-serif!important;flex-shrink:0!important}
+.asobi-unified-brand img{width:34px!important;height:34px!important;object-fit:cover!important;border-radius:9px!important;display:block!important;flex-shrink:0!important;box-shadow:none!important}
+.asobi-unified-brand .asobi-brand-copy{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:3px!important;min-width:0!important;white-space:nowrap!important}
+.asobi-unified-brand .asobi-brand-name{font-size:clamp(16px,2.7vw,21px)!important;font-weight:850!important;letter-spacing:-.035em!important;color:#fff!important;line-height:1!important;text-shadow:none!important}
+.asobi-unified-brand .asobi-brand-tagline{font-size:8px!important;letter-spacing:.075em!important;font-weight:600!important;color:#b4c9e4!important;line-height:1.15!important;text-shadow:none!important}
+.asobi-unified-brand:focus-visible{outline:2px solid #ffd76d!important;outline-offset:3px!important;border-radius:8px!important}
+.asobi-unified-brand:hover .asobi-brand-name{text-decoration:underline}
+.logoPanel:has(.asobi-unified-brand){min-width:0!important}
+.logoPanel .asobi-unified-brand{width:auto!important;max-width:100%!important;text-align:left!important;z-index:4!important}
+@media(max-width:460px){.asobi-unified-brand{gap:6px!important;padding:1px!important}.asobi-unified-brand img{width:29px!important;height:29px!important}.asobi-unified-brand .asobi-brand-name{font-size:16px!important}.asobi-unified-brand .asobi-brand-tagline{font-size:7px!important}}

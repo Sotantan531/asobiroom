@@ -56,6 +56,7 @@
           <li><a href="/sector-01/"><span class="game-name">👁️ 隔離区画01</span><span data-count="sector-09">—</span></a></li>
           <li><a href="/billiards/"><span class="game-name">🎱 BILLIARDS CLUB</span><span data-count="billiards">—</span></a></li>
           <li><a href="/bowling/"><span class="game-name">🎳 ポケット・ボウリング</span><span data-count="bowling">—</span></a></li>
+          <li><a href="/crystal-pop/"><span class="game-name">💎 クリスタル・ポップ</span><span data-count="crystal-pop">—</span></a></li>
         </ul>
         <p class="asobi-dashboard-status" role="status" aria-live="polite">開くと最新の記録を取得します。</p>
         <p class="asobi-dashboard-note">訪問はタブごとに1回、プレイはゲーム開始時に加算。集計開始前の履歴は含みません。</p>
@@ -91,7 +92,7 @@
       const data = await activity.summary();
       drawer.querySelector('[data-count="visits"]').textContent = number(data.visits);
       
-      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling'])
+      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling', 'crystal-pop'])
         drawer.querySelector(`[data-count="${key}"]`).textContent = number(data.games?.[key]);
       lastLoaded = Date.now();
       status.textContent = '集計更新：' + new Date(lastLoaded).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
@@ -144,3 +145,4 @@
   syncProfile();
   activity.visit();
 })();
+

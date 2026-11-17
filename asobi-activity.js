@@ -3,7 +3,7 @@
   'use strict';
   const ENDPOINT = (window.asobiApi ? window.asobiApi('/api/activity') : '/api/activity');
   const QUEUE_KEY = 'asobiroom-activity-pending-v1';
-  const ALLOWED = new Set(['visit', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling']);
+  const ALLOWED = new Set(['visit', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling', 'crystal-pop']);
   let pending = [];
   let sending = false;
   try {
@@ -67,3 +67,4 @@
   addEventListener('online', flush);
   if (pending.length) void flush();
 })();
+
