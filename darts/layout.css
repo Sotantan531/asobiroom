@@ -71,3 +71,9 @@ header nav .asobi-home-link:hover{background:#214e71;color:#fff}
 @media(max-width:760px){header nav .asobi-home-link{margin-right:1px;padding:5px 7px;font-size:11px}.brand{min-width:0}.brand-type{min-width:0}.publisher span{display:none}}
 @media(max-width:540px){header nav .asobi-home-link{padding:5px 7px}.asobi-home-text{display:none}.brand strong{font-size:15px}header nav{gap:2px}header nav button{font-size:10px;padding:4px 5px}}
 @media(max-width:370px){.brand img{width:28px;height:28px}.brand strong{font-size:13px}header{padding-inline:8px}}
+
+
+/* Compact game title and actions, including the dynamically inserted online button. */
+.title{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px!important}.title>div{flex:1 1 180px;min-width:0}.title h1{font-size:clamp(18px,3.2vw,32px)!important;line-height:1.1;letter-spacing:-.04em!important;white-space:nowrap}.title button{font-size:12px!important;line-height:1.2!important;padding:8px 10px!important;min-height:36px;min-width:0!important;width:auto!important;white-space:nowrap!important;flex:0 0 auto!important;border-radius:9px!important}
+@media(max-width:600px){.title>div{flex-basis:100%;display:block!important}.title h1{font-size:22px!important}.title{margin-bottom:8px!important}.title button{font-size:11px!important;padding:7px 9px!important}header nav{gap:3px!important}header nav button{font-size:10px!important;padding:5px!important}}
+@media(max-height:540px) and (orientation:landscape){.title{position:static!important;height:auto!important}.title>div{flex:1 1 auto!important}.title h1{font-size:16px!important}.title button{min-height:28px;padding:4px 7px!important}}
