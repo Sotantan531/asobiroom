@@ -38,6 +38,8 @@
         <a href="/billiards/">🎱 BILLIARDS CLUB</a>
         <a href="/bowling/">🎳 ポケット・ボウリング</a>
         <a href="/crystal-pop/">💎 クリスタル・ポップ</a>
+        <a href="/homerun-impact.html">⚾ ホームラン・インパクト</a>
+        <a href="/gunman.html">🤠 早撃ちガンマン</a>
       </div>
       <a class="asobi-menu-main-link" href="/#arcadeRankings"><span>🏆</span> みんなのランキング <b aria-hidden="true">›</b></a>
       <a class="asobi-menu-main-link" href="/#arcadeMissions"><span>✨</span> 今日のミッション <b aria-hidden="true">›</b></a>
@@ -57,7 +59,9 @@
           <li><a href="/billiards/"><span class="game-name">🎱 BILLIARDS CLUB</span><span data-count="billiards">—</span></a></li>
           <li><a href="/bowling/"><span class="game-name">🎳 ポケット・ボウリング</span><span data-count="bowling">—</span></a></li>
           <li><a href="/crystal-pop/"><span class="game-name">💎 クリスタル・ポップ</span><span data-count="crystal-pop">—</span></a></li>
-        </ul>
+        <li><a href="/homerun-impact.html"><span class="game-name">⚾ ホームラン・インパクト</span><span data-count="homerun-impact">—</span></a></li>
+<li><a href="/gunman.html"><span class="game-name">🤠 早撃ちガンマン</span><span data-count="gunman">—</span></a></li>
+</ul>
         <p class="asobi-dashboard-status" role="status" aria-live="polite">開くと最新の記録を取得します。</p>
         <p class="asobi-dashboard-note">訪問はタブごとに1回、プレイはゲーム開始時に加算。集計開始前の履歴は含みません。</p>
       </div>
@@ -92,7 +96,7 @@
       const data = await activity.summary();
       drawer.querySelector('[data-count="visits"]').textContent = number(data.visits);
       
-      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling', 'crystal-pop'])
+      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman'])
         drawer.querySelector(`[data-count="${key}"]`).textContent = number(data.games?.[key]);
       lastLoaded = Date.now();
       status.textContent = '集計更新：' + new Date(lastLoaded).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
@@ -138,11 +142,12 @@
     const games = player ? Object.values(player.GAMES) : [
       { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }, { href: '/bowling/' }
     ];
-    if (!games.some(g => g.href === '/crystal-pop/')) games.push({ href: '/crystal-pop/' });
+    for (const href of ['/crystal-pop/', '/homerun-impact.html', '/gunman.html']) if (!games.some(g => g.href === href)) games.push({ href });
     location.href = games[Math.floor(Math.random() * games.length)].href;
   });
   addEventListener('asobi:player-updated', syncProfile);
   syncProfile();
   activity.visit();
 })();
+
 
