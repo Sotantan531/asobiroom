@@ -87,3 +87,7 @@ a:focus-visible { outline: 3px solid var(--info-red); outline-offset: 3px; }
   .footer-inner { align-items: flex-start; flex-direction: column; }
 }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } }
+
+/* Shared trust pages: scoped layout, native scrolling, readable licence text. */
+.site-header-inner{flex-wrap:wrap}.site-header nav{flex:1 1 100%;line-height:1.5}.info-facts{display:grid;grid-template-columns:minmax(100px,150px) 1fr;gap:10px 18px}.info-facts dt{font-weight:800}.info-facts dd{margin:0;color:var(--info-sub);overflow-wrap:anywhere}.game-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.game-summary-grid article{padding:18px;background:var(--info-card);border:1px solid var(--info-line);border-radius:14px}.game-summary-grid h3{margin-top:0}.game-summary-grid p{margin-bottom:0;font-size:14px}.license-text{font:12px/1.7 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;background:var(--info-soft);padding:18px;border-radius:12px;color:var(--info-text)}time{font-size:12px;font-weight:800;color:var(--info-sub)}.site-footer nav{display:flex;flex-wrap:wrap;gap:12px}.info-page a{overflow-wrap:anywhere}@media(max-width:620px){.game-summary-grid{grid-template-columns:1fr}.info-facts{grid-template-columns:1fr;gap:4px}.info-facts dd{margin-bottom:12px}.site-header nav{gap:8px 14px}}
+.site-header .asobi-info-brand{font-size:23px;font-weight:900;text-decoration:none;letter-spacing:-.04em}

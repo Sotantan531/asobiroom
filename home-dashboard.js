@@ -67,7 +67,7 @@
       </div>
     </details>
     <div class="asobi-menu-footer">
-      <a href="/about.html">サイトについて</a><a href="/privacy-policy.html">プライバシー</a><a href="/contact.html">お問い合わせ</a>
+      <a href="/about.html">サイトについて</a><a href="/updates.html">更新履歴</a><a href="/credits.html">制作・素材について</a><a href="/privacy-policy.html">プライバシー</a><a href="/contact.html">お問い合わせ</a>
     </div>`;
   document.body.append(backdrop, drawer);
 
