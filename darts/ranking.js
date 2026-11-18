@@ -14,7 +14,7 @@ async function syncRanks(){
   sending=(async()=>{
     while(pending.length){
       const record=pending[0];let response;
-      try{response=await fetch(asobiApi('/api/ranks'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)})}catch{break}
+      try{await window.asobiPlayer?.ready?.();const profile=window.asobiPlayer?.get?.();if(record.playerId===profile?.id){record.name=profile.name;record.sessionToken=window.asobiPlayer?.credentials?.().sessionToken;}response=await fetch(asobiApi('/api/ranks'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)})}catch{break}
       if(!response.ok)break;
       pending.shift();savePref('fl-pending',pending);
     }
@@ -23,7 +23,7 @@ async function syncRanks(){
   })().finally(()=>sending=null);
   return sending;
 }
-function recordResults(w){
+function recordResults(w){if(window.asobiPlayer?.get?.().loggedOut){rankMessage='ほかの端末へ引き継がれたためログアウトしています。';return;}
   if(partyMode()){partySaveRecord();rankMessage='パーティの記録をこの端末に保存しました。';return;}
   if(rules.bonus.some((v,i)=>v&&(!i||!solo()))){rankMessage='ハンデ戦はランキングの対象外です。';return}
   const board=rankKey();let added=false;
@@ -31,8 +31,8 @@ function recordResults(w){
     if(p&&rules.opponent!=='local')continue;
     if(is01()&&(p!==w||scores[p]!==0))continue;
     const score=is01()?-rankedThrows[p]:mode==='cut'?-scores[p]:scores[p];
-    const safeName=window.asobiPlayer?.publicName(nicknames[p])||'ゲスト';
-    pending.push({id:crypto.randomUUID(),board,name:safeName,score});added=true;
+    const profile=window.asobiPlayer?.get?.(),eventId=crypto.randomUUID(),safeName=profile?.name||'ゲスト';
+    pending.push({id:eventId,playerId:p?eventId:profile?.id,board,name:p?'ゲスト':safeName,score});added=true;
   }
   rankMessage=added?'ランキングへ送信中…':'01は上がったプレイヤーの投数を記録します。';
   if(added){savePref('fl-pending',pending);syncRanks()}
@@ -40,7 +40,7 @@ function recordResults(w){
 function showRanking(){
  if(partyMode()){partyRanking();return;}
  const key=rankKey(),numeric=is01(),reverse=numeric||mode==='cut';
- show('<h2>オンラインランキング</h2><p id="boardLabel"></p><div id="rankList" aria-live="polite">読み込み中…</div><p>ハンデなしの人間プレイヤーが対象です。<a href="/contact.html">不適切な名前の通報</a></p><div class="chooser"><label>P1 の登録名<input id="rankName0" maxlength="16"></label><label>P2 の登録名<input id="rankName1" maxlength="16"></label></div><div class="buttons"><button id="rankClose">ゲームに戻る</button></div>');
+ show('<h2>オンラインランキング</h2><p id="boardLabel"></p><div id="rankList" aria-live="polite">読み込み中…</div><p>ハンデなしの人間プレイヤーが対象です。<a href="/contact.html">不適切な名前の通報</a></p><div class="chooser"><label>P1 のプロフィール名<input id="rankName0" maxlength="16"></label><label>P2 の自動登録名<input id="rankName1" maxlength="16"></label></div><div class="buttons"><button id="rankClose">ゲームに戻る</button></div>');
  $('boardLabel').textContent=names[mode]+' ／ '+(numeric?({open:'オープンアウト',master:'マスターアウト',double:'ダブルアウト'}[rules.out]+' ／ 上がりまでの投数'):mode==='cut'?'失点が少ない順':'得点が高い順')+(key.endsWith('-split')?' ／ セパレートブル':key.endsWith('-fat')?' ／ ブル50点':'');
  for(let i=0;i<2;i++){const input=$('rankName'+i);input.value=nicknames[i];input.onchange=()=>{
    const next=input.value.trim();
@@ -49,13 +49,13 @@ function showRanking(){
    }
    input.setCustomValidity('');nicknames[i]=next;input.value=nicknames[i];savePref('fl-names',nicknames);
  }}
- $('rankClose').onclick=closeModal;
+ for(let i=0;i<2;i++){const input=$('rankName'+i);input.readOnly=true;input.value=i?'ゲスト（対面プレイヤー）':window.asobiPlayer?.get?.().name||'ゲスト';} $('rankClose').onclick=closeModal;
  const list=$('rankList');
  async function load(){
   try{
     await syncRanks();const res=await fetch(asobiApi('/api/ranks?board='+encodeURIComponent(key)));if(!res.ok)throw Error();
     const rows=await res.json();list.replaceChildren();if(!rows.length)list.textContent='まだ記録がありません。';
-    rows.forEach((r,i)=>{const row=document.createElement('div');row.className='rankRow';for(const val of [i+1,window.asobiPlayer?.publicName(r.name)||'非公開ユーザー',(reverse?-r.score:r.score)+(numeric?' 投':' 点')]){const col=document.createElement('span');col.textContent=val;row.append(col)}list.append(row)});
+    rows.forEach((r,i)=>{const row=document.createElement('div');row.className='rankRow';for(const val of [i+1,(window.asobiPlayer?.publicName(r.name)||'非公開ユーザー')+(r.role==='admin'?'【運営者】':''),(reverse?-r.score:r.score)+(numeric?' 投':' 点')]){const col=document.createElement('span');col.textContent=val;row.append(col)}list.append(row)});
   }catch{list.textContent='順位を取得できませんでした。';const retry=document.createElement('button');retry.textContent='再読み込み';retry.onclick=load;list.append(retry)}
  }
  load();
@@ -64,3 +64,5 @@ document.getElementById('ranking').onclick=showRanking;
 window.addEventListener('online',syncRanks);
 if(pending.length)syncRanks();
 
+
+window.addEventListener('asobi:session-revoked',()=>{pending=[];savePref('fl-pending',pending);});
