@@ -30,7 +30,9 @@ function dash(){
   dashEnds=clock+dashDuration;dashReady=dashEnds+dashCooldown;
   updateDashButton();
 }
-$('#run').onclick=dash;
+// Fire on pointerdown: a second finger must not wait for a synthesized click.
+$('#run').addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();dash();});
+$('#run').onclick=e=>{if(e.detail===0)dash();};
 
 $('#guide').onclick=()=>openModal('庭園での生存手順','庭園図は北が上。白い矢印があなた、琥珀色の点が未点灯のスイッチです。すべてを好きな順に灯して、北の鉄門を開けてください。水色の◆は探知器です。拾ったあと、Rキーか探知ボタンで1回だけ、30秒間石像の位置を表示できます。<br><br>難易度によって石像の速さとスイッチの数、霧の濃さが変わります。1体は最短経路を詰め、1体は側面から回り込み、1体は移動方向の先で待ち伏せます。壁や生垣を挟んでいても、こちらが向いている方の石像は止まります。視界の外にいる石像は、そのまま追ってきます。庭園に立つ黒い石像は動きません。<br><br>床板の縁が赤く光ったら針が出る合図です。針は庭園に設置された床板から周期的に突き出します。スイッチや鉄門は正面に捉えて操作してください。<br><br>ダッシュは3秒間加速し、終了から6秒で再使用できます。<br><br><b>PC</b>　WASDで移動、画面クリック後マウスまたは左右キーで見回す。Shiftでダッシュ、Eで操作。<br><b>スマホ</b>　スティックで移動、空いている場所をスワイプして視点操作。「ダッシュ」をタップ。','閉じる',()=>{},false);
 function sampleSwitches(){let result=[];for(let [a,b,c,d] of [[2,17,2,16],[25,41,3,18],[2,18,25,41],[25,41,25,41]]){let options=[];for(let x=a;x<=b;x++)for(let z=c;z<=d;z++)if(free(x,z)&&Math.hypot(x+.5-spawn.x,z+.5-spawn.z)>2&&[[1,0],[-1,0],[0,1],[0,-1]].some(([i,j])=>free(x+i,z+j)))options.push({x:x+.5,z:z+.5,on:false});result.push(options[Math.floor(Math.random()*options.length)])}const needed=levels[prefs.level].count;

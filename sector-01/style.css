@@ -10,3 +10,11 @@
 #options input{accent-color:#d6a17a}#options input[type=range]{width:36%}#options output{margin-left:auto;color:#d3b798;font:12px monospace}#options .level-info{font-size:11px;color:#cfbda5;margin:7px 0}#options button{margin-top:17px;width:100%}
 @media(pointer:coarse){.left-hand #stick{right:6%;left:auto}.left-hand #use,.left-hand #run{right:auto;left:5%}}
 @media(max-width:650px){.menu-tools{width:215px}}
+
+/* Title difficulty stays visible before starting and shares the settings value. */
+.title-difficulty{width:245px;max-width:100%;border:0;padding:0;margin:16px 0 12px;min-width:0}.title-difficulty legend{font-size:11px;letter-spacing:.08em;color:#d7d1c7;margin-bottom:7px}.title-difficulty>div{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.title-difficulty button{padding:9px 2px;font-size:11px;font-weight:700;border:1px solid #817b705c;background:#141512d9;border-radius:4px;touch-action:manipulation}.title-difficulty button[aria-pressed=true]{background:#c6a568;color:#171314;border-color:#c6a568}.hero .title-difficulty p{font-size:10px;line-height:1.55;margin:7px 0 0;min-height:2.9em;color:#d4cbbd;letter-spacing:0}
+@media(max-width:650px){.title-difficulty{width:245px;margin-block:10px}.title-difficulty button{min-height:38px}.hero{bottom:8%}.hero>p{margin:9px 0}}
+@media(max-height:620px) and (min-width:651px){.hero h1{font-size:52px;margin-top:10px}.hero h1 span{font-size:58px;display:inline-flex}.hero>p{margin:8px 0}.title-difficulty{margin:7px 0}.title-difficulty button{padding:6px 2px}.hero .title-difficulty p{min-height:0}.hero .primary,.menu-tools .secondary{padding-block:9px}}
+@media(max-height:480px){#menu{overflow-y:auto}.hero{top:75px!important;bottom:auto!important;transform:none!important;padding-bottom:65px}.hero h1{font-size:42px!important;margin:5px 0}.hero h1 span{font-size:42px!important;display:inline-flex}.hero>p{font-size:11px;line-height:1.5}.title-difficulty{margin-block:5px}.hero .title-difficulty p{min-height:0}.title-difficulty button{min-height:30px;padding:5px 2px}#menu footer{display:none}}
+
+#run{touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:auto;z-index:5;min-height:46px}#stick{touch-action:none}#run:active{background:#695635}

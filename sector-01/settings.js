@@ -20,6 +20,8 @@ function refreshSettings(){
  const level=levels[prefs.level];
  panel.querySelector('output').value=prefs.sensitivity+'%';
  panel.querySelector('.level-info').textContent='スイッチ '+level.count+'個　／　石像 '+({easy:'遅め',normal:'標準',hard:'速め'}[prefs.level])+'　／　視界 '+({easy:'明るめ',normal:'標準',hard:'暗め'}[prefs.level]);
+ document.querySelectorAll('[data-difficulty]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.difficulty===prefs.level)));
+ document.getElementById('difficultyNote').textContent='スイッチ '+level.count+'個 · 石像 '+({easy:'遅め / 視界は明るめ',normal:'標準 / 視界は標準',hard:'速め / 視界は暗め'}[prefs.level]);
  document.body.classList.toggle('left-hand',prefs.left);
 }
 const options=document.getElementById('options');
@@ -30,3 +32,5 @@ options.addEventListener('input',e=>{
 });
 document.getElementById('settings').onclick=()=>{refreshSettings();options.showModal()};
 refreshSettings();
+
+document.querySelectorAll('[data-difficulty]').forEach(b=>b.onclick=()=>{prefs.level=b.dataset.difficulty;refreshSettings();try{localStorage.setItem('sector09-controls',JSON.stringify(prefs))}catch{}});
