@@ -2,6 +2,8 @@
 'use strict';
 class CrystalGame {
  constructor(mode='easy',random=Math.random){this.random=random;this.mode=mode;this.n=mode==='easy'?7:8;this.colors=mode==='easy'?5:6;this.moves=mode==='hard'?30:25;this.target={easy:6500,normal:10000,hard:14000}[mode];this.score=0;this.combo=0;this.dead=false;this.events=[];this.board=Array.from({length:this.n*this.n},()=>this.piece());this.settleInitial();this.decorate();this.ensureMoves();}
+ remainingObjectives(){return this.board.filter(p=>p&&(p.ice||p.chain||p.stone||p.slime||p.treasure||p.timer!==undefined)).length;}
+ canClear(){return !this.dead&&this.score>=this.target&&this.remainingObjectives()===0;}
  piece(){return {c:Math.floor(this.random()*this.colors)};}
  xy(i){return [i%this.n,Math.floor(i/this.n)];}
  near(i){let [x,y]=this.xy(i);return [[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([a,b])=>a>=0&&b>=0&&a<this.n&&b<this.n).map(([a,b])=>b*this.n+a);}
@@ -32,7 +34,7 @@ class CrystalGame {
  if(p.special==='rainbow'||q.special==='rainbow'||p.special&&q.special){this.combo++;let m=this.mix(a,b);this.blast(m.ids,new Map,m);await onStep('clear');this.gravity();await onStep('fall');}
  let runs,cycles=0;while((runs=this.matches()).length&&cycles++<80){this.combo++;let make=this.creations(runs,cycles===1?[b,a]:[]);this.blast(new Set(runs.flatMap(r=>r.ids)),make);await onStep('clear');this.gravity();await onStep('fall');}
  if(this.mode==='hard'){if(!this.slimeKilled){let choices=[];this.board.forEach((v,i)=>{if(v.slime)for(let j of this.near(i)){let p=this.board[j];if(this.valid(p)&&!p.special&&!p.timer&&!p.ice&&!p.chain)choices.push(j);}});if(choices.length){let i=choices[Math.floor(this.random()*choices.length)];this.board[i]={c:-1,slime:true};this.events.push({type:'grow',at:i});}}for(let p of this.board)if(p.timer!==undefined){p.timer--;if(p.timer<=0){this.dead=true;this.reason='時限爆弾が爆発！';}}}
- this.won=!this.dead&&this.score>=this.target;if(this.won)this.dead=true;else if(this.moves<=0){this.dead=true;this.reason='手数を使い切りました';}if(!this.dead)this.ensureMoves();this.busy=false;await onStep('done');return true;}
+ this.won=this.canClear();if(this.won)this.dead=true;else if(this.moves<=0){this.dead=true;this.reason='手数を使い切りました';}if(!this.dead)this.ensureMoves();this.busy=false;await onStep('done');return true;}
 }
 if(typeof module!=='undefined')module.exports=CrystalGame;else root.CrystalGame=CrystalGame;
 })(typeof window!=='undefined'?window:globalThis);
