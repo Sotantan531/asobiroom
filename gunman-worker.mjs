@@ -1,3 +1,4 @@
+import {authenticateIdentity} from './player-identity.mjs';
 import { DurableObject } from 'cloudflare:workers';
 const json=(v,status=200)=>Response.json(v,{status});
 const uuid=()=>crypto.randomUUID();
@@ -27,18 +28,19 @@ export default {async fetch(req,env){
  res=json(await env.LOBBY.getByName('queue-v1').join(b.client));
  }else if(u.pathname==='/cancel'&&req.method==='POST'){const b=await body(req);if(validId(b.client))await env.LOBBY.getByName('queue-v1').cancel(b.client);res=json({ok:true});}else if(u.pathname==='/rankings'&&req.method==='GET'){
  const mode=u.searchParams.get('mode')==='survival'?'survival':'reaction';const order=mode==='reaction'?'ASC':'DESC';
- const rows=await env.DB.prepare(`SELECT name,value,created FROM records WHERE mode=? ORDER BY value ${order},created ASC LIMIT 20`).bind(mode).all();res=json({mode,rows:rows.results});
+ const rows=await env.DB.prepare(`SELECT client,name,value,created FROM records WHERE mode=? ORDER BY value ${order},created ASC LIMIT 20`).bind(mode).all();const profiles=rows.results.length?await env.PROFILE_DB.batch(rows.results.map(r=>env.PROFILE_DB.prepare("SELECT p.name,p.role FROM ranking_owners o JOIN player_profiles p ON p.player_id=o.player_id WHERE o.kind='gunman' AND o.record_id=?").bind(mode+':'+r.client))):[];res=json({mode,rows:rows.results.map((r,i)=>({name:profiles[i]?.results?.[0]?.name||r.name,value:r.value,created:r.created,role:profiles[i]?.results?.[0]?.role||'player'}))});
  }else if(u.pathname==='/runs'&&req.method==='POST'){
  const b=await body(req);if(!validId(b.client)||!['reaction','survival'].includes(b.mode))throw Error('計測モードが不正です');
  const ip=req.headers.get('CF-Connecting-IP')||'unknown';const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ip+new Date().toISOString().slice(0,10))))).map(x=>x.toString(16).padStart(2,'0')).join('');
  const recent=await env.DB.prepare('SELECT COUNT(*) n FROM runs WHERE ip=? AND created>?').bind(hash,Date.now()-60000).first();if(recent.n>=12)return new Response(JSON.stringify({error:'少し時間をおいて再試行してください'}),{status:429,headers});
  const token=uuid(),now=Date.now();await env.DB.batch([env.DB.prepare('DELETE FROM runs WHERE created<?').bind(now-3600000),env.DB.prepare('INSERT INTO runs(id,client,mode,created,ip,used) VALUES(?,?,?,?,?,0)').bind(token,b.client,b.mode,now,hash)]);res=json({token});
  }else if(u.pathname==='/records'&&req.method==='POST'){
- const b=await body(req),name=cleanName(b.name);if(!name||/[<>@\r\n\x00-\x1f]/.test(name)||/https?:|死ね|殺す|fuck|nigger/i.test(name))throw Error('公開用の名前を変更してください');
+ const b=await body(req);let name=cleanName(b.name);if(!name||/[<>@\r\n\x00-\x1f]/.test(name)||/https?:|死ね|殺す|fuck|nigger/i.test(name))throw Error('公開用の名前を変更してください');
  if(!validId(b.token)||!validId(b.client))throw Error('計測をやり直してください');
  const run=await env.DB.prepare('SELECT * FROM runs WHERE id=? AND client=?').bind(b.token,b.client).first();if(!validateRecord(b,run))throw Error('記録が検証条件を満たしていません（100ms未満・重複・期限切れ等）');
+ const identity=await authenticateIdentity({DB:env.PROFILE_DB},validId(b.playerId)?b.playerId:b.client,b.sessionToken,name,v=>!!cleanName(v)&&!/[<>@\r\n\x00-\x1f]/.test(v),true);name=identity.name;
  const value=Math.round(b.value*10)/10,cmp=run.mode==='reaction'?'<':'>';
- const result=await env.DB.batch([env.DB.prepare(`INSERT INTO records(client,mode,name,value,created) SELECT client,mode,?,?,? FROM runs WHERE id=? AND used=0 ON CONFLICT(client,mode) DO UPDATE SET name=excluded.name,value=excluded.value,created=excluded.created WHERE excluded.value ${cmp} records.value`).bind(name,value,Date.now(),b.token),env.DB.prepare('UPDATE runs SET used=1 WHERE id=? AND used=0').bind(b.token)]);res=json({ok:true,improved:result[0].meta.changes>0});
+ const result=await env.DB.batch([env.DB.prepare(`INSERT INTO records(client,mode,name,value,created) SELECT client,mode,?,?,? FROM runs WHERE id=? AND used=0 ON CONFLICT(client,mode) DO UPDATE SET name=excluded.name,value=excluded.value,created=excluded.created WHERE excluded.value ${cmp} records.value`).bind(name,value,Date.now(),b.token),env.DB.prepare('UPDATE runs SET used=1 WHERE id=? AND used=0').bind(b.token)]);await env.PROFILE_DB.prepare('INSERT OR REPLACE INTO ranking_owners(record_id,player_id,kind) VALUES(?,?,?)').bind(run.mode+':'+b.client,identity.player_id,'gunman').run();res=json({ok:true,improved:result[0].meta.changes>0});
  }else res=json({error:'Not found'},404);
  for(const [k,v] of Object.entries(headers))res.headers.set(k,v);return res;
  }catch(e){return new Response(JSON.stringify({error:e.message||'通信に失敗しました'}),{status:400,headers:{...headers,'Content-Type':'application/json'}});}

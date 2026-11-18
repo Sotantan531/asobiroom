@@ -85,7 +85,7 @@
     const avatar = drawer.querySelector('#asobiMenuAvatar');
     avatar.textContent = me.avatar;
     avatar.dataset.frame = me.frame || 'classic';
-    drawer.querySelector('#asobiMenuName').textContent = me.name;
+    drawer.querySelector('#asobiMenuName').textContent=me.name+(me.loggedOut?'（ログアウト）':'');if(me.role==='admin'){const badge=document.createElement('small');badge.className='asobi-admin-badge';badge.textContent='運営者 · ADMIN';drawer.querySelector('#asobiMenuName').append(badge);}
     drawer.querySelector('#asobiMenuLevel').textContent = 'LEVEL ' + me.level + ' · ' + number(me.xp) + ' XP';
   }
   async function refresh() {
