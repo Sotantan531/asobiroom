@@ -40,6 +40,7 @@
         <a href="/crystal-pop/">💎 クリスタル・ポップ</a>
         <a href="/homerun-impact.html">⚾ ホームラン・インパクト</a>
         <a href="/gunman.html">🤠 早撃ちガンマン</a>
+        <a href="/kyudo.html">🏹 弓道 — 一射の間</a>
       </div>
       <a class="asobi-menu-main-link" href="/#arcadeRankings"><span>🏆</span> みんなのランキング <b aria-hidden="true">›</b></a>
       <a class="asobi-menu-main-link" href="/#arcadeMissions"><span>✨</span> 今日のミッション <b aria-hidden="true">›</b></a>
@@ -51,7 +52,7 @@
       <div class="asobi-menu-stats-body">
         <div class="asobi-dashboard-total"><span>🏠 サイト訪問回数</span><strong data-count="visits">—</strong></div>
         <div class="asobi-dashboard-heading"><span>ゲーム別プレイ回数</span><button type="button" class="asobi-dashboard-refresh" id="asobiStatsRefresh">↻ 更新</button></div>
-        <ul class="asobi-dashboard-list">
+        <ul class="asobi-dashboard-list"><li><a href="/kyudo.html"><span class="game-name">🏹 弓道 — 一射の間</span><span data-count="kyudo">—</span></a></li>
           <li><a href="/zero-dive/"><span class="game-name">🌊 深海ゼロダイブ</span><span data-count="zero-dive">—</span></a></li>
           <li><a href="/darts/"><span class="game-name">🎯 FLIGHTLINE DARTS</span><span data-count="darts">—</span></a></li>
           <li><a href="/dobon-quiz/"><span class="game-name">💣 ドボンクイズ</span><span data-count="dobon-quiz">—</span></a></li>
@@ -96,7 +97,7 @@
       const data = await activity.summary();
       drawer.querySelector('[data-count="visits"]').textContent = number(data.visits);
       
-      for (const key of ['zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'sector-02', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman'])
+      for (const key of ['kyudo', 'zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'sector-02', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman'])
         drawer.querySelector(`[data-count="${key}"]`).textContent = number(data.games?.[key]);
       lastLoaded = Date.now();
       status.textContent = '集計更新：' + new Date(lastLoaded).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
@@ -142,7 +143,7 @@
     const games = player ? Object.values(player.GAMES) : [
       { href: '/zero-dive/' }, { href: '/darts/' }, { href: '/dobon-quiz/' }, { href: '/sector-01/' }, { href: '/billiards/' }, { href: '/bowling/' }
     ];
-    for (const href of ['/crystal-pop/', '/homerun-impact.html', '/gunman.html', '/sector-02/']) if (!games.some(g => g.href === href)) games.push({ href });
+    for (const href of ['/kyudo.html', '/crystal-pop/', '/homerun-impact.html', '/gunman.html', '/sector-02/']) if (!games.some(g => g.href === href)) games.push({ href });
     location.href = games[Math.floor(Math.random() * games.length)].href;
   });
   addEventListener('asobi:player-updated', syncProfile);
