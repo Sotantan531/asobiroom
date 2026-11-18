@@ -1,6 +1,7 @@
+import {ensureIdentity,authenticateIdentity,identityEndpoint,decorateAvatar,SECRET_AVATARS,SECRET_FRAMES} from './player-identity.mjs';
 import {sportsRanks} from './sports-ranks.mjs';
 // asobiroom.net の共有ゲーム記録 API (Cloudflare Workers + D1)
-// 公開プロフィールは事前に利用者が明示的に有効化した場合のみ送信される。
+// ブラウザのプロフィール名でゲーム記録を自動集計。クリアはXPに残し、速報は開始のみ。
 const SITE_ORIGINS = new Set(['https://asobiroom.net', 'https://www.asobiroom.net']);
 const UUID = /^[a-f\d-]{36}$/i;
 const NUMERIC = '(?:301|501|701|901|1101|1501)';
@@ -9,8 +10,8 @@ const DELTA_KEY = /^(?:plays|finished|wins|answered|correct|best|s[0-9]|q(?:[1-9
 const QUESTION_COUNT = 185;
 const ACTIVITY_KEYS = Object.freeze({ kyudo: 'kyudo_play', visit: 'site_visit', darts: 'darts_play', 'dobon-quiz': 'dobon_play', 'sector-09': 'sector_play', 'sector-02': 'sector02_play', billiards: 'billiards_play', bowling: 'bowling_play', 'crystal-pop': 'crystal_pop_play', 'homerun-impact': 'homerun_impact_play', gunman: 'gunman_play' });
 const GAMES = new Set(['kyudo', 'zero-dive', 'darts', 'dobon-quiz', 'sector-09', 'sector-02', 'billiards', 'bowling', 'crystal-pop', 'homerun-impact', 'gunman']);
-const AVATARS = new Set(['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲']);
-const FRAMES = new Set(['classic', 'sunshine', 'ocean', 'cherry', 'mint', 'cosmic', 'neon', 'royal', 'rainbow', 'pixel']);
+const AVATARS = new Set(['🐣', '🐈', '🐳', '🎯', '💣', '🦊', '🤖', '👑', '🐶', '🐰', '🐼', '🐸', '🦋', '🦄', '🐙', '🦈', '🐧', '🦖', '🚀', '🌙', '⭐', '🎮', '👾', '🐲',...SECRET_AVATARS.keys()]);
+const FRAMES = new Set(['classic', 'sunshine', 'ocean', 'cherry', 'mint', 'cosmic', 'neon', 'royal', 'rainbow', 'pixel',...SECRET_FRAMES.keys()]);
 const avatarOK = value => {
   if (typeof value !== 'string' || value.length > 32) return false;
   const [avatar, frame, ...unexpected] = value.split('|');
@@ -42,16 +43,17 @@ async function darts(request, env, url) {
   if (request.method === 'GET') {
     const board = url.searchParams.get('board') || '';
     if (!BOARD.test(board)) return json({ error: 'board' }, 400);
-    const { results } = await env.DB.prepare('SELECT name,score FROM rankings WHERE board=? ORDER BY score DESC,created,id LIMIT 20').bind(board).all();
+    const { results } = await env.DB.prepare(`SELECT COALESCE(p.name,r.name) name,r.score,COALESCE(p.role,'player') role FROM rankings r LEFT JOIN ranking_owners o ON o.record_id=r.id AND o.kind='darts' LEFT JOIN player_profiles p ON p.player_id=o.player_id WHERE r.board=? ORDER BY r.score DESC,r.created,r.id LIMIT 20`).bind(board).all();
     return json(results.map(row => ({ ...row, name: visibleName(row.name) })));
   }
   if (request.method !== 'POST') return json({ error: 'method' }, 405);
   const data = await payload(request);
   if (!data || !idOK(data.id) || !BOARD.test(data.board || '') || !nameOK(data.name) || !Number.isInteger(data.score)) return json({ error: 'input' }, 400);
-  const { id, board, name, score } = data;
+  const { id, board, score } = data; const identity=await authenticateIdentity(env,idOK(data.playerId)?data.playerId:id,data.sessionToken,data.name,nameOK,true); const name=identity.name;
   const max = board === 'center' ? 14400 : board === 'eagle' ? 1200 : board.startsWith('multi') ? 2880 : board.startsWith('jack') ? 10000 : 3600;
   if (/^\d/.test(board) ? score >= 0 || score < -60 : board === 'cut' ? score > 0 || score < -3600 : score < 0 || score > max) return json({ error: 'score' }, 400);
   await env.DB.prepare('INSERT OR IGNORE INTO rankings(id,board,name,score,created) VALUES(?,?,?,?,?)').bind(id, board, normalizeName(name), score, Date.now()).run();
+  await env.DB.prepare('INSERT OR IGNORE INTO ranking_owners(record_id,player_id,kind) VALUES(?,?,?)').bind(id,identity.player_id,'darts').run();
   return json({ saved: true });
 }
 async function dobon(request, env) {
@@ -74,13 +76,15 @@ async function zeroRecords(request, env) {
 }
 async function zeroRanking(request, env) {
   if (request.method === 'GET') {
-    const { results } = await env.DB.prepare('SELECT name,score,correct FROM zero_scores ORDER BY score DESC,created,id LIMIT 20').all();
+    const { results } = await env.DB.prepare(`SELECT COALESCE(p.name,z.name) name,z.score,z.correct,COALESCE(p.role,'player') role FROM zero_scores z LEFT JOIN ranking_owners o ON o.record_id=z.id AND o.kind='zero-dive' LEFT JOIN player_profiles p ON p.player_id=o.player_id ORDER BY z.score DESC,z.created,z.id LIMIT 20`).all();
     return json(results.map(row => ({ ...row, name: visibleName(row.name) })));
   }
   if (request.method !== 'POST') return json({ error: 'method' }, 405);
   const data = await payload(request);
   if (!data || !idOK(data.id) || !nameOK(data.name) || !Number.isInteger(data.score) || !Number.isInteger(data.correct) || data.correct < 0 || data.correct > 10 || data.score !== data.correct * 100) return json({ error: 'input' }, 400);
-  await env.DB.prepare('INSERT OR IGNORE INTO zero_scores(id,name,score,correct,created) VALUES(?,?,?,?,?)').bind(data.id, normalizeName(data.name), data.score, data.correct, Date.now()).run();
+  const identity=await authenticateIdentity(env,idOK(data.playerId)?data.playerId:data.id,data.sessionToken,data.name,nameOK,true);
+  await env.DB.prepare('INSERT OR IGNORE INTO zero_scores(id,name,score,correct,created) VALUES(?,?,?,?,?)').bind(data.id, identity.name, data.score, data.correct, Date.now()).run();
+  await env.DB.prepare('INSERT OR IGNORE INTO ranking_owners(record_id,player_id,kind) VALUES(?,?,?)').bind(data.id,identity.player_id,'zero-dive').run();
   return json({ saved: true });
 }
 async function activity(request, env) {
@@ -100,9 +104,10 @@ async function activity(request, env) {
 async function community(request, env, url) {
   if (request.method === 'POST') {
     const data = await payload(request);
-    if (!data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).sort().join(',') !== 'action,avatar,game,id,name,playerId'
+    if (!data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).filter(k=>k!=='sessionToken').sort().join(',') !== 'action,avatar,game,id,name,playerId'
       || !idOK(data.id) || !idOK(data.playerId) || !nameOK(data.name) || !avatarOK(data.avatar)
       || !GAMES.has(data.game) || !['start', 'clear'].includes(data.action)) return json({ error: 'input' }, 400);
+    const identity=await authenticateIdentity(env,data.playerId,data.sessionToken,data.name,nameOK,true); data.playerId=identity.player_id;data.name=identity.name;data.avatar=decorateAvatar(data.avatar,identity.role);
     const now = Date.now();
     const dayStart = jstDayStart(now);
     // ゲームごとに1日60件、全体300件。別ゲームの利用で新しいゲームの速報を塞がない。
@@ -123,17 +128,15 @@ async function community(request, env, url) {
   const monthStart = Date.UTC(japanNow.getUTCFullYear(), japanNow.getUTCMonth(), 1) - 9 * 3600000;
   const since = period === 'all' ? 0 : period === 'month' ? monthStart : weekStart;
   const leaderboardSql = `SELECT SUM(c.xp) AS xp,
-    (SELECT e.name FROM community_events e WHERE e.player_id=c.player_id ORDER BY e.created DESC, e.id DESC LIMIT 1) AS name,
-    (SELECT e.avatar FROM community_events e WHERE e.player_id=c.player_id ORDER BY e.created DESC, e.id DESC LIMIT 1) AS avatar
-    FROM community_events c WHERE c.created>=? GROUP BY c.player_id ORDER BY xp DESC, MIN(c.created) ASC LIMIT 20`;
-  const [ranks, feed] = await Promise.all([
+    COALESCE(p.name,(SELECT e.name FROM community_events e WHERE e.player_id=c.player_id ORDER BY e.created DESC,e.id DESC LIMIT 1)) AS name,
+    COALESCE(p.avatar||'|'||p.frame,(SELECT e.avatar FROM community_events e WHERE e.player_id=c.player_id ORDER BY e.created DESC,e.id DESC LIMIT 1)) AS avatar,
+    COALESCE(p.role,'player') AS role
+    FROM community_events c LEFT JOIN player_aliases a ON a.alias_id=c.player_id LEFT JOIN player_profiles p ON p.player_id=COALESCE(a.player_id,c.player_id) WHERE c.created>=? GROUP BY COALESCE(a.player_id,c.player_id) ORDER BY xp DESC,MIN(c.created) ASC LIMIT 20`;
+  const [ranks,feed]=await Promise.all([
     env.DB.prepare(leaderboardSql).bind(since).all(),
-    env.DB.prepare('SELECT name,avatar,game,action,created FROM community_events ORDER BY created DESC,id DESC LIMIT 12').all()
+    env.DB.prepare("SELECT COALESCE(p.name,c.name) name,COALESCE(p.avatar||'|'||p.frame,c.avatar) avatar,COALESCE(p.role,'player') role,c.game,c.action,c.created FROM community_events c LEFT JOIN player_aliases a ON a.alias_id=c.player_id LEFT JOIN player_profiles p ON p.player_id=COALESCE(a.player_id,c.player_id) WHERE c.action='start' ORDER BY c.created DESC,c.id DESC LIMIT 12").all()
   ]);
-  return json({ period,
-    leaderboard: ranks.results.map(row => ({ ...row, name: visibleName(row.name) })),
-    feed: feed.results.map(row => ({ ...row, name: visibleName(row.name) }))
-  });
+  return json({period,leaderboard:ranks.results.map(r=>({...r,name:visibleName(r.name),avatar:decorateAvatar(r.avatar,r.role)})),feed:feed.results.map(r=>({...r,name:visibleName(r.name),avatar:decorateAvatar(r.avatar,r.role)}))});
 }
 
 export default {
@@ -146,7 +149,8 @@ export default {
     if (!env.DB) return new Response('D1 binding is missing', { status: 503, headers: cors });
     const url = new URL(request.url);
     try {
-      const response = url.pathname === '/api/sports-ranks' ? await sportsRanks(request,env,url,{json,payload,idOK,nameOK,visibleName,normalizeName})
+      const response = url.pathname === '/api/player' ? await identityEndpoint(request,env,{json,payload,idOK,nameOK,normalizeName,avatarOK})
+        : url.pathname === '/api/sports-ranks' ? await sportsRanks(request,env,url,{json,payload,idOK,nameOK,visibleName,normalizeName,ensureIdentity:authenticateIdentity})
         : url.pathname === '/api/ranks' ? await darts(request, env, url)
         : url.pathname === '/api/stats' ? await dobon(request, env)
         : url.pathname === '/api/records' ? await zeroRecords(request, env)
@@ -159,10 +163,10 @@ export default {
       return new Response(response.body, { status: response.status, headers });
     } catch (error) {
       console.error(JSON.stringify({ message: 'asobiroom stats request failed', path: url.pathname, error: error instanceof Error ? error.message : String(error) }));
-      const response = json({ error: 'server' }, 500);
+      const status=error?.status===401?401:500;const response=json({error:status===401?'session_revoked':'server'},status);
       const headers = new Headers(response.headers);
       for (const [key, value] of Object.entries(cors)) headers.set(key, value);
-      return new Response(response.body, { status: 500, headers });
+      return new Response(response.body,{status,headers});
     }
   }
 };
