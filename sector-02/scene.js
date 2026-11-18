@@ -9,7 +9,8 @@ gl.useProgram(program);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disab
 Object.assign(loc,{P:gl.getAttribLocation(program,'aP'),N:gl.getAttribLocation(program,'aN'),C:gl.getAttribLocation(program,'aC'),E:gl.getAttribLocation(program,'aE'),PV:gl.getUniformLocation(program,'uPV'),Model:gl.getUniformLocation(program,'uModel'),Eye:gl.getUniformLocation(program,'uEye'),Forward:gl.getUniformLocation(program,'uForward'),Flash:gl.getUniformLocation(program,'uFlash'),Time:gl.getUniformLocation(program,'uTime'),Ghost:gl.getUniformLocation(program,'uGhost')});}
 function color(hex){if(Array.isArray(hex))return hex;const h=hex.replace('#','');return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]}
 class Mesh{constructor(){this.v=[];this.buffer=null;this.count=0}triangle(a,b,c,col,emit=0){const v=this.v,n=[(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]),(b[2]-a[2])*(c[0]-a[0])-(b[0]-a[0])*(c[2]-a[2]),(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])];const ll=Math.hypot(...n)||1;let co=color(col);for(const p of [a,b,c])v.push(...p,n[0]/ll,n[1]/ll,n[2]/ll,...co,emit)}quad(a,b,c,d,col,e=0){this.triangle(a,b,c,col,e);this.triangle(a,c,d,col,e)}box(x,y,z,w,h,d,col,e=0){const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;this.quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],col,e);this.quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],col,e);this.quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],col,e);this.quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],col,e);this.quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],col,e);this.quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],col,e)}cylinder(x,y,z,r,h,col,segments=9,e=0){for(let i=0;i<segments;i++){const a=i/segments*2*PI,b=(i+1)/segments*2*PI,p=t=>[x+Math.cos(t)*r,y,z+Math.sin(t)*r],q=t=>[x+Math.cos(t)*r,y+h,z+Math.sin(t)*r];this.quad(p(a),p(b),q(b),q(a),col,e);this.triangle([x,y+h,z],q(a),q(b),col,e);this.triangle([x,y,z],p(b),p(a),col,e)}}sphere(x,y,z,rx,ry,rz,col,e=0){const seg=12,steps=8;for(let i=0;i<steps;i++){let a=i/steps*PI,b=(i+1)/steps*PI;for(let j=0;j<seg;j++){let c=j*2*PI/seg,d=(j+1)*2*PI/seg;const p=(v,u)=>[x+Math.sin(v)*Math.cos(u)*rx,y+Math.cos(v)*ry,z+Math.sin(v)*Math.sin(u)*rz];const start=this.v.length;this.quad(p(a,c),p(b,c),p(b,d),p(a,d),col,e);for(let k=start;k<this.v.length;k+=10){const n=[(this.v[k]-x)/(rx*rx),(this.v[k+1]-y)/(ry*ry),(this.v[k+2]-z)/(rz*rz)],l=Math.hypot(...n)||1;this.v[k+3]=n[0]/l;this.v[k+4]=n[1]/l;this.v[k+5]=n[2]/l;}}}}build(){this.count=this.v.length/10;this.data=new Float32Array(this.v);if(!gl){this.v=[];return;}this.buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,this.buffer);gl.bufferData(gl.ARRAY_BUFFER,this.data,gl.STATIC_DRAW);}draw(){gl.bindBuffer(gl.ARRAY_BUFFER,this.buffer);for(let [id,size,offset] of [[loc.P,3,0],[loc.N,3,3],[loc.C,3,6],[loc.E,1,9]]){gl.enableVertexAttribArray(id);gl.vertexAttribPointer(id,size,gl.FLOAT,false,40,offset*4)}gl.drawArrays(gl.TRIANGLES,0,this.count)}}
-const main=new Mesh(),door=new Mesh(),ghost=new Mesh();
+const main=new Mesh(),door=new Mesh(),ghost=new Mesh(),doorGlow=new Mesh();
+doorGlow.box(0,1.1,-1.58,.018,2.16,.025,'#efd697',.9);
 // A sealed T-junction: 1.9m side corridors, a low 2.55m ceiling, no open background.
 const wood='#30272e',wall='#34313e',trim='#524654';
 main.box(0,-.1,2.5,49,.2,1.95,'#242029');main.box(0,2.67,2.5,49,.24,2.13,'#15131b');
@@ -62,7 +63,7 @@ for(let j=-4;j<=4;j++){const y=2.115-Math.abs(j)*.010;ghost.sphere(j*.029,y,.267
 // Uneven black hair and creases follow the skull surface in 3D.
 for(let i=0;i<19;i++){let a=i*2*PI/19,x=Math.cos(a)*.265,z=Math.sin(a)*.22;ghost.sphere(x,2.48,z,.044,.11,.05,'#111019');if(i%3!==0)ghost.sphere(x*1.03,2.26,z*.94,.027,.26+(i%3)*.06,.03,'#17121d');}
 for(let i=0;i<12;i++){let x=(i%2?1:-1)*(.08+(i%5)*.035);ghost.sphere(x,2.41-(i%4)*.12,.225,.004,.052,.004,'#38313f');}
-for(const m of [main,door,ghost])m.build();
+for(const m of [main,door,ghost,doorGlow])m.build();
 function identity(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])}function matrixMultiply(a,b){const out=new Float32Array(16);for(let j=0;j<4;j++)for(let i=0;i<4;i++){out[i+j*4]=a[i+0]*b[j*4+0]+a[i+4]*b[j*4+1]+a[i+8]*b[j*4+2]+a[i+12]*b[j*4+3]}return out}
 function translate(x,y,z){const m=identity();m[12]=x;m[13]=y;m[14]=z;return m}function rotateY(a){const m=identity(),s=Math.sin(a),c=Math.cos(a);m[0]=c;m[8]=s;m[2]=-s;m[10]=c;return m}
 function perspective(fov,aspect,near,far){const f=1/Math.tan(fov/2),o=new Float32Array(16);o[0]=f/aspect;o[5]=f;o[10]=(far+near)/(near-far);o[11]=-1;o[14]=2*far*near/(near-far);return o}
@@ -87,19 +88,20 @@ function cpuScene(objects,eye,forward,flash,time,scare){
  for(let y=y0;y<=y1;y++){let u=ax*(x0-c[0])+ay*(y-c[1]),v=bx*(x0-c[0])+by*(y-c[1]);for(let x=x0;x<=x1;x++,u+=ax,v+=bx){const w=1-u-v;if(u<0||v<0||w<0)continue;const iz=u*a[2]+v*b[2]+w*c[2],k=y*W+x;if(iz>zbuffer[k]){zbuffer[k]=iz;pixels[k]=packed;}}}}
  }}ctx.putImageData(image,0,0);
 }
-let cpuLast=-1000,cpuKey='';function render(opts){const {time=0,yaw=0,reveal=null,menu=false,scare=0,escape=0,motion=1}=opts;
+let cpuLast=-1000,cpuKey='';function render(opts){const {time=0,yaw=0,reveal=null,menu=false,scare=0,escape=0,motion=1,progress=0}=opts;
  const rect=canvas.getBoundingClientRect(),ratio=gl?Math.min(devicePixelRatio||1,1.5):Math.min(1,(menu?800:480)/Math.max(1,rect.width),(menu?550:360)/Math.max(1,rect.height));
  const w=Math.max(1,Math.round(rect.width*ratio)),h=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
  let eye=[0,1.68,2.5],forward=[Math.sin(yaw),-.018,-Math.cos(yaw)],objects=[{mesh:main,model:identity()},{mesh:door,model:matrixMultiply(translate(-.82,0,-1.49),rotateY(Math.min(1,escape/.30)*1.9))}],flash=reveal?2.6:0;
+ if(progress>0&&!menu){const seam=translate(.825,0,.12);seam[5]=.15+.85*Math.min(1,progress/100);objects.push({mesh:doorGlow,model:seam});}
  if(escape>0){const walk=Math.max(0,Math.min(1,(escape-.28)/.72));const ease=walk*walk*(3-2*walk);eye=[0,1.68+Math.sin(walk*32)*.035*motion,2.5-ease*9];forward=[0,-.018,-1];flash=.3;}
  if(menu){eye=[0,1.86,2.9];forward=[0,.01,-1];objects.push({mesh:ghost,model:matrixMultiply(translate(.70,-.10,1.1),rotateY(-.10))});flash=.95;}
  if(reveal){objects.push({mesh:ghost,model:matrixMultiply(translate(reveal.side*reveal.distance,0,2.5),rotateY((reveal.side===-1?PI/2:-PI/2)+(reveal.turn||0)))});}
  if(scare>0){const age=scare-.0001,rush=.64+.94*Math.exp(-age*10),shake=Math.exp(-age*5)*.03*motion;eye=[Math.sin(age*70)*shake,2.16+Math.cos(age*83)*shake,2.5];forward=[0,-.025,-1];objects=[{mesh:ghost,model:translate(0,0,2.5-rush-.15)}];flash=2.4;}
- if(!gl){const key=[w,h,Math.round(yaw*50),menu,Math.round(scare*12),Math.round(escape*30),reveal?reveal.side+':'+Math.round(reveal.distance*10)+':'+Math.round((reveal.turn||0)*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
+ if(!gl){const key=[w,h,Math.round(yaw*50),menu,Math.round(scare*12),Math.round(escape*30),Math.floor(progress/20),reveal?reveal.side+':'+Math.round(reveal.distance*10)+':'+Math.round((reveal.turn||0)*10):''].join('|');if(key===cpuKey)return;if(time-cpuLast<1/24&&!scare&&!reveal)return;cpuKey=key;cpuLast=time;cpuScene(objects,eye,forward,flash,time,scare>0);frames++;return;}
  gl.viewport(0,0,w,h);gl.clearColor(.008,.009,.014,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);const pv=matrixMultiply(perspective(73*PI/180,w/h,.08,95),lookAt(eye,eye.map((x,k)=>x+forward[k])));
  gl.uniformMatrix4fv(loc.PV,false,pv);gl.uniform3fv(loc.Eye,eye);gl.uniform3fv(loc.Forward,forward);gl.uniform1f(loc.Flash,flash);gl.uniform1f(loc.Time,time);
  for(const o of objects){gl.uniformMatrix4fv(loc.Model,false,o.model);gl.uniform1f(loc.Ghost,o.mesh===ghost?1:0);o.mesh.draw();}frames++;
 }
-return {render,gpu:!!gl,counts:{room:main.count,door:door.count,monster:ghost.count},dispose(){if(gl)for(const m of [main,door,ghost])gl.deleteBuffer(m.buffer);}};
+return {render,gpu:!!gl,counts:{room:main.count,door:door.count,monster:ghost.count},dispose(){if(gl)for(const m of [main,door,ghost,doorGlow])gl.deleteBuffer(m.buffer);}};
 }
 
