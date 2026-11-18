@@ -724,7 +724,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
 </dialog>
 <a class="asobi-home-link" href="/" aria-label="asobiroom ホームへ戻る">⌂ ホームへ</a>
 <script src="../asobi-config.js"></script>
-<script src="../asobi-player.js"></script>
+<script src="../asobi-player.js?v=20261119identity"></script>
 <script>
 // A single IndexedDB transaction imports pre-online history once per browser.
 // New events receive independent IDs so concurrent tabs and retries are additive.
@@ -1200,25 +1200,19 @@ function setupArchive(questions, scenes, getStats, showArea) {
       if(!response.ok)throw Error('rank');
       const data=await response.json();rankList.replaceChildren();
       for(const [i,item] of data.entries()){
-        const row=document.createElement('li');row.textContent=`${window.asobiPlayer?.publicName(item.name)||'非公開ユーザー'} — ${item.score}点（${item.correct}問正解）`;
+        const row=document.createElement('li');row.textContent=`${window.asobiPlayer?.publicName(item.name)||'非公開ユーザー'}${item.role==='admin'?'【運営者】':''} — ${item.score}点（${item.correct}問正解）`;
         rankList.append(row);
       }
       rankStatus.textContent=data.length?'上位20件を表示しています。':'まだランキングの記録がありません。';
     }catch{rankStatus.textContent='ランキングを取得できませんでした。'}
   }
   $('#diveRankReload').onclick=loadDiveRanking;
-  $('#diveRankSubmit').onclick=async()=>{
-    if(!window.ASOBIROOM_API_BASE){rankStatus.textContent='ランキングは準備中です。';return}
-    const name=rankName.value.trim();
-    if(!window.asobiPlayer?.isPublicNameAllowed(name)){rankStatus.textContent='16文字以内で、URL・連絡先・不適切な言葉を含まない名前にしてね。';return}
-    const button=$('#diveRankSubmit');button.disabled=true;rankStatus.textContent='送信中…';
-    try{
-      const res=await fetch(asobiApi('/api/zero-ranking'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentResultId,name,score,correct})});
-      if(!res.ok)throw Error('send');
-      try{localStorage.setItem('zero_dive_rank_name',name)}catch{}
-      rankStatus.textContent='今回の記録を登録しました！';await loadDiveRanking();
-    }catch{button.disabled=false;rankStatus.textContent='登録できませんでした。通信を確認してもう一度。'}
-  };
+  async function submitDiveRecord(){
+    if(!window.ASOBIROOM_API_BASE){rankStatus.textContent='ランキングは準備中です。';return;}
+    const entry={id:currentResultId,score,correct};const button=$('#diveRankSubmit');button.disabled=true;rankStatus.textContent='送信中…';
+    try{await window.asobiPlayer?.ready?.();const profile=window.asobiPlayer?.get?.();const response=await fetch(asobiApi('/api/zero-ranking'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry,...window.asobiPlayer?.credentials?.(),name:profile?.name||'ゲスト'})});if(!response.ok)throw Error('登録できませんでした。接続を確認してもう一度。');rankName.value=profile.name;rankStatus.textContent='今回の記録を自動登録しました！';await loadDiveRanking();}catch(error){button.disabled=false;rankStatus.textContent=error.message;}
+  }
+  $('#diveRankSubmit').onclick=submitDiveRecord;rankName.readOnly=true;rankName.value=window.asobiPlayer?.get?.().name||'ゲスト';
   function saveStats(){try{localStorage.setItem(STATS_KEY,JSON.stringify(stats));}catch{}}
   function estimatedDifficulty(q){
     // An editorial estimate until this browser has enough attempts to assess this question.
@@ -1642,7 +1636,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
     $('#finalSub').textContent = correct === 10 ? '竜宮城に到着！' : `${scene.place} まで到達！`;
     $('#finalText').innerHTML = `全10問中 <strong>${correct}問正解</strong><br>到達深度：<strong>${scene.depth}m</strong><br>到達地点：<strong>${scene.place}</strong><br>スコア：<strong>${score}</strong><br><br>${correct === 10 ? '全問正解！ 伝説の竜宮城にたどり着きました！' : 'もう一度挑戦して、さらに深く潜ってみよう！'}`;
     $('#resultModal').classList.remove('hidden');
-    loadDiveRanking();
+    void submitDiveRecord();
     sound('end');
   }
 
