@@ -39,7 +39,7 @@
     return icon;
   };
   const gameIcons = player.GAMES;
-  let period = 'week', lastFeed = [], lastRanks = [], loading = false, pendingRefresh = false;
+  let period = 'week', lastFeed = [], lastRanks = [], loading = false, pendingRefresh = false, lastRefresh = 0;
 
   function render() {
     const me=player.get();$('#arcadeSessionStatus').textContent=me.loggedOut?'ほかの端末へ引き継がれたためログアウトしました。キーで復元するか、新しいゲストで始めてください。':'この端末で接続中 · プロフィールは自動保存';$('#arcadeBackupCreate').disabled=!!me.loggedOut;$('#arcadeStartGuest').hidden=!me.loggedOut;$('#arcadeProfileForm button').disabled=!!me.loggedOut;
@@ -133,7 +133,7 @@
       const data = await player.community(requestedPeriod);
       lastRanks = Array.isArray(data.leaderboard) ? data.leaderboard : [];
       lastFeed = Array.isArray(data.feed) ? data.feed : [];
-      rankView(); feedView();
+      rankView(); feedView(); lastRefresh=Date.now();
     } catch {
       $('#arcadeLeaderboard').textContent = 'いまはランキングに接続できません。後で更新してね。';
       if (!lastFeed.length) $('#arcadeFeed').textContent = '速報を取得できませんでした。';
@@ -175,6 +175,9 @@
   addEventListener('asobi:player-updated', render);
   addEventListener('storage',event=>{if(event.key==='asobiroom-player-v1')render();});
   render(); void refresh();
-  setInterval(() => { render(); if (!document.hidden) void refresh(); }, 60000);
+  setInterval(()=>{render();},60000);
+  setInterval(()=>{if(!document.hidden)void refresh();},20000);
+  const refreshOnReturn=()=>{if(!document.hidden&&Date.now()-lastRefresh>3000)void refresh();};
+  addEventListener('focus',refreshOnReturn);document.addEventListener('visibilitychange',refreshOnReturn);
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('/service-worker.js').catch(() => {});
 })();
