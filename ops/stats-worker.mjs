@@ -110,13 +110,19 @@ async function community(request, env, url) {
     const identity=await authenticateIdentity(env,data.playerId,data.sessionToken,data.name,nameOK,true); data.playerId=identity.player_id;data.name=identity.name;data.avatar=decorateAvatar(data.avatar,identity.role);
     const now = Date.now();
     const dayStart = jstDayStart(now);
-    // ゲームごとに1日60件、全体300件。別ゲームの利用で新しいゲームの速報を塞がない。
-    const row = await env.DB.prepare('SELECT count(*) AS total, sum(CASE WHEN game=? THEN 1 ELSE 0 END) AS game_total FROM community_events WHERE player_id=? AND created>=?')
-      .bind(data.game, data.playerId, dayStart).first();
-    if ((row?.total || 0) >= 300 || (row?.game_total || 0) >= 60) return json({ error: 'daily_limit' }, 429);
+    const existing=await env.DB.prepare('SELECT player_id,xp FROM community_events WHERE id=?').bind(data.id).first();
+    if(existing)return existing.player_id===data.playerId?json({saved:true,xp:existing.xp,duplicate:true}):json({error:'event_conflict'},409);
+    // The daily cap limits credited XP, never legitimate play-start feed entries.
+    // A short global burst limit still protects the endpoint from request floods.
+    const row=await env.DB.prepare("SELECT COUNT(*) AS total,SUM(CASE WHEN game=? THEN 1 ELSE 0 END) AS game_total FROM community_events WHERE player_id=? AND created>=? AND xp>0")
+      .bind(data.game,data.playerId,dayStart).first();
+    const burst=await env.DB.prepare('SELECT COUNT(*) AS n FROM community_events WHERE player_id=? AND created>?').bind(data.playerId,now-60000).first();
+    if((burst?.n||0)>=120){const response=json({error:'rate_limit'},429);response.headers.set('Retry-After','60');return response;}
+    const credited=(row?.total||0)<300&&(row?.game_total||0)<60;
+    const xp=credited?(data.action==='start'?10:25):0;
     await env.DB.prepare('INSERT OR IGNORE INTO community_events(id,player_id,name,avatar,game,action,xp,created) VALUES(?,?,?,?,?,?,?,?)')
-      .bind(data.id, data.playerId, normalizeName(data.name), data.avatar, data.game, data.action, data.action === 'start' ? 10 : 25, now).run();
-    return json({ saved: true });
+      .bind(data.id,data.playerId,normalizeName(data.name),data.avatar,data.game,data.action,xp,now).run();
+    return json({saved:true,xp});
   }
   if (request.method !== 'GET') return json({ error: 'method' }, 405);
   const period = url.searchParams.get('period') || 'week';
