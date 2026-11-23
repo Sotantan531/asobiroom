@@ -933,7 +933,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
 }
 
 </script>
-<script src="../asobi-bgm.js?v=20261114b"></script>
+<script src="../asobi-bgm.js?v=20261124"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
@@ -1608,8 +1608,10 @@ function setupArchive(questions, scenes, getStats, showArea) {
     }
     requestAnimationFrame(frame);
   }
+  let finaleTimer;
   function startGame(){
     if(playing)return;
+    clearTimeout(finaleTimer);
     window.asobiPlayer?.record('zero-dive','start');
     toggleScenic(false);
     round = 0; correct = 0; score = 0; zeroCount = 0; current = null; history = []; playing = true; lock = false;
@@ -1624,7 +1626,8 @@ function setupArchive(questions, scenes, getStats, showArea) {
   }
   function endGame(){
     playing = false;
-    oceanBgm.stop();
+    if(correct===10) finaleTimer = setTimeout(() => oceanBgm.stop(), 6500);
+    else oceanBgm.stop();
     if(correct===10)window.asobiPlayer?.record('zero-dive','clear');
     stats.finished++;if(correct===10)stats.wins++;stats.best=Math.max(stats.best,correct);for(let i=0;i<correct;i++)stats.stageCounts[i]=(stats.stageCounts[i]||0)+1;saveStats();renderHeader();renderStats();
     const scene = sceneData[correct];
