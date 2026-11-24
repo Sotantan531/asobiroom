@@ -34,7 +34,7 @@ function dash(){
 $('#run').addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();dash();});
 $('#run').onclick=e=>{if(e.detail===0)dash();};
 
-$('#guide').onclick=()=>openModal('庭園での生存手順','庭園図は北が上。白い矢印があなた、琥珀色の点が未点灯のスイッチです。すべてを好きな順に灯して、北の鉄門を開けてください。テスト版では赤い点で石像の位置を常時表示します。<br><br>難易度によって石像の速さとスイッチの数、霧の濃さが変わります。1体は最短経路を詰め、1体は側面から回り込み、1体は移動方向の先で待ち伏せます。壁や生垣を挟んでいても、こちらが向いている方の石像は止まります。視界の外にいる石像は、そのまま追ってきます。庭園に立つ黒い石像は動きません。<br><br>床板の縁が赤く光ったら針が出る合図です。針は庭園に設置された床板から周期的に突き出します。スイッチや鉄門は正面に捉えて操作してください。<br><br>ダッシュは3秒間加速し、終了から6秒で再使用できます。<br><br><b>PC</b>　WASDで移動、画面クリック後マウスまたは左右キーで見回す。Shiftでダッシュ、Eで操作。<br><b>スマホ</b>　スティックで移動、空いている場所をスワイプして視点操作。「ダッシュ」をタップ。','閉じる',()=>{},false);
+$('#guide').onclick=()=>openModal('庭園での生存手順','庭園図は北が上。白い矢印があなた、琥珀色の点が未点灯のスイッチです。すべてを好きな順に灯して、北の鉄門を開けてください。赤い点は探知器を使用した30秒間だけ表示されます。石を擦る音の方向にも注意してください。<br><br>難易度によって石像の速さとスイッチの数、霧の濃さが変わります。1体は最短経路を詰め、1体は側面から回り込み、1体は移動方向の先で待ち伏せます。壁や生垣を挟んでいても、こちらが向いている方の石像は止まります。視界の外にいる石像は、そのまま追ってきます。庭園に立つ黒い石像は動きません。<br><br>床板の縁が赤く光ったら針が出る合図です。針は庭園に設置された床板から周期的に突き出します。スイッチや鉄門は正面に捉えて操作してください。<br><br>ダッシュは3秒間加速し、終了から6秒で再使用できます。<br><br><b>PC</b>　WASDで移動、画面クリック後マウスまたは左右キーで見回す。Shiftでダッシュ、Eで操作。<br><b>スマホ</b>　スティックで移動、空いている場所をスワイプして視点操作。「ダッシュ」をタップ。','閉じる',()=>{},false);
 function sampleSwitches(){let result=[];for(let [a,b,c,d] of [[2,22,2,22],[28,48,2,22],[2,22,28,48],[28,48,28,48]]){let options=[];for(let x=a;x<=b;x++)for(let z=c;z<=d;z++)if(free(x,z)&&!trapCells.has(z*gardenSize+x)&&Math.hypot(x+.5-spawn.x,z+.5-spawn.z)>2&&[[1,0],[-1,0],[0,1],[0,-1]].some(([i,j])=>free(x+i,z+j)))options.push({x:x+.5,z:z+.5,on:false});result.push(options[Math.floor(Math.random()*options.length)])}const needed=levels[prefs.level].count;
 if(needed===3)result.splice(Math.floor(Math.random()*4),1);
 while(result.length<needed){
@@ -47,7 +47,7 @@ let detector={status:'spent'};
 function resetDetector(){
   const sites=[[9.5,5.5],[16.5,7.5],[19.5,6.5],[11.5,9.5]];
   const choices=sites.filter(([x,z])=>free(x,z)&&!switches.some(s=>s.x===x&&s.z===z)&&!plates.some(s=>s.x===x&&s.z===z));
-  const [x,z]=choices[Math.floor(Math.random()*choices.length)];
+  const [x,z]=choices[Math.floor(Math.random()*choices.length)]||[spawn.x,spawn.z];
   detector={x,z,status:'ground',expires:0};
   updateDetectorUI();
 }
@@ -70,7 +70,7 @@ function updateDetector(){
   updateDetectorUI();
 }
 $('#detect').onclick=activateDetector;
-function start(){if(!world){openModal('3D描画を開始できません','WebGLを使用できるブラウザで開いてください。','戻る',home,false);return}if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch{}ac?.resume();inputsOff();p={...spawn};travelHeading={x:0,z:1};hunters=[[6.5,23.5],[44.5,13.5],[23.5,44.5]].map(([x,z])=>{const id=queue.reduce((a,k)=>Math.hypot(k%gardenSize+.5-x,Math.floor(k/gardenSize)+.5-z)<Math.hypot(a%gardenSize+.5-x,Math.floor(a/gardenSize)+.5-z)?k:a,queue[0]);return [id%gardenSize+.5,Math.floor(id/gardenSize)+.5]}).map(([x,z],i)=>({x,z,role:['chase','flank','ambush'][i],closeUntil:0,planUntil:0,heading:0,face:0,expression:i,pose:0,frozen:false,route:[],goalCell:-1,heard:0}));switches=sampleSwitches();resetTraps(switches);resetDetector();nextLaugh=18+Math.random()*20;stepWeight=0;warned=false;clock=foot=pitch=phase=angle=0;dashEnds=dashReady=0;updateDashButton();state='play';$('#menu').hidden=true;$('#hud').hidden=false;setObjective();say('TEST：赤い点は石像の現在位置（常時表示）');tone(160,.4,.08)}
+function start(){if(!world){openModal('3D描画を開始できません','WebGLを使用できるブラウザで開いてください。','戻る',home,false);return}if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch{}ac?.resume();inputsOff();p={...spawn};travelHeading={x:0,z:1};hunters=[[6.5,23.5],[44.5,13.5],[23.5,44.5]].map(([x,z])=>[x+(Math.random()-.5)*8,z+(Math.random()-.5)*8]).map(([x,z])=>{const id=queue.reduce((a,k)=>Math.hypot(k%gardenSize+.5-x,Math.floor(k/gardenSize)+.5-z)<Math.hypot(a%gardenSize+.5-x,Math.floor(a/gardenSize)+.5-z)?k:a,queue[0]);return [id%gardenSize+.5,Math.floor(id/gardenSize)+.5]}).map(([x,z],i)=>({x,z,role:['chase','flank','ambush'][i],closeUntil:0,planUntil:0,heading:0,face:0,expression:i,pose:0,frozen:false,route:[],goalCell:-1,heard:0}));switches=sampleSwitches();resetTraps(switches);resetDetector();nextLaugh=18+Math.random()*20;stepWeight=0;warned=false;clock=foot=pitch=phase=angle=0;dashEnds=dashReady=0;updateDashButton();state='play';$('#menu').hidden=true;$('#hud').hidden=false;setObjective();say('石像の足音に注意。探知器は一度だけ使える。');tone(160,.4,.08)}
 function count(){return switches.filter(s=>s.on).length}
 function setObjective(){let n=count();$('#objective').textContent=n===switches.length?'北門から脱出せよ':'庭園のスイッチを灯せ　'+n+' / '+switches.length}
 function say(text){$('#message').textContent=text;notice=3}
@@ -165,7 +165,7 @@ function strategyTarget(h){
 function nextWaypoint(h,goal){
   if((h.role==='chase'||distance(h,goal)<1.5)&&clearPassage(h,goal))return goal;
   const goalId=cell(goal);
-  if(!h.route.length||!clearPassage(h,h.route[0])||clock>=(h.repathAt||0)){
+  if(!h.route.length||!clearPassage(h,h.route[0])||clock>=(h.repathAt||0)||(h.goalCell!==goalId&&clock>=(h.repathAt||0)-.2)){
     h.route=pathTo(h,goal);h.goalCell=goalId;h.repathAt=clock+(h.role==='chase'?.35:1.1);
   }
   if(h.role==='chase')for(let i=h.route.length-1;i>0;i--)if(clearPassage(h,h.route[i])){h.route.splice(0,i);break}
@@ -176,7 +176,7 @@ function inFrame(monster){let dx=monster.x-p.x,dz=monster.z-p.z,f=dx*Math.sin(an
 let depths=[-.74,statueHeight-.74].map(y=>f*Math.cos(pitch)+y*Math.sin(pitch)),top=(statueHeight-.74)*Math.cos(pitch)-f*Math.sin(pitch),bottom=-.74*Math.cos(pitch)-f*Math.sin(pitch),far=Math.max(...depths)+.27;
 return far>.032&&Math.abs(side)<=far*aspect/1.48+.48&&bottom<=far/1.48&&top>=-far/1.48}
 const scareDistance=.50;
-function pursue(monster,dt){if(Math.hypot(monster.x-p.x,monster.z-p.z)<scareDistance&&clearLine(monster,p)){caught();return}const visible=inFrame(monster);if(!monster.frozen||!visible)monster.face=Math.atan2(monster.x-p.x,monster.z-p.z);
+function pursue(monster,dt){if(clock>2&&Math.hypot(monster.x-p.x,monster.z-p.z)<scareDistance&&clearLine(monster,p)){caught();return}const visible=inFrame(monster);if(!monster.frozen||!visible)monster.face=Math.atan2(monster.x-p.x,monster.z-p.z);
 if(visible){
   if(!monster.frozen){
     monster.pose=(monster.pose+1+Math.floor(Math.random()*3))%4;
@@ -194,7 +194,8 @@ if(crowded)return;
 monster.x=nextX;monster.z=nextZ;
 if(l<=step&&target===monster.route[0])monster.route.shift();
 monster.heading=Math.atan2(monster.x-p.x,monster.z-p.z);
-let dist=Math.hypot(monster.x-p.x,monster.z-p.z);if(dist<7&&(monster.heard-=dt)<0){tone(78,.24,.105*(1-dist/8),'triangle');monster.heard=.48}if(dist<scareDistance&&clearLine(monster,p))caught()}
+let dist=Math.hypot(monster.x-p.x,monster.z-p.z);if(dist<10&&(monster.heard-=dt)<0){stoneStep(monster,dist);monster.heard=.32+Math.random()*.18}if(clock>2&&dist<scareDistance&&clearLine(monster,p))caught()}
+function stoneStep(h,d){if(!sound||!ac)return;const t=ac.currentTime,n=Math.floor(ac.sampleRate*.23),b=ac.createBuffer(1,n,ac.sampleRate),v=b.getChannelData(0);for(let i=0;i<n;i++)v[i]=(Math.random()*2-1)*Math.exp(-5*i/n);const src=ac.createBufferSource(),filter=ac.createBiquadFilter(),g=ac.createGain(),pan=ac.createStereoPanner?.();src.buffer=b;filter.type='lowpass';filter.frequency.value=clearLine(h,p)?950:380;g.gain.value=.18*Math.pow(Math.max(0,1-d/11),1.4);src.connect(filter).connect(g);if(pan){pan.pan.value=Math.max(-1,Math.min(1,((h.x-p.x)*Math.cos(angle)-(h.z-p.z)*Math.sin(angle))/Math.max(d,.1)));g.connect(pan).connect(ac.destination)}else g.connect(ac.destination);src.start();src.onended=()=>{src.disconnect();filter.disconnect();g.disconnect();pan?.disconnect()}}
 let stepWeight=0,nextLaugh=0;
 function distantLaugh(){
  if(!sound||!ac)return;
@@ -225,7 +226,7 @@ function mini(){let el=$('#mapview'),g=el.getContext('2d');if(el.width!==280)el.
   const x=xx(detector.x),y=yy(detector.z);
   g.fillStyle='#65f3f2';g.beginPath();g.moveTo(x,y-7);g.lineTo(x+7,y);g.lineTo(x,y+7);g.lineTo(x-7,y);g.fill();
 }
-{
+if(detector.status==='active'){
   for(const h of hunters){g.beginPath();g.arc(xx(h.x),yy(h.z),6,0,2*Math.PI);g.fillStyle='#ff514a';g.fill();g.strokeStyle='#31100e';g.lineWidth=2;g.stroke()}
 }
 g.fillStyle=count()===switches.length?'#abf9c2':'#aaaea3';g.fillRect(xx(gate.x)-6,yy(gate.z)-3,12,6);g.fillStyle='#eee9d9';g.font='bold 13px monospace';g.fillText('N',7,14);g.save();g.translate(xx(p.x),yy(p.z));g.rotate(angle);g.beginPath();g.moveTo(0,-9);g.lineTo(5,5);g.lineTo(0,3);g.lineTo(-5,5);g.closePath();g.fill();g.restore()}
