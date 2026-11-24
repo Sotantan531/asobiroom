@@ -23,3 +23,4 @@ body.trap-death #world{animation:trapFall 1.45s forwards;transform-origin:center
 .poster{background:#161b20}#menu{background:#101318}.eyebrow{color:#c3d8e4}#world{display:block}#mapview{opacity:.85}#hint{color:#ffe9a5}
 #mapview,#use{display:none!important}
 body.scare #hud{visibility:hidden}
+#cover{display:block;width:100%;height:100%}.poster{background:#10171b}.poster:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#101318 0%,transparent 35%),linear-gradient(0deg,#10131888,transparent 25%)}.hero{z-index:1}
