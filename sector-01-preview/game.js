@@ -178,7 +178,8 @@ function nextWaypoint(h,goal){
 function inFrame(monster){let dx=monster.x-p.x,dz=monster.z-p.z,f=dx*Math.sin(angle)+dz*Math.cos(angle),side=dx*Math.cos(angle)-dz*Math.sin(angle),aspect=canvas.clientWidth/canvas.clientHeight;
 let depths=[-.74,statueHeight-.74].map(y=>f*Math.cos(pitch)+y*Math.sin(pitch)),top=(statueHeight-.74)*Math.cos(pitch)-f*Math.sin(pitch),bottom=-.74*Math.cos(pitch)-f*Math.sin(pitch),far=Math.max(...depths)+.27;
 return far>.032&&Math.abs(side)<=far*aspect/1.48+.48&&bottom<=far/1.48&&top>=-far/1.48}
-function pursue(monster,dt){if(Math.hypot(monster.x-p.x,monster.z-p.z)<.40&&clearLine(monster,p)){caught();return}const visible=inFrame(monster);if(!monster.frozen||!visible)monster.face=Math.atan2(monster.x-p.x,monster.z-p.z);
+const scareDistance=.95;
+function pursue(monster,dt){if(Math.hypot(monster.x-p.x,monster.z-p.z)<scareDistance&&clearLine(monster,p)){caught();return}const visible=inFrame(monster);if(!monster.frozen||!visible)monster.face=Math.atan2(monster.x-p.x,monster.z-p.z);
 if(visible){
   if(!monster.frozen){
     monster.pose=(monster.pose+1+Math.floor(Math.random()*3))%4;
@@ -196,7 +197,7 @@ if(crowded)return;
 monster.x=nextX;monster.z=nextZ;
 if(l<=step&&target===monster.route[0])monster.route.shift();
 monster.heading=Math.atan2(monster.x-p.x,monster.z-p.z);
-let dist=Math.hypot(monster.x-p.x,monster.z-p.z);if(dist<7&&(monster.heard-=dt)<0){tone(78,.24,.105*(1-dist/8),'triangle');monster.heard=.48}if(dist<.52&&clearLine(monster,p))caught()}
+let dist=Math.hypot(monster.x-p.x,monster.z-p.z);if(dist<7&&(monster.heard-=dt)<0){tone(78,.24,.105*(1-dist/8),'triangle');monster.heard=.48}if(dist<scareDistance&&clearLine(monster,p))caught()}
 let stepWeight=0,nextLaugh=0;
 function distantLaugh(){
  if(!sound||!ac)return;
