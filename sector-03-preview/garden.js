@@ -1,5 +1,5 @@
-const gardenSize=23,gate={x:21.5,z:21.5},spawn={x:1.5,z:1.5};
-const grid=["SSSSSSSSSSSSSSSSSSSSSSS","S.....................S","S.SSS.S.S.S.S.S.SSSSS.S","S...S.S.........S.....S","S.S.S.SSS.S.SSS.S.SSS.S","S.S.....S...S.........S","S.S.SSS.SSSSS.S.S.S.SSS","S.....S.S.............S","S.SSS.S.S.S.S.S.SSSSS.S","S.S...S.S.S...S.S.....S","S.S.S.S.S.SSSSS.S.S.S.S","S.S...S.S.S.......S.S.S","S.S.S.S.S.S.S.S.S.S.S.S","S.S.....S.S.S.......S.S","S.S.S.S.S.S.SSSSS.SSS.S","S.S.............S.....S","S.SSS.S.S.S.SSS.S.S.SSS","S.....S.S...S...S.....S","S.S.S.S.SSSSS.S.S.S.S.S","S.S...S.......S.....S.S","S.S.S.S.S.S.S.S.S.SSS.S","S.........S...........S","SSSSSSSSSSSSSSSSSSSSSSS"].map(r=>r.split(''));
+const gardenSize=35,gate={x:31.5,z:33.5},spawn={x:15.5,z:15.5};
+const grid=["SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS","SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS","SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS","SSS...SSSSSSS.....S...SSSSSSS.....S","SSS.S.SSSSSSS.S.S.S.S.SSSSSSS.SSS.S","SSS.S.........S.S.............SSS.S","SSS.S.SSSSSSSSS.S.SSS.SSSSSSSSSSS.S","SSS...SSSSSSS...S.....SSSSSSSSS...S","SSSSS.SSSSSSS.S.SSSSSSSSSSSSSSS.SSS","SSSSS.SSSSSSS.S.SSSSSSSSSSSSSSS.SSS","SSSSS.SSSSSSS.S.SSSSSSSSSSSSSSS.SSS","SSS...........S.......SSSSS.....SSS","SSS.SSSSSSSSS.S.SSSSS.SSSSS.SSS.SSS","SSS.SSSSSSSSS...S.........S.SSS.SSS","SSS.SSSSSSSSSSSSS.SSS.SSS.S.SSS.SSS","SSS...SSSSSSSSS...SSS.SSS...SSS.SSS","SSSSS.SSSSSSSSS.SSSSS.SSSSSSSSS.SSS","SSS...SSS.....S.SSSSS.SSS.....S.SSS","SSS.SSSSS.SSS.S.SSSSS.SSS.SSS.S.SSS","SSS.......SSS.............SSS...SSS","SSS.SSSSS.SSS.S.SSSSS.SSS.SSS.S.SSS","SSS...SSS.....S.SSSSS.SSS.....S.SSS","SSSSS.SSSSS.SSS.SSSSS.SSSSS.SSS.SSS","SSSSS.SSSSS.SSS.SSSSS...SSS.S.....S","SSSSS.SSSSS.SSS.SSSSSSS.SSS.S.SSS.S","SSSSS.......................S.SSS.S","SSSSS.SSSSSSSSS.SSSSSSS.SSS.S.SSS.S","SSSSS.S.....SSS.SSSSS...SSS.S.....S","SSSSS.S.SSS.SSS.SSSSS.SSSSS.SSS.SSS","SSS...S.....SSS.SSSSS.SSSSS.SSS.SSS","SSS.S.S.SSS.SSS.SSSSS.SSSSS.SSS.SSS","SSS.S...SSS...S.S.................S","SSS.SSS.SSSSS.S.S.SSSSSSSSSSS.SSS.S","SSS.....SSSSS.....SSSSSSSSSSS.....S","SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"].map(r=>r.split(''));
 const free=(x,z)=>grid[Math.floor(z)]?.[Math.floor(x)]==='.';
 const plates=[],decoys=[];
 function nearbyDecoys(cam,angle){
@@ -56,7 +56,7 @@ function gardenDetails(){
    quad([x-u,.008,z-v],[x-v*.38,.02,z+u*.38],[x+u,.009,z+v],[x+v*.38,.012,z-u*.38],3);
  }
 }
-function grounds(){dest=[];quad([0,0,0],[0,0,gardenSize],[gardenSize,0,gardenSize],[gardenSize,0,0],2);for(let z=0;z<gardenSize;z++)for(let x=0;x<gardenSize;x++){if(!free(x,z)){box(x,0,z,1,1.65,1,5);box(x-.005,.35,z-.005,1.01,.055,1.01,12);box(x-.005,1.35,z-.005,1.01,.035,1.01,12);}else{box(x,.002,z,.99,.008,.99,2);box(x,1.65,z,1,.08,1,12);if((x+z)%7===0)box(x+.32,1.58,z+.32,.36,.06,.36,13);}}box(21.05,0,21.86,.9,1.55,.12,11);box(21.32,1.35,21.78,.36,.12,.05,9);return dest;}
+function grounds(){dest=[];quad([0,0,0],[0,0,gardenSize],[gardenSize,0,gardenSize],[gardenSize,0,0],2);for(let z=0;z<gardenSize;z++)for(let x=0;x<gardenSize;x++){if(!free(x,z)){box(x,0,z,1,1.24,1,5);box(x-.005,.35,z-.005,1.01,.055,1.01,12);box(x-.005,1.10,z-.005,1.01,.035,1.01,12);}else{box(x,.002,z,.99,.008,.99,2);quad([x,1.24,z],[x+1,1.24,z],[x+1,1.24,z+1],[x,1.24,z+1],12);if((x+z)%7===0)box(x+.32,1.19,z+.32,.36,.06,.36,13);}}box(31.05,0,33.86,.9,1.20,.12,11);box(31.32,1.05,33.78,.36,.12,.05,9);return dest;}
 function effigy(pose=0,parts=false,expression=0){dest=[];const s=8;oval(0,1.15,0,.29,.47,.22,s,10,7);for(let side of [-1,1]){tube([side*.15,.88,0],[side*.22,.38,.08],.12,.075,7);tube([side*.22,.38,.08],[side*.18,.05,-.12],.075,.055,8);tube([side*.25,1.4,0],[side*.39,.92,-.13],.10,.065,7);tube([side*.39,.92,-.13],[side*.30,.54,-.38],.065,.035,8);for(let i=0;i<3;i++)tube([side*.30+i*.025,.54,-.38],[side*.30+i*.025,.43,-.48],.022,.003,7);}let body=new Float32Array(dest);dest=[];oval(0,1.68,-.06,.22,.31,.25,7,12,8);oval(0,1.58,-.25,.14,.12,.045,8);for(let side of [-1,1])oval(side*.085,1.76,-.275,.045,.025,.02,13,8,4);for(let i=0;i<5;i++)box(-.10+i*.045,1.57,-.29,.02,.055,.02,7);let head=new Float32Array(dest);return parts?{body,head}:[...body,...head];}
 function pillar(on){dest=[];if(!on){tube([0,.10,0],[0,.18,0],.13,.13,6,12);tube([0,.10,0],[0,.18,0],.065,.065,8,12);box(-.025,.12,.06,.05,.05,.29,6);box(.02,.12,.25,.12,.05,.05,6);}return dest;}
 const geom={ground:new Float32Array(grounds()),statue:new Float32Array(effigy()),off:new Float32Array(pillar(false)),on:new Float32Array(pillar(true))};
@@ -71,7 +71,7 @@ box(-.13,.32,-.14,.26,.16,.29,9);
 tube([.11,.55,0],[.11,.87,0],.018,.012,11);
 geom.detector=new Float32Array(dest);
 // The tallest fingertip fits below the 1.24-unit masonry screens.
-const statueScale=.76,statueHeight=2.16*statueScale;
+const statueScale=.58,statueHeight=2.16*statueScale;
 function gardenStatue(mesh){
  const scaled=mesh.slice();
  for(let i=0;i<scaled.length;i+=7)for(let j=0;j<3;j++)scaled[i+j]*=statueScale;
@@ -84,8 +84,8 @@ function drawActors(statues,portrait,draw){
   
   for(const s of statues){
     if(portrait&&s.expression===undefined){draw('statue',s.x,0,s.z,s.heading);continue}
-    draw((portrait?'pose':'smallpose')+s.pose,s.x,0,s.z,s.heading);
-    draw((portrait?'head':'smallhead')+s.expression,s.x,0,s.z,s.face);
+    draw((portrait?'pose':'smallpose')+s.pose,s.x,s.lurch||0,s.z,s.heading+(s.twist||0));
+    draw((portrait?'head':'smallhead')+s.expression,s.x,s.lurch||0,s.z,s.face+(s.twitch||0));
   }
 }
 geom.decoy=gardenStatue(geom.statue);
