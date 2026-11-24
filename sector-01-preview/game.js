@@ -103,6 +103,7 @@ function clearPassage(a,b){
   return true;
 }
 function pathTo(a,b){
+  const avoid=new Map();if(a.role!=='chase')for(const other of hunters){if(other===a)continue;for(const point of [other,...other.route.slice(0,18)]){const id=cell(point);avoid.set(id,Math.max(avoid.get(id)||0,other.role==='chase'?4:2));for(const link of walkLinks[id]||[])avoid.set(link.id,Math.max(avoid.get(link.id)||0,1.1));}}
   const first=cell(a),last=cell(b);
   if(first===last)return [];
   const costs=new Float64Array(walkLinks.length).fill(Infinity),parents=new Int16Array(walkLinks.length).fill(-1);
@@ -114,7 +115,7 @@ function pathTo(a,b){
     open.delete(current);
     if(current===last)break;
     for(const link of walkLinks[current]){
-      const next=costs[current]+link.cost;
+      const next=costs[current]+link.cost+(link.id===last?0:(avoid.get(link.id)||0));
       if(next>=costs[link.id])continue;
       costs[link.id]=next;parents[link.id]=current;
       open.set(link.id,next+distance(tileCenter(link.id),tileCenter(last)));
@@ -136,49 +137,45 @@ function approachPoint(direction){
     const dx=at.x-p.x,dz=at.z-p.z;
     const value=dx*direction.x+dz*direction.z-.6*Math.abs(dx*direction.z-dz*direction.x)-.22*steps;
     if(value>score){score=value;best=id}
-    if(steps===6)continue;
+    if(steps===12)continue;
     for(const {id:next} of walkLinks[id])if(!depth.has(next)){depth.set(next,steps+1);queue.push(next)}
   }
   return tileCenter(best);
 }
 function strategyTarget(h){
   const gap=distance(h,p);
-  if(h.role==='chase'||gap<1.35)return p;
+  if(h.role==='chase'||gap<1.6)return p;
   if(h.role==='flank'){
-    if(h.flankPoint&&(distance(h,h.flankPoint)<.4||distance(h.flankPoint,p)>11)){
-      h.flankPoint=null;h.closeUntil=clock+3.2;
-    }
-    if(clock<h.closeUntil)return p;
-    if(!h.flankPoint){
+    if(!h.flankPoint||clock>=h.planUntil||distance(h.flankPoint,p)>12){
       const lead=hunters[0],dx=p.x-lead.x,dz=p.z-lead.z,l=Math.hypot(dx,dz)||1;
-      const side=(h.x-p.x)*(-dz)+(h.z-p.z)*dx>=0?1:-1;
-      h.flankPoint=approachPoint({x:(.65*dx-side*.76*dz)/l,z:(.65*dz+side*.76*dx)/l});
+      const side=h.flankSide||(h.flankSide=((h.x-p.x)*(-dz)+(h.z-p.z)*dx>=0?1:-1));
+      h.flankPoint=approachPoint({x:(.25*dx-side*.97*dz)/l,z:(.25*dz+side*.97*dx)/l});
+      h.planUntil=clock+4;
     }
+    if(distance(h,h.flankPoint)<.45)return p;
     return h.flankPoint;
   }
-  const atPost=h.ambushPoint&&distance(h,h.ambushPoint)<.25;
-  if(atPost&&!h.waitUntil)h.waitUntil=clock+2.4;
-  const expired=h.waitUntil?clock>=h.waitUntil:clock>=h.planUntil;
-  if(!h.ambushPoint||expired){
+  if(!h.ambushPoint||clock>=h.planUntil||distance(h.ambushPoint,p)>13){
     h.ambushPoint=approachPoint(travelHeading);
-    h.waitUntil=0;h.planUntil=clock+Math.max(4,distance(h,h.ambushPoint)/dashSpeed+3);
+    h.planUntil=clock+5;
   }
+  if(distance(h,h.ambushPoint)<.4&&gap<4)return p;
   return h.ambushPoint;
 }
 function nextWaypoint(h,goal){
-  if(clearPassage(h,goal))return goal;
+  if((h.role==='chase'||distance(h,goal)<1.5)&&clearPassage(h,goal))return goal;
   const goalId=cell(goal);
-  if(h.goalCell!==goalId||!h.route.length||!clearPassage(h,h.route[0])){
-    h.route=pathTo(h,goal);h.goalCell=goalId;
+  if(!h.route.length||!clearPassage(h,h.route[0])||clock>=(h.repathAt||0)){
+    h.route=pathTo(h,goal);h.goalCell=goalId;h.repathAt=clock+(h.role==='chase'?.35:1.1);
   }
-  for(let i=h.route.length-1;i>0;i--)if(clearPassage(h,h.route[i])){h.route.splice(0,i);break}
-  return h.route[0]||h;
+  if(h.role==='chase')for(let i=h.route.length-1;i>0;i--)if(clearPassage(h,h.route[i])){h.route.splice(0,i);break}
+  return h.route[0]||(clearPassage(h,goal)?goal:h);
 }
 // Project the statue bounds into the very same camera frustum used by WebGL. Occluders deliberately do not participate.
 function inFrame(monster){let dx=monster.x-p.x,dz=monster.z-p.z,f=dx*Math.sin(angle)+dz*Math.cos(angle),side=dx*Math.cos(angle)-dz*Math.sin(angle),aspect=canvas.clientWidth/canvas.clientHeight;
 let depths=[-.74,statueHeight-.74].map(y=>f*Math.cos(pitch)+y*Math.sin(pitch)),top=(statueHeight-.74)*Math.cos(pitch)-f*Math.sin(pitch),bottom=-.74*Math.cos(pitch)-f*Math.sin(pitch),far=Math.max(...depths)+.27;
 return far>.032&&Math.abs(side)<=far*aspect/1.48+.48&&bottom<=far/1.48&&top>=-far/1.48}
-const scareDistance=.65;
+const scareDistance=.50;
 function pursue(monster,dt){if(Math.hypot(monster.x-p.x,monster.z-p.z)<scareDistance&&clearLine(monster,p)){caught();return}const visible=inFrame(monster);if(!monster.frozen||!visible)monster.face=Math.atan2(monster.x-p.x,monster.z-p.z);
 if(visible){
   if(!monster.frozen){
