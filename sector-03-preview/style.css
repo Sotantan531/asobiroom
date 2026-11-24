@@ -22,3 +22,4 @@
 body.trap-death #world{animation:trapFall 1.45s forwards;transform-origin:center}body.trap-death #hud{pointer-events:none;animation:trapHud .4s forwards} @keyframes trapFall{0%{filter:brightness(1.8) sepia(.6);transform:rotate(0)}12%{filter:brightness(.8) sepia(.6);transform:rotate(-3deg) scale(1.08)}65%{filter:brightness(.55);transform:rotate(8deg) scale(1.17)}100%{filter:brightness(0);transform:rotate(8deg) scale(1.17)}}@keyframes trapHud{to{opacity:0}}
 .poster{background:#161b20}#menu{background:#101318}.eyebrow{color:#c3d8e4}#world{display:block}#mapview{opacity:.85}#hint{color:#ffe9a5}
 #mapview,#use{display:none!important}
+body.scare #hud{visibility:hidden}body.scare #world{filter:contrast(1.2)}
