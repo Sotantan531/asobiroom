@@ -34,7 +34,7 @@ function dash(){
 $('#run').addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();dash();});
 $('#run').onclick=e=>{if(e.detail===0)dash();};
 
-$('#guide').onclick=()=>openModal('庭園での生存手順','庭園図は北が上。白い矢印があなた、琥珀色の点が未点灯のスイッチです。すべてを好きな順に灯して、北の鉄門を開けてください。水色の◆は探知器です。拾ったあと、Rキーか探知ボタンで1回だけ、30秒間石像の位置を表示できます。<br><br>難易度によって石像の速さとスイッチの数、霧の濃さが変わります。1体は最短経路を詰め、1体は側面から回り込み、1体は移動方向の先で待ち伏せます。壁や生垣を挟んでいても、こちらが向いている方の石像は止まります。視界の外にいる石像は、そのまま追ってきます。庭園に立つ黒い石像は動きません。<br><br>床板の縁が赤く光ったら針が出る合図です。針は庭園に設置された床板から周期的に突き出します。スイッチや鉄門は正面に捉えて操作してください。<br><br>ダッシュは3秒間加速し、終了から6秒で再使用できます。<br><br><b>PC</b>　WASDで移動、画面クリック後マウスまたは左右キーで見回す。Shiftでダッシュ、Eで操作。<br><b>スマホ</b>　スティックで移動、空いている場所をスワイプして視点操作。「ダッシュ」をタップ。','閉じる',()=>{},false);
+$('#guide').onclick=()=>openModal('庭園での生存手順','庭園図は北が上。白い矢印があなた、琥珀色の点が未点灯のスイッチです。すべてを好きな順に灯して、北の鉄門を開けてください。テスト版では赤い点で石像の位置を常時表示します。<br><br>難易度によって石像の速さとスイッチの数、霧の濃さが変わります。1体は最短経路を詰め、1体は側面から回り込み、1体は移動方向の先で待ち伏せます。壁や生垣を挟んでいても、こちらが向いている方の石像は止まります。視界の外にいる石像は、そのまま追ってきます。庭園に立つ黒い石像は動きません。<br><br>床板の縁が赤く光ったら針が出る合図です。針は庭園に設置された床板から周期的に突き出します。スイッチや鉄門は正面に捉えて操作してください。<br><br>ダッシュは3秒間加速し、終了から6秒で再使用できます。<br><br><b>PC</b>　WASDで移動、画面クリック後マウスまたは左右キーで見回す。Shiftでダッシュ、Eで操作。<br><b>スマホ</b>　スティックで移動、空いている場所をスワイプして視点操作。「ダッシュ」をタップ。','閉じる',()=>{},false);
 function sampleSwitches(){let result=[];for(let [a,b,c,d] of [[2,30,2,30],[34,62,2,30],[2,30,34,62],[34,62,34,62]]){let options=[];for(let x=a;x<=b;x++)for(let z=c;z<=d;z++)if(free(x,z)&&!trapCells.has(z*gardenSize+x)&&Math.hypot(x+.5-spawn.x,z+.5-spawn.z)>2&&[[1,0],[-1,0],[0,1],[0,-1]].some(([i,j])=>free(x+i,z+j)))options.push({x:x+.5,z:z+.5,on:false});result.push(options[Math.floor(Math.random()*options.length)])}const needed=levels[prefs.level].count;
 if(needed===3)result.splice(Math.floor(Math.random()*4),1);
 while(result.length<needed){
@@ -70,7 +70,7 @@ function updateDetector(){
   updateDetectorUI();
 }
 $('#detect').onclick=activateDetector;
-function start(){if(!world){openModal('3D描画を開始できません','WebGLを使用できるブラウザで開いてください。','戻る',home,false);return}if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch{}ac?.resume();inputsOff();p={...spawn};travelHeading={x:0,z:1};hunters=[[6.5,23.5],[55.5,13.5],[23.5,55.5]].map(([x,z])=>{const id=queue.reduce((a,k)=>Math.hypot(k%65+.5-x,Math.floor(k/65)+.5-z)<Math.hypot(a%65+.5-x,Math.floor(a/65)+.5-z)?k:a,queue[0]);return [id%65+.5,Math.floor(id/65)+.5]}).map(([x,z],i)=>({x,z,role:['chase','flank','ambush'][i],closeUntil:0,planUntil:0,heading:0,face:0,expression:i,pose:0,frozen:false,route:[],goalCell:-1,heard:0}));switches=sampleSwitches();resetTraps(switches);resetDetector();nextLaugh=18+Math.random()*20;stepWeight=0;warned=false;clock=foot=pitch=phase=angle=0;dashEnds=dashReady=0;updateDashButton();state='play';$('#menu').hidden=true;$('#hud').hidden=false;setObjective();say('水色の◆は探知器。近づくと拾えます。');tone(160,.4,.08)}
+function start(){if(!world){openModal('3D描画を開始できません','WebGLを使用できるブラウザで開いてください。','戻る',home,false);return}if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch{}ac?.resume();inputsOff();p={...spawn};travelHeading={x:0,z:1};hunters=[[6.5,23.5],[55.5,13.5],[23.5,55.5]].map(([x,z])=>{const id=queue.reduce((a,k)=>Math.hypot(k%65+.5-x,Math.floor(k/65)+.5-z)<Math.hypot(a%65+.5-x,Math.floor(a/65)+.5-z)?k:a,queue[0]);return [id%65+.5,Math.floor(id/65)+.5]}).map(([x,z],i)=>({x,z,role:['chase','flank','ambush'][i],closeUntil:0,planUntil:0,heading:0,face:0,expression:i,pose:0,frozen:false,route:[],goalCell:-1,heard:0}));switches=sampleSwitches();resetTraps(switches);resetDetector();nextLaugh=18+Math.random()*20;stepWeight=0;warned=false;clock=foot=pitch=phase=angle=0;dashEnds=dashReady=0;updateDashButton();state='play';$('#menu').hidden=true;$('#hud').hidden=false;setObjective();say('TEST：赤い点は石像の現在位置（常時表示）');tone(160,.4,.08)}
 function count(){return switches.filter(s=>s.on).length}
 function setObjective(){let n=count();$('#objective').textContent=n===switches.length?'北門から脱出せよ':'庭園のスイッチを灯せ　'+n+' / '+switches.length}
 function say(text){$('#message').textContent=text;notice=3}
@@ -228,7 +228,7 @@ function mini(){let el=$('#mapview'),g=el.getContext('2d');if(el.width!==280)el.
   const x=xx(detector.x),y=yy(detector.z);
   g.fillStyle='#65f3f2';g.beginPath();g.moveTo(x,y-7);g.lineTo(x+7,y);g.lineTo(x,y+7);g.lineTo(x-7,y);g.fill();
 }
-if(detector.status==='active'){
+{
   for(const h of hunters){g.beginPath();g.arc(xx(h.x),yy(h.z),6,0,2*Math.PI);g.fillStyle='#ff514a';g.fill();g.strokeStyle='#31100e';g.lineWidth=2;g.stroke()}
 }
 g.fillStyle=count()===switches.length?'#abf9c2':'#aaaea3';g.fillRect(xx(gate.x)-6,yy(gate.z)-3,12,6);g.fillStyle='#eee9d9';g.font='bold 13px monospace';g.fillText('N',7,14);g.save();g.translate(xx(p.x),yy(p.z));g.rotate(angle);g.beginPath();g.moveTo(0,-9);g.lineTo(5,5);g.lineTo(0,3);g.lineTo(-5,5);g.closePath();g.fill();g.restore()}
