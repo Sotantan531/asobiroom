@@ -7,7 +7,7 @@ const prefs={level:'normal',sensitivity:100,bob:1,invert:false,left:false};
 try{
  const saved=JSON.parse(localStorage.getItem('sector01-maze-preview-controls')||'{}');
  if(Object.hasOwn(levels,saved.level))prefs.level=saved.level;
- if(Number.isFinite(saved.sensitivity))prefs.sensitivity=Math.max(50,Math.min(180,saved.sensitivity));
+ if(Number.isFinite(saved.sensitivity))prefs.sensitivity=Math.max(30,Math.min(300,saved.sensitivity));
  if([0,.5,1].includes(saved.bob))prefs.bob=saved.bob;
  prefs.invert=saved.invert===true;prefs.left=saved.left===true;
 }catch{}

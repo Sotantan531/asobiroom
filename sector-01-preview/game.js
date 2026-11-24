@@ -178,7 +178,7 @@ function nextWaypoint(h,goal){
 function inFrame(monster){let dx=monster.x-p.x,dz=monster.z-p.z,f=dx*Math.sin(angle)+dz*Math.cos(angle),side=dx*Math.cos(angle)-dz*Math.sin(angle),aspect=canvas.clientWidth/canvas.clientHeight;
 let depths=[-.74,statueHeight-.74].map(y=>f*Math.cos(pitch)+y*Math.sin(pitch)),top=(statueHeight-.74)*Math.cos(pitch)-f*Math.sin(pitch),bottom=-.74*Math.cos(pitch)-f*Math.sin(pitch),far=Math.max(...depths)+.27;
 return far>.032&&Math.abs(side)<=far*aspect/1.48+.48&&bottom<=far/1.48&&top>=-far/1.48}
-const scareDistance=.95;
+const scareDistance=1.5;
 function pursue(monster,dt){if(Math.hypot(monster.x-p.x,monster.z-p.z)<scareDistance&&clearLine(monster,p)){caught();return}const visible=inFrame(monster);if(!monster.frozen||!visible)monster.face=Math.atan2(monster.x-p.x,monster.z-p.z);
 if(visible){
   if(!monster.frozen){
