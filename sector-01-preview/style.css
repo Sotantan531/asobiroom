@@ -18,3 +18,5 @@
 @media(max-height:480px){#menu{overflow-y:auto}.hero{top:75px!important;bottom:auto!important;transform:none!important;padding-bottom:65px}.hero h1{font-size:42px!important;margin:5px 0}.hero h1 span{font-size:42px!important;display:inline-flex}.hero>p{font-size:11px;line-height:1.5}.title-difficulty{margin-block:5px}.hero .title-difficulty p{min-height:0}.title-difficulty button{min-height:30px;padding:5px 2px}#menu footer{display:none}}
 
 #run{touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:auto;z-index:5;min-height:46px}#stick{touch-action:none}#run:active{background:#695635}
+
+body.trap-death #world{animation:trapFall 1.45s forwards;transform-origin:center}body.trap-death #hud{pointer-events:none;animation:trapHud .4s forwards} @keyframes trapFall{0%{filter:brightness(1.8) sepia(.6);transform:rotate(0)}12%{filter:brightness(.8) sepia(.6);transform:rotate(-3deg) scale(1.08)}65%{filter:brightness(.55);transform:rotate(8deg) scale(1.17)}100%{filter:brightness(0);transform:rotate(8deg) scale(1.17)}}@keyframes trapHud{to{opacity:0}}
