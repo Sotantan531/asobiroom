@@ -38,3 +38,16 @@
 
 /* Preview HUD */
 #energyPanel{position:absolute;z-index:4;right:14px;top:76px;width:clamp(135px,28vw,220px);padding:9px;background:#14121bea;border:1px solid #8c795d;border-radius:7px;color:#e8d5af;pointer-events:auto}.energyHead{display:flex;justify-content:space-between;align-items:center;font:10px monospace;gap:4px}.energyHead #flashStatus{position:static;color:#e8d5af;font:12px monospace}#energyCells{display:flex;gap:4px;margin:8px 0}#energyCells i{flex:1;height:9px;border-radius:2px;background:linear-gradient(90deg,#d9b55a var(--fill,0%),#45434a var(--fill,0%))}#charge{width:100%;padding:7px 3px;border:1px solid #817052;border-radius:4px;background:linear-gradient(90deg,#52432b var(--charge,0%),#25232b var(--charge,0%));font-size:11px;color:#f4e6ce;touch-action:none;user-select:none}#charge[aria-pressed=true]{border-color:#e9c77b}#judgment{height:19px;text-align:center;font:bold 13px monospace;color:#c7d7aa}#judgment[data-kind=perfect]{color:#e7c579}#judgment[data-kind=miss]{color:#ff8d85}#hud #progress{background:#c7a46a}#hud #percent{color:#e1c49a}@media(max-height:600px){#energyPanel{top:55px;width:135px;padding:5px}#energyCells{margin:4px 0}#charge{padding:4px 2px}#judgment{height:15px;font-size:11px}}
+/* Thumb-first preview layout: fixed action row, no upper-screen controls. */
+#controls{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;bottom:max(24px,calc(env(safe-area-inset-bottom) + 12px));width:min(560px,calc(100% - 24px))}
+#controls #energyPanel{position:static;grid-column:1/-1;width:100%;padding:6px 10px;pointer-events:none;display:flex;align-items:center;gap:12px}
+#energyPanel .energyHead{flex:0 0 auto;gap:8px}#energyCells{flex:1;margin:0}#energyCells i{height:10px}
+#controls [data-view]{grid-column:span 2;min-height:44px;touch-action:manipulation}
+#controls #action{grid-column:span 4;min-height:52px;margin:0;touch-action:manipulation}
+#controls #charge{grid-column:span 2;min-height:52px;margin:0;background:linear-gradient(90deg,#52432b var(--charge,0%),#25232b var(--charge,0%));border-color:#817052;color:#f4e6ce;font-weight:bold;touch-action:none}
+#centralProgress{top:max(62px,calc(env(safe-area-inset-top) + 52px));padding:7px 12px;width:min(380px,calc(100% - 32px))}
+#centralProgress #progressWrap{height:9px;margin-top:5px}#centralProgress #percent{font-size:20px}
+#viewLabel{top:max(126px,calc(env(safe-area-inset-top) + 116px))}#message{top:max(147px,calc(env(safe-area-inset-top) + 137px));font-size:12px}
+#lockPanel{top:auto;bottom:max(174px,calc(env(safe-area-inset-bottom) + 162px));transform:translateX(-50%);left:50%}
+@media(max-height:740px) and (orientation:portrait){#lockPanel{width:210px;padding:6px 9px}.padlock{width:145px;padding-top:26px;margin:4px auto}.lock-shackle{left:28px;width:89px;height:64px;border-width:11px}.lock-body{padding:4px}#track.dial{width:133px;height:133px}.dial-label{bottom:30px}.lock-note{display:none}}
+@media(max-height:560px) and (orientation:landscape){#controls{left:auto;right:12px;transform:none;width:min(340px,46vw);bottom:12px}#lockPanel{left:12px;bottom:12px;transform:none;width:180px}#controls [data-view]{min-height:42px}#controls #action,#controls #charge{min-height:48px}#centralProgress{top:12px;width:min(280px,36vw)}#viewLabel{top:74px}#message{top:94px}}
