@@ -24,3 +24,4 @@ body.trap-death #world{animation:trapFall 1.45s forwards;transform-origin:center
 #mapview,#use{display:none!important}
 body.scare #hud{visibility:hidden}
 #cover{display:block;width:100%;height:100%}.poster{background:#10171b}.poster:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#101318 0%,transparent 35%),linear-gradient(0deg,#10131888,transparent 25%)}.hero{z-index:1}
+#stamina{position:absolute;right:5%;bottom:8%;width:110px;pointer-events:none;color:#e6dfce;font-size:11px;letter-spacing:.12em}.staminaTrack{height:4px;background:#ffffff30;margin-top:6px}.staminaTrack i{display:block;height:100%;width:100%;background:#e6dfce;transition:width .1s linear}.left-hand #stamina{right:auto;left:5%}
