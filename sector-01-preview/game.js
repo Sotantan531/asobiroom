@@ -1,4 +1,4 @@
-const walkSpeed=1.75, dashSpeed=3.1;
+const walkSpeed=1.96, dashSpeed=3.1;
 const $=s=>document.querySelector(s),canvas=$('#world'),dialog=$('dialog');
 let p,hunters=[],state='menu',switches=[],clock=0,angle=0,pitch=0,last=0,foot=0,notice=0,sound=true,ac,moveX=0,moveY=0,stickID=null,lookID=null,lastX,lastY,phase=0,keys={},scareTime=0;
 const world=renderer(canvas),cover=renderer($('#cover'));
