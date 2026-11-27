@@ -516,7 +516,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
 #answerCard[data-result="ng"]{border-color:#ffa58d}#answerValue{display:block;font-size:clamp(24px,5vw,34px);line-height:1.3;overflow-wrap:anywhere}#answerNext{margin-top:8px;padding:9px 24px;border-radius:24px;font-size:16px;background:#cbf9ec;color:#113d4c;border:0;font-weight:bold}
 #launchCurtain[hidden],#answerCard[hidden]{display:none}
 </style><div id="launchCurtain" hidden=""><canvas id="launchSea" width="320" height="601"></canvas><strong id="launchTitle">海面付近に到着</strong></div>
-<section id="answerCard" hidden="" aria-live="polite"><b id="answerVerdict"></b><strong id="answerValue"></strong><button id="answerNext">次へ進む</button></section>
+<section id="answerCard" hidden="" aria-live="polite"><b id="answerVerdict"></b><strong id="answerValue"></strong><span id="roundingNote" hidden></span><button id="answerNext">次へ進む</button></section>
 <canvas id="sea" aria-hidden="true" width="412" height="901"></canvas>
 <div class="screenShade"></div>
 <div class="frame">
@@ -1124,7 +1124,7 @@ function setupArchive(questions, scenes, getStats, showArea) {
 {"id":397,"category":"映像","q":"映画の上映時間が2時間15分なら何秒？","base":"81","zeros":2,"unit":"秒"},
 {"id":398,"category":"映像","q":"1枚4MBの写真を250枚保存すると合計何MB？","base":"1","zeros":3,"unit":"MB"},
 {"id":399,"category":"情報","q":"1バイトは8ビット。125バイトは何ビット？","base":"1","zeros":3,"unit":"ビット"},
-{"id":400,"category":"情報","q":"1MiB（メビバイト）は約何バイト？","base":"105","zeros":4,"unit":"バイト"},
+{"id":400,"category":"情報","q":"1 MiB（メビバイト）を有効数字3桁で表すと約何バイト？","base":"105","zeros":4,"unit":"バイト"},
 {"id":401,"category":"情報","q":"IPv4の32ビットで表せるアドレスは約何個？","base":"43","zeros":8,"unit":"個"},
 {"id":402,"category":"情報","q":"RGB各色を256段階にすると、約何色を表せる？","base":"17","zeros":6,"unit":"色"},
 {"id":403,"category":"情報","q":"0〜9から選ぶ暗証番号4桁は、先頭の0も含めると何通り？","base":"1","zeros":4,"unit":"通り"},
@@ -1551,7 +1551,12 @@ function setupArchive(questions, scenes, getStats, showArea) {
       const card=$('#answerCard');
       card.dataset.result=ok?'ok':'ng';
       $('#answerVerdict').textContent=ok?'○ 正解！':'× 不正解　正しい答え';
-      $('#answerValue').textContent=formatJapaneseNumber(targetString())+(current.unit||'');
+      const approximate = /約何|約いくつ/.test(current.q);
+      $('#answerValue').textContent=(approximate?'約 ':'')+formatJapaneseNumber(targetString())+(current.unit||'');
+      const note = $('#roundingNote');
+      const explanations = {400:'1 MiBは2の20乗で1,048,576バイト。上から3桁に丸めると105万バイトです。',394:'1,920 × 1,080 = 2,073,600画素。上から2桁に丸めると210万画素です。'};
+      note.textContent = explanations[current.id] || '';
+      note.hidden = !note.textContent;
       card.hidden=false;
       $('#answerNext').focus({preventScroll:true});
       // 正誤表示をしっかり見せてから潜航する（判定直後には深度を変えない）
