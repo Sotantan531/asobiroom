@@ -6,29 +6,30 @@
   const midiHz = n => 440 * 2 ** ((n - 69) / 12);
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
 
+  const OCEAN_BPM = 104;
   const OCEAN_STAGES = [
     // 0: Surface — light and sunny.
-    { bpm:104, chords:[[48,4],[43,4],[45,3],[41,4]], pad:.018, bass:.025, arp:.016, shine:.008, pulse:0, lead:.066 },
+    { chords:[[48,4],[43,4],[45,3],[41,4]], pad:.018, bass:.025, arp:.016, shine:.008, pulse:0, lead:.066 },
     // 1: Shallows — bright bubbles and more forward movement.
-    { bpm:106, chords:[[50,4],[45,4],[47,3],[43,4]], pad:.020, bass:.028, arp:.020, shine:.012, pulse:0, lead:.068 },
+    { chords:[[50,4],[45,4],[47,3],[43,4]], pad:.020, bass:.028, arp:.020, shine:.012, pulse:0, lead:.068 },
     // 2: Coral reef — playful sparkles and gentle percussion.
-    { bpm:108, chords:[[52,4],[47,4],[49,3],[45,4]], pad:.023, bass:.031, arp:.024, shine:.016, pulse:.007, lead:.070 },
+    { chords:[[52,4],[47,4],[49,3],[45,4]], pad:.023, bass:.031, arp:.024, shine:.016, pulse:.007, lead:.070 },
     // 3: Underwater forest — layered melodic echoes.
-    { bpm:104, chords:[[53,4],[48,4],[50,3],[46,4]], pad:.026, bass:.035, arp:.027, shine:.018, pulse:.009, lead:.073 },
+    { chords:[[53,4],[48,4],[50,3],[46,4]], pad:.026, bass:.035, arp:.027, shine:.018, pulse:.009, lead:.073 },
     // 4: Turtle waters — warm, sweeping strings.
-    { bpm:102, chords:[[55,4],[50,4],[52,3],[48,4]], pad:.029, bass:.039, arp:.030, shine:.020, pulse:.011, lead:.076 },
+    { chords:[[55,4],[50,4],[52,3],[48,4]], pad:.029, bass:.039, arp:.030, shine:.020, pulse:.011, lead:.076 },
     // 5: Shipwreck — mystery arrives with a minor-key theme.
-    { bpm:100, chords:[[52,3],[48,4],[55,4],[50,4]], pad:.033, bass:.043, arp:.032, shine:.022, pulse:.013, lead:.079 },
+    { chords:[[52,3],[48,4],[55,4],[50,4]], pad:.033, bass:.043, arp:.032, shine:.022, pulse:.013, lead:.079 },
     // 6: Jellyfish waters — glowing, ringing upper voices.
-    { bpm:98, chords:[[45,3],[41,4],[48,4],[43,4]], pad:.036, bass:.047, arp:.034, shine:.025, pulse:.015, lead:.081 },
+    { chords:[[45,3],[41,4],[48,4],[43,4]], pad:.036, bass:.047, arp:.034, shine:.025, pulse:.015, lead:.081 },
     // 7: Abyss entrance — deep drones and spacious harmonies.
-    { bpm:96, chords:[[50,3],[46,4],[53,4],[48,4]], pad:.040, bass:.051, arp:.036, shine:.027, pulse:.018, lead:.083 },
+    { chords:[[50,3],[46,4],[53,4],[48,4]], pad:.040, bass:.051, arp:.036, shine:.027, pulse:.018, lead:.083 },
     // 8: Undersea volcano — low rhythmic force.
-    { bpm:94, chords:[[43,3],[39,4],[46,4],[41,4]], pad:.044, bass:.055, arp:.038, shine:.030, pulse:.021, lead:.085 },
+    { chords:[[43,3],[39,4],[46,4],[41,4]], pad:.044, bass:.055, arp:.038, shine:.030, pulse:.021, lead:.085 },
     // 9: Ancient ruins — solemn, cathedral-like depth.
-    { bpm:92, chords:[[48,3],[44,4],[39,4],[46,4]], pad:.048, bass:.060, arp:.040, shine:.034, pulse:.023, lead:.087 },
+    { chords:[[48,3],[44,4],[39,4],[46,4]], pad:.048, bass:.060, arp:.040, shine:.034, pulse:.023, lead:.087 },
     // 10: Ryugu Castle — full, hopeful, cinematic finale.
-    { bpm:96, chords:[[53,4],[46,4],[50,3],[48,4]], pad:.052, bass:.064, arp:.043, shine:.038, pulse:.025, lead:.090 },
+    { chords:[[53,4],[46,4],[50,3],[48,4]], pad:.052, bass:.064, arp:.043, shine:.038, pulse:.025, lead:.090 },
   ];
   const OCEAN_MOTIFS = [
     [0,1,2,4,3,2,1,4],
@@ -130,7 +131,7 @@
       while (this.nextTime < now + 0.16) {
         if (this.mode === 'dobon') this.dobonStep(this.step, this.nextTime);
         else this.oceanStep(this.step, this.nextTime);
-        const bpm = this.mode === 'dobon' ? (this.urgent ? 156 : 114) : OCEAN_STAGES[this.activeDepth].bpm;
+        const bpm = this.mode === 'dobon' ? (this.urgent ? 156 : 114) : OCEAN_BPM;
         this.nextTime += 60 / bpm / 4;
         this.step++;
       }
@@ -207,7 +208,7 @@
       const depth = this.activeDepth, stage = OCEAN_STAGES[depth];
       const [root, third] = stage.chords[bar];
       const octave = root < 48 ? 24 : 12;
-      const quarter = 60 / stage.bpm;
+      const quarter = 60 / OCEAN_BPM;
       const intervals = [0, third, 7, 9, 12, 14, third + 12, 19];
       const motif = OCEAN_MOTIFS[depth];
       if (beat === 0) {

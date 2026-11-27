@@ -1,29 +1,48 @@
-/* PWA の最小限のキャッシュ。常にネットワークを優先し、ゲーム記録・広告はキャッシュしない。 */
-const CACHE = 'asobiroom-shell-v10';
-const SHELL = ['/', '/asobi-config.js', '/asobi-brand.js', '/asobi-brand.css', '/asobi-player.js', '/asobi-activity.js', '/asobi-community.js', '/asobi-community.css', '/asobi-theme.css', '/asobi-theme.js', '/home-dashboard.js', '/home-dashboard.css', '/manifest.webmanifest', '/icon-192.png'];
+/* Network-first PWA cache; never touches localStorage, IndexedDB or remote records. */
+const CACHE = 'asobiroom-shell-v12';
+const SHELL = ['/', '/asobi-config.js', '/asobi-brand.js', '/asobi-brand.css', '/asobi-player.js', '/asobi-activity.js', '/asobi-community.js', '/asobi-community.css', '/asobi-theme.css', '/asobi-theme.js', '/home-dashboard.js', '/home-dashboard.css', '/home-catalog.js', '/home-catalog.css', '/manifest.webmanifest', '/icon-192.png'];
+const MAX_ENTRIES = 64;
+const MAX_ITEM_BYTES = 2 * 1024 * 1024;
+const excluded = path => /^\/(?:ops|share-test|sector-\d+-preview)(?:\/|$)/.test(path);
+let queue = Promise.resolve();
+function remember(cache, request, response) {
+  const job = queue.then(async () => {
+    if ((await response.clone().blob()).size > MAX_ITEM_BYTES) return;
+    await cache.put(request, response);
+    const keys = await cache.keys();
+    const url = new URL(request.url);
+    for (const key of keys) {
+      const old = new URL(key.url);
+      if (old.pathname === url.pathname && old.href !== url.href && (old.searchParams.has('v') || url.searchParams.has('v')) && [...old.searchParams.keys(), ...url.searchParams.keys()].every(k => k === 'v')) await cache.delete(key);
+    }
+    const remaining = await cache.keys();
+    const removable = remaining.filter(key => !SHELL.includes(new URL(key.url).pathname) || new URL(key.url).search);
+    for (let i = 0; i < remaining.length - MAX_ENTRIES && i < removable.length; i++) await cache.delete(removable[i]);
+  });
+  queue = job.catch(() => {});
+  return queue;
+}
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL.map(path => new Request(path, {cache:'reload'})))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
   event.waitUntil(Promise.all([caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('asobiroom-shell-') && key !== CACHE).map(key => caches.delete(key)))), self.clients.claim()]));
 });
 self.addEventListener('fetch', event => {
   const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin || excluded(url.pathname)) return;
   if (!['document', 'script', 'style', 'image', 'manifest'].includes(request.destination)) return;
+  if (request.headers.has('Authorization') || request.headers.has('Range')) return;
   event.respondWith((async () => {
-    const cache = await caches.open(CACHE);
     try {
-      // 古いHTML/CSS/JSが端末のHTTPキャッシュに残っても最新版を確認する。
-      const response = await fetch(request, {
-        cache: ['document', 'script', 'style'].includes(request.destination) ? 'no-cache' : 'default'
-      });
-      if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
+      const response = await fetch(request, {cache: ['document','script','style'].includes(request.destination) ? 'no-cache' : 'default'});
+      if (response.ok && response.status === 200 && response.type === 'basic' && !response.redirected && !/no-store|private/i.test(response.headers.get('Cache-Control') || '')) {
+        try { await remember(await caches.open(CACHE), request, response.clone()); } catch { /* Cache failure must not break online play. */ }
+      }
       return response;
     } catch {
-      const hit = await cache.match(request);
-      return hit || Response.error();
+      try { return await (await caches.open(CACHE)).match(request) || Response.error(); } catch { return Response.error(); }
     }
   })());
 });
-
