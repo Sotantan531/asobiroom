@@ -20,6 +20,38 @@ header{border-bottom:1px solid #ccbdb4;padding:5px 3px;color:#78495a}header b,he
 .nav{background:#894256;border:1px solid #894256;border-radius:0 0 4px 4px}
 .minor{background:#fff7db;border:1px solid #966e66;color:#482937;border-radius:7px}
 .dialog{background:#fff8e7;border:2px solid #894758;box-shadow:0 5px #c0a79e}.dialog h1{color:#af1935}.dialog .action{background:#ffda3a;border:2px solid #7a3546;color:#251f1d;box-shadow:0 3px #b89c77}.dialog select{background:#fff7db;border:1px solid #966e66}.status{color:#803e35}.status.ok,.status.no{color:#b80018}
+
+/* Television-style quiz board; retain the shared Dobon wallpaper and timer. */
+.board{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;color:#111}
+.stage{grid-template-columns:minmax(0,2.05fr) minmax(0,1fr);gap:4px;align-items:stretch}
+.left,.right{gap:3px}
+.theme{background:#080808;color:#fff;border:2px solid #141414;border-radius:5px;padding:5px 9px;min-height:clamp(30px,4.7vw,52px);display:flex;align-items:center;font-size:clamp(13px,2.3vw,26px);font-weight:950;line-height:1.2;letter-spacing:-.025em}
+.question{background:#fff;border:3px solid #b49a44;border-radius:0;min-height:clamp(54px,7.8vw,87px);padding:5px 10px;gap:8px}
+.question h2{font-size:clamp(18px,3.6vw,44px);font-weight:950;letter-spacing:0;line-height:1.2}
+.number,.circle{border:.09em solid #111;box-shadow:0 0 0 1px #fff;background:#fff;color:#101010;font-weight:950}
+.number{width:1.28em;font-size:clamp(26px,5vw,58px)}
+.options{min-height:clamp(150px,29vw,330px);background:#f7f9ba;border:3px solid #b49a44;border-radius:0;overflow:hidden}
+.option{background:#f7f9ba;padding:30px 8px 12px}.option+.option{border-left:3px solid #101010}
+.letter{background:#050505;color:#fff;padding:3px 9px;line-height:1;font-size:clamp(19px,3.2vw,38px);font-weight:950}
+.option strong{font-size:clamp(19px,4.2vw,48px);font-weight:950;line-height:1.2}
+.option.good{background:#d4f1ad}.option.bad{background:#ffc9c1}
+.timerbox{background:transparent;border:0;border-radius:0;padding:3px 3px 3px 8px;display:flex;justify-content:flex-end;align-items:center;min-height:clamp(30px,4.7vw,52px)}
+.remaining{background:linear-gradient(#8ce34e,#4ab826);color:#fff;border:2px solid #4a9b30;border-radius:0;text-shadow:1px 1px 2px #26721a;font-size:clamp(16px,3.4vw,38px);font-weight:950;padding:9px 4px}
+.answerbox{background:#292bc8;border:3px solid #80a1db;border-radius:0;padding:4px;gap:4px}
+.answer{background:linear-gradient(#4145e3,#292ac7);border:2px solid #a5b9ee;border-radius:0;color:#fff;box-shadow:inset 0 0 7px #fff2;font-size:clamp(32px,7vw,76px);font-weight:950;text-shadow:0 1px 1px #16166b}
+.answer:enabled:hover{background:#4549e8}.answer:enabled:active{background:#2023ac;transform:none}.answer.good{background:#3cab39;color:#fff}.answer.bad{background:#c52a35;color:#fff}
+.answerbox[data-format="same"] .answer,.answerbox[data-format="meaning"] .answer{font-size:clamp(13px,3.3vw,36px);line-height:1.15;overflow-wrap:anywhere}
+.difficulty{background:linear-gradient(90deg,#9e9ddd 0%,#c4a8cc 48%,#e893a3 100%);color:#323db4;border:1px solid #a79bc0;border-radius:0;margin-top:3px;padding:2px 8px;font-size:clamp(12px,2.2vw,24px);font-weight:950;text-shadow:1px 1px 0 white,-1px -1px 0 white}
+.difficulty span:last-child{color:#bb1740}
+.nav{background:#b9dca4;border:2px solid #92b66d;border-radius:0;gap:2px;padding:2px}
+.tile{min-height:clamp(40px,8.4vw,94px);background:linear-gradient(#96ff6a,#57ed2f);border:1px solid #d5ffba;border-radius:0;padding:2px}
+.tile.selected{background:#fff;border-color:#f0f0e6}.tile:enabled:hover:not(.clear):not(.selected){background:#c4ff9f}
+.circle{font-size:clamp(13px,4.35vw,49px);width:1.46em;line-height:1}
+.tile.clear{background:#a4a4a4;border-color:#aaa;filter:brightness(.75)}.tile.flash{background:#fff;filter:none}
+.clear-label{writing-mode:horizontal-tb;font-size:clamp(7px,2.15vw,25px);letter-spacing:-.08em;line-height:1;color:#a90018;text-shadow:none;font-weight:950}.tile.flash .clear-label{color:#ed0019}
+.dialog{border:3px solid #b49a44;border-radius:5px;background:#fffde7;box-shadow:0 4px #8b784a}.dialog h1{color:#171a94}.dialog .action{background:linear-gradient(#9cf86a,#51c82b);border:2px solid #388827;color:#12220d;border-radius:3px;box-shadow:none}
+@media(max-width:480px) and (orientation:portrait){.stage{gap:2px}.left,.right{gap:2px}.theme{padding:4px;min-height:30px}.question{border-width:2px;padding:4px;gap:4px}.number{font-size:25px}.options{border-width:2px;min-height:146px}.option{padding:20px 4px 6px}.option+.option{border-left-width:2px}.letter{padding:3px 5px}.timerbox{padding:1px 1px 1px 5px}.remaining{padding:4px 0}.answerbox{border-width:2px;gap:3px;padding:3px}.answer{border-width:1px}.nav{gap:1px;padding:1px}.tile{min-height:40px;padding:0}.circle{font-size:clamp(12px,4.15vw,20px)}.clear-label{font-size:clamp(7px,2.1vw,10px)}.difficulty{padding:2px 5px}}
+@media(max-height:540px) and (orientation:landscape){.theme,.timerbox{min-height:32px;padding-block:2px}.question{min-height:48px;padding:3px 8px}.question h2{font-size:clamp(18px,3vw,30px)}.number{font-size:31px}.options{min-height:125px}.option strong{font-size:clamp(20px,3.7vw,38px)}.remaining{padding:3px;font-size:20px}.answer{font-size:40px;min-height:38px}.tile{min-height:48px}.circle{font-size:29px}.clear-label{font-size:clamp(10px,2vw,18px)}}
 </style></head><body><main><header><b><img src="asobiroom.svg" alt="">asobiroom / 二択ラッシュ <small>TEST</small></b><button id="sound" aria-pressed="true">♫ ON</button></header><div class="screen"><section class="board" aria-label="クイズ"><div class="stage"><div class="left"><div class="theme" id="theme">テーマ</div><div class="question"><span id="num" class="number">1</span><h2 id="question">問題</h2></div><div class="options" id="options" data-format="ab"><div class="option" id="oa"><span class="letter">A</span><strong id="a">—</strong></div><div class="option" id="ob"><span class="letter">B</span><strong id="b">—</strong></div></div></div><aside class="right"><div class="timerbox" id="timer"><div class="clock" role="timer" aria-label="残り時間"><i>Q</i><div class="meter"><div id="shade"></div></div><span>残り <b id="time">120</b> 秒</span></div></div><div class="remaining">残り <b id="remaining">10</b> 問</div><div class="answerbox" id="answerbox" data-format="ab"><button class="answer" id="answerA" aria-label="Aを選ぶ">A</button><button class="answer" id="answerB" aria-label="Bを選ぶ">B</button></div></aside></div><div class="difficulty"><span>◀ 易しい</span><span>難しい ▶</span></div><nav id="nav" class="nav" aria-label="問題選択"></nav></section><div class="overlay" id="overlay"><div class="dialog" id="dialog"><h1>二択ラッシュ</h1><p>120秒で10問クリア！<br>下の番号を選んで、右側のボタンから回答。<br>難しい問題は後回しでもOK。<br><b id="bankCount"></b></p><select id="themeSelect" aria-label="テーマ"><option value="-1">おまかせ</option><option value="-2">ミックス（全ジャンル）</option></select><br><button class="action" id="start">スタート</button></div></div></div><p class="status" id="status" aria-live="polite">問題番号は自由に切り替えられます。</p><div class="controls"><button class="minor" id="menu">タイトルへ</button><button class="minor" id="retry">もう一度</button></div><div class="foot">開発テスト版・記録やランキングは送信されません</div></main><script src="../asobi-bgm.js?v=20261127guides"></script><script src="recorded-bgm.js?v=20261128v4synth"></script><script src="questions.js"></script><script>
 const sets=window.choiceTenSets,$=id=>document.getElementById(id);
 const total=120000, WAIT=960, SHOW=1400, labels={ab:['A','B'],tf:['○','×'],same:['同じ','違う'],meaning:['意味が近い','反対の意味']};
