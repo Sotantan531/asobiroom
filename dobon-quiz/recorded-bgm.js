@@ -1,13 +1,25 @@
-/* Dobon Quiz approved V4 audio tracks. Existing synthesized music remains a fallback. */
+/* Dobon Quiz V4: synthesize both tracks in a worker without audio files. */
 (() => {
   'use strict';
-  const files = {
-    normal: 'dobon_normal_bgm_v4.mp3',
-    urgent: 'dobon_countdown_30s_v4.mp3'
-  };
-  const raw = Object.fromEntries(Object.entries(files).map(([key, url]) => [
-    key, fetch(url).then(r => { if (!r.ok) throw Error('BGM unavailable'); return r.arrayBuffer(); }).catch(() => null)
-  ]));
+  const raw = {};
+  const pending = {};
+  for (const key of ['normal','urgent']) raw[key] = new Promise(resolve => { pending[key] = resolve; });
+  let worker;
+  const fail = () => { for (const key of Object.keys(pending)) pending[key](null); if(worker)worker.terminate(); };
+  try {
+    worker = new Worker('bgm-synth-worker.js?v=20261128v4synth');
+    worker.onmessage = ({data}) => {
+      if (pending[data.key]) {
+        pending[data.key](data.error ? null : data);
+        delete pending[data.key];
+      }
+      if (!Object.keys(pending).length) worker.terminate();
+    };
+    worker.onerror = fail;
+    worker.onmessageerror = fail;
+    worker.postMessage({key:'normal'});
+    worker.postMessage({key:'urgent'});
+  } catch { fail(); }
   class DobonRecordedBgm {
     constructor(contextFactory, remainingTime) {
       this.contextFactory = contextFactory;
@@ -63,9 +75,11 @@
       };
       try {
         if (!this.decoded[key]) {
-          this.decoded[key] = raw[key].then(bytes => {
-            if (!bytes) throw Error('BGM unavailable');
-            return ctx.decodeAudioData(bytes.slice(0));
+          this.decoded[key] = raw[key].then(data => {
+            if (!data) return null;
+            const buffer = ctx.createBuffer(2, data.channels[0].length, data.sr);
+            data.channels.forEach((samples, i) => buffer.copyToChannel(samples, i));
+            return buffer;
           }).catch(() => null);
           fallback();
         }
