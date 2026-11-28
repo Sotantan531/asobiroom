@@ -1,4 +1,4 @@
-/* Dobon Quiz V4: synthesize both tracks in a worker without audio files. */
+/* Choice Ten: continuous 90-second V4 extension plus original 30-second finale. */
 (() => {
   'use strict';
   const raw = {};
@@ -7,7 +7,7 @@
   let worker;
   const fail = () => { for (const key of Object.keys(pending)) pending[key](null); if(worker)worker.terminate(); };
   try {
-    worker = new Worker('bgm-synth-worker.js?v=20261128v4synth');
+    worker = new Worker('bgm-synth-worker.js?v=20261128choice90');
     worker.onmessage = ({data}) => {
       if (pending[data.key]) {
         pending[data.key](data.error ? null : data);
@@ -88,15 +88,14 @@
         if (token !== this.generation || !this.playing || !this.enabled) return;
         if (!buffer) { fallback(); return; }
         const remaining = this.remainingTime();
-        const section = urgent ? 30 : 50;
-        const loopNormal = !urgent && this.roundSeconds > 80;
-        const elapsed = Math.max(0, urgent ? Math.min(section, 30 - remaining / 1000) : loopNormal ? (this.roundSeconds - remaining / 1000) % section : Math.min(section, this.roundSeconds - remaining / 1000));
+        const section = urgent ? 30 : this.roundSeconds - 30;
+        const elapsed = Math.max(0, Math.min(section, urgent ? 30 - remaining / 1000 : this.roundSeconds - remaining / 1000));
         if (remaining <= 0 || elapsed >= section) { this.fallback.stop(); return; }
         const speed = buffer.duration / section;
         const src = ctx.createBufferSource(), gain = ctx.createGain();
         src.buffer = buffer;
         src.playbackRate.value = speed;
-        src.loop = loopNormal;
+        src.loop = false;
         gain.gain.value = 0.36;
         src.connect(gain); gain.connect(ctx.destination);
         src.onended = () => { try { src.disconnect(); gain.disconnect(); } catch {} if (this.node === src) this.node = null; };
