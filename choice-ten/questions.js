@@ -646,7 +646,11 @@ const badSemantic=new Set(['疎密','表在','新機軸','自堕落','附会']);
 sem.qs=sem.qs.filter(q=>!badSemantic.has(q.a)&&!badSemantic.has(q.b)&&!ambiguousMeaning.includes(q.a+'|'+q.b)&&!ambiguousMeaning.includes(q.b+'|'+q.a));
 const globalKeys=new Set();for(const set of sets){const local=new Set();set.qs=set.qs.filter(q=>{if(!q.note||![0,1].includes(q.key)||q.format!=='tf'&&q.a===q.b)return false;const key=JSON.stringify([q.format,q.q,[q.a,q.b].sort()]);if(local.has(key))return false;local.add(key);return true})}
 
+
+const lastTraps=parseReading("8|熾烈|しれつ|歯列|しれつ\n8|糾弾|きゅうだん|球団|きゅうだん\n8|驚愕|きょうがく|教学|きょうがく\n8|薫陶|くんとう|訓導|くんどう\n8|屹立|きつりつ|起立|きりつ\n8|峻厳|しゅんげん|修験|しゅげん\n8|雌伏|しふく|私服|しふく\n8|雄飛|ゆうひ|夕日|ゆうひ\n9|悔悛|かいしゅん|改悛|かいしゅん\n9|憤懣|ふんまん|忿懣|ふんまん\n9|顰蹙|ひんしゅく|頻出|ひんしゅつ\n9|悄然|しょうぜん|騒然|そうぜん\n9|怫然|ふつぜん|仏前|ぶつぜん\n9|瀟洒|しょうしゃ|商社|しょうしゃ\n9|滂沱|ぼうだ|膨大|ぼうだい\n9|緘口|かんこう|観光|かんこう\n9|謬説|びゅうせつ|妙説|みょうせつ\n9|傀儡|かいらい|快楽|かいらく\n9|狷介|けんかい|見解|けんかい\n9|衒学|げんがく|玄学|げんがく\n9|刮目|かつもく|科目|かもく\n9|佇立|ちょりつ|樹立|じゅりつ\n10|羈絆|きはん|規範|きはん\n10|羈旅|きりょ|器量|きりょう\n10|鉗口|かんこう|箝口|かんこう\n10|弥縫|びほう|美貌|びぼう\n10|瞥見|べっけん|別件|べっけん\n10|嗟嘆|さたん|遮断|しゃだん\n10|鴻恩|こうおん|高温|こうおん\n10|夙夜|しゅくや|宿屋|やどや\n10|匍匐|ほふく|報復|ほうふく\n10|聚落|しゅうらく|集落|しゅうらく\n10|哄笑|こうしょう|公称|こうしょう\n10|咆哮|ほうこう|方向|ほうこう\n10|猖獗|しょうけつ|焼結|しょうけつ\n10|櫛比|しっぴ|執筆|しっぴつ\n10|拈華|ねんげ|年賀|ねんが\n10|跋扈|ばっこ|抜去|ばっきょ");for(const [i,q] of lastTraps.entries()){const set=sets.find(s=>s.theme===jpThemes[i%2]);if(!set.qs.some(x=>[x.a,x.b].sort().join('|')===[q.a,q.b].sort().join('|')))set.qs.push(q)}
+
 function questionUid(q,theme){const opts=[q.a||'',q.b||''];const answer=q.format==='ab'?opts[q.key]:String(q.key);const raw=JSON.stringify([theme,q.format,q.q,opts.slice().sort(),answer,q.format==='same'?[q.readA,q.readB].sort():[]]);let a=2166136261,b=0x9e3779b9;for(let i=0;i<raw.length;i++){const c=raw.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b^c,2246822519)}return (a>>>0).toString(16).padStart(8,'0')+(b>>>0).toString(16).padStart(8,'0')}
 for(const set of sets)for(const q of set.qs)q.uid=questionUid(q,set.theme);
+const finalIds=new Set();for(const set of sets)set.qs=set.qs.filter(q=>{if(finalIds.has(q.uid))return false;finalIds.add(q.uid);return true});
 window.choiceTenSets=sets;
 })();
