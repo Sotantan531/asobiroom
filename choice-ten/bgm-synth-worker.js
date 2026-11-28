@@ -1,6 +1,6 @@
-/* Original Dobon V4 synthesis, ported from the approved offline arrangements. No external audio files. */
+/* Choice Ten normal: 60 bars at 160 BPM (90 seconds), continuous arrangement. Urgent: unchanged Dobon V4. */
 function synth(key) {
-  const sr=44100, normal=key==='normal', bpm=normal?157.5:168, beat=60/bpm, bar=4*beat, duration=normal?32*bar:30, N=Math.round(sr*duration);
+  const sr=44100, normal=key==='normal', bpm=normal?160:168, beat=60/bpm, bar=4*beat, duration=normal?60*bar:30, N=Math.round(sr*duration);
   const L=new Float32Array(N), R=new Float32Array(N);
   let state=normal?92:531;
   const rand=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return (state+0.5)/4294967296};
@@ -49,7 +49,7 @@ function synth(key) {
   function snare(){const d=normal?.10:.16,x=noise(d,normal?'b':'d');return wave(d,(t,i)=>normal?(.6*x[i]+.3*sin(pi*175*t))*exp(-t*28)*env(t,d,.002,.01):(.65*x[i]+.28*sin(pi*178*t))*decay(t,.002,.041))}
   if(normal){
     const roots=[45,45,43,47], patterns=[[0,0,7,0,3,0,7,0],[0,0,5,0,7,0,3,0],[0,0,7,0,2,0,7,0],[0,0,6,0,5,0,2,0]];
-    for(let b=0;b<32;b++){const section=b>>2,root=roots[b%4];
+    for(let b=0;b<60;b++){const section=b>>3,root=b<32?roots[b%4]:[45,43,41,47,45,45,43,47][b%8];
       for(let s=0;s<8;s++){const t=b*bar+s*beat/2;
         put(t,click(s%2===0),s%2===0?.26:.19,s%2===0?-.12:.12);
         if(s%2===0)put(t,bass(root,.25),.14);
@@ -60,6 +60,13 @@ function synth(key) {
         if(section>=5&&[1,2,5,7].includes(s))put(t,pluck(root+36+[7,0,2,5][(s+b)%4],.12),.058,.35);
         if(section>=6){if(s===0||s===4)for(const m of [root+12,root+19])put(t,pad(m,beat*1.94),.042,-.24);if(s===3||s===7)put(t,kick(),.10)}
         if(section>=7&&[0,2,3,4,6,7].includes(s))put(t,stab(root+24+[0,0,7,3,0,5,7,2][s],.11),.055,-.08);
+        // Later phrases introduce countermelody, fuller harmony and fills instead of a restart.
+        if(section>=4&&[1,5].includes(s))put(t,pluck(root+31+[0,3,5,7][b%4],.21),.045,.42);
+        if(section>=5&&[0,4].includes(s))put(t,pad(root+7,beat*1.9),.032,-.42);
+        if(section>=6&&s%2===1)put(t+.5*beat/2,hat(),.035,.48);
+        if(section>=6&&b%4===3&&s>=6)put(t+beat/4,snare(),.075,.12);
+        if(section>=7&&[0,4].includes(s))for(const m of [root+12,root+19,root+27])put(t,stab(m,.25),.040,.24);
+        if(b>=58&&s===7)put(t,pluck(root+36+[0,7][b%2],.15),.085,-.22);
       }
     }
   }else{
