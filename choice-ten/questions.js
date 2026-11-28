@@ -535,5 +535,8 @@ for(const [theme,rows] of readingChallenges){
  const keys=new Set(explicit.map(q=>[q.a,q.b].sort().join('|')));
  set.qs=set.qs.filter(q=>!keys.has([q.a,q.b].sort().join('|'))).concat(explicit);
 }
+
+function questionUid(q,theme){const opts=[q.a||'',q.b||''];const answer=q.format==='ab'?opts[q.key]:String(q.key);const raw=JSON.stringify([theme,q.format,q.q,opts.slice().sort(),answer,q.format==='same'?[q.readA,q.readB].sort():[]]);let a=2166136261,b=0x9e3779b9;for(let i=0;i<raw.length;i++){const c=raw.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b^c,2246822519)}return (a>>>0).toString(16).padStart(8,'0')+(b>>>0).toString(16).padStart(8,'0')}
+for(const set of sets)for(const q of set.qs)q.uid=questionUid(q,set.theme);
 window.choiceTenSets=sets;
 })();
