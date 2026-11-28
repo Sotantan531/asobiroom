@@ -516,7 +516,7 @@ body:has(#startModal:not(.hidden)) .gameMark{visibility:hidden}
 #answerCard[data-result="ng"]{border-color:#ffa58d}#answerValue{display:block;font-size:clamp(24px,5vw,34px);line-height:1.3;overflow-wrap:anywhere}#answerNext{margin-top:8px;padding:9px 24px;border-radius:24px;font-size:16px;background:#cbf9ec;color:#113d4c;border:0;font-weight:bold}
 #launchCurtain[hidden],#answerCard[hidden]{display:none}
 </style><div id="launchCurtain" hidden=""><canvas id="launchSea" width="320" height="601"></canvas><strong id="launchTitle">海面付近に到着</strong></div>
-<section id="answerCard" hidden="" aria-live="polite"><b id="answerVerdict"></b><strong id="answerValue"></strong><span id="roundingNote" hidden></span><div><a id="answerSource" style="color:#a7f9ee" target="_blank" rel="noopener noreferrer" hidden>出典を見る</a></div><button id="answerNext">次へ進む</button></section>
+<section id="answerCard" hidden="" aria-live="polite"><b id="answerVerdict"></b><strong id="answerValue"></strong><span id="roundingNote" hidden></span><div><a id="answerSource" style="color:#a7f9ee" target="_blank" rel="noopener noreferrer" hidden>出典を見る</a> <a id="answerBroadcast" style="color:#a7f9ee" target="_blank" rel="noopener noreferrer" hidden>放送の記録</a></div><button id="answerNext">次へ進む</button></section>
 <canvas id="sea" aria-hidden="true" width="412" height="901"></canvas>
 <div class="screenShade"></div>
 <div class="frame">
@@ -1336,6 +1336,20 @@ function setupArchive(questions, scenes, getStats, showArea) {
     {"id":471,"category":"宇宙と海","q":"ISSは地球を約何分で一周する？","base":"9","zeros":1,"unit":"分","note":"約90分で地球1周。地球のまわりを1日に約16周します。","source":"https://humans-in-space.jaxa.jp/faq/detail/000467.html"},
     {"id":15,"category":"宇宙と海","q":"海でいちばん深い場所。水面から底まで約何m？","base":"11","zeros":3,"unit":"m","note":"マリアナ海溝のチャレンジャー海淵は約10,935 m。水面から真下へ約11 kmです。","source":"https://oceanexplorer.noaa.gov/ocean-fact/ocean-depth/"}
   ];
+  // Adapted topics from 2013 broadcast write-ups, with dated figures and independent sources.
+  const broadcastPool = [
+    {"id":473,"category":"ペット","q":"2012年、全国の家庭で飼われていた犬は推計で約何頭？","base":"12","zeros":6,"unit":"頭","note":"調査の推計は1,153万4,000頭。同じ調査の猫は974万8,000頭でした。","source":"https://www.petoffice.co.jp/world/article.html?id=n2013010801","broadcast":"https://ameblo.jp/chico-4211/page-2.html"},
+    {"id":474,"category":"テクノロジー","q":"2013年、iPhone 5sと5cは発売から3日間で合計何台売れた？","base":"9","zeros":6,"unit":"台","note":"Appleの発表では900万台。バブルリーグで扱われた世界累計販売をきっかけに、発売直後の記録を問題にしました。","source":"https://www.apple.com/jp/newsroom/2013/09/23First-Weekend-iPhone-Sales-Top-Nine-Million-Sets-New-Record/","broadcast":"https://ameblo.jp/chico-4211/page-2.html"},
+    {"id":475,"category":"人体","q":"日本人の頭には、平均で約何本の髪の毛が生えている？","base":"1","zeros":5,"unit":"本","note":"平均は約10万本。花王の解説では、毛髪の成長が盛んな頃でも1日に50〜100本ほど抜けます。","source":"https://www.kao.com/jp/haircare/hair/4-6/","broadcast":"https://ameblo.jp/chico-4211/page-2.html"},
+    {"id":476,"category":"天文","q":"地球を横一列に並べると、太陽の直径は地球の約何個分？","base":"1","zeros":2,"unit":"個分","note":"実際は約109個分。ここでは大きさの目安として100個分に丸めています。","source":"https://www.nasa.gov/wp-content/uploads/2019/08/nosl-grc-ps-01906-earth-space-explorers-module.pdf","broadcast":"https://ameblo.jp/chico-4211/page-2.html"},
+    {"id":477,"category":"人体","q":"体重65 kgの人の血液を全部集めたら、目安は約何mL？","base":"5","zeros":3,"unit":"mL","note":"日本赤十字社の資料では約5,000 mL。500 mLのペットボトル10本分の量です。","source":"https://www.jrc.or.jp/vcms_lf/ketsueki_syokaipanfu.pdf","broadcast":"https://ameblo.jp/chico-4211/page-2.html"},
+    {"id":478,"category":"人口","q":"2013年当時、地球に暮らしていた人は約何人？","base":"72","zeros":8,"unit":"人","note":"内閣府の資料では約72億人。放送を見た人の記録には約71億人とあり、ここでは内閣府資料の数字を使っています。","source":"https://www5.cao.go.jp/keizai-shimon/kaigi/special/2030tf/281114/shiryou4_2.pdf","broadcast":"https://ameblo.jp/chico-4211/page-2.html"},
+    {"id":479,"category":"芸能","q":"吉本興業の会長だった大﨑洋氏への取材では、所属芸人は約何人？","base":"6","zeros":3,"unit":"人","note":"当時の会長へのインタビューでは約6,000人。所属人数は時期によって変わります。","source":"https://www.works-i.com/works/series/management/detail005.html","broadcast":"https://goodiesyep.livedoor.blog/archives/222119.html"},
+    {"id":480,"category":"学校","q":"2013年の東大。前期・後期日程の入学者を合わせると約何人？","base":"31","zeros":2,"unit":"人","note":"東京大学の公表値は3,063人。対象を前期・後期日程の入学者にそろえた数です。","source":"https://www.u-tokyo.ac.jp/ja/about/overview/e08_01_h25.html","broadcast":"https://goodiesyep.livedoor.blog/archives/222119.html"},
+    {"id":481,"category":"人口","q":"2013年の日本で、1年間に離婚したのは約何組？","base":"23","zeros":4,"unit":"組","note":"厚生労働省の人口動態統計では231,385組。2013年の1年間に限った数字です。","source":"https://www.mhlw.go.jp/toukei/saikin/hw/jinkou/tokusyu/rikon22/dl/gaikyo.pdf","broadcast":"https://goodiesyep.livedoor.blog/archives/222119.html"},
+    {"id":482,"category":"自治体","q":"2013年の日本にあった「市」は、東京23区や町村を含めず約いくつ？","base":"79","zeros":1,"unit":"市","note":"2013年の資料では789市。東京23区は別に数えています。","source":"https://www.yotsuyaotsuka.com/kyozai/pdf/6th_grade/02_04.pdf","broadcast":"https://goodiesyep.livedoor.blog/archives/222119.html"},
+    {"id":483,"category":"食べ物","q":"2012年のテレビ取材によると、カルビーのポテトチップスは1年に約何袋売れていた？","base":"56","zeros":7,"unit":"袋","note":"テレビ東京の2012年の放送では年間5億6,000万袋。バブルリーグでも年間の出荷量が題材になりました。","source":"https://www.tv-tokyo.co.jp/cambria/backnumber/2012/0830/","broadcast":"https://goodiesyep.livedoor.blog/archives/222119.html"}
+  ];
   const triviaGroups = [...new Set(triviaPool.map(q => q.category))]
     .map(category => triviaPool.filter(q => q.category === category));
   // The original bank's final block contains unit conversions and word problems.
@@ -1347,12 +1361,15 @@ function setupArchive(questions, scenes, getStats, showArea) {
     const previous = getUsedIds();
     const used = new Set(Array.isArray(previous) ? previous : []);
     function draw(pool, count, avoidCategoryRepeats = false){
-      let available = pool.filter(q => !used.has(q.id));
-      if(available.length < count){
-        for(const q of pool) used.delete(q.id);
-        available = pool;
-      }
+      const available = pool.filter(q => !used.has(q.id));
+      const availableCount = avoidCategoryRepeats
+        ? new Set(available.map(q => q.category)).size
+        : available.length;
       const shuffled = shuffle(available);
+      if(availableCount < count){
+        shuffled.push(...shuffle(pool.filter(q => used.has(q.id))));
+        for(const q of pool) used.delete(q.id);
+      }
       const picked = [];
       const categories = new Set();
       for(const q of shuffled){
@@ -1368,11 +1385,12 @@ function setupArchive(questions, scenes, getStats, showArea) {
       return picked;
     }
     const trivia = triviaGroups.flatMap(group => draw(group, 1));
+    const broadcast = draw(broadcastPool, 3, true);
     const practice = draw(practicePool, 1);
-    const general = draw(generalPool, TOTAL_ROUNDS - trivia.length - practice.length, true);
-    const [first, ...rest] = shuffle(trivia);
+    const general = draw(generalPool, TOTAL_ROUNDS - trivia.length - broadcast.length - practice.length, true);
+    const [first, ...rest] = shuffle(broadcast);
     setUsedIds([...used]);
-    return [first, ...shuffle([...rest, ...general, ...practice])];
+    return [first, ...shuffle([...rest, ...trivia, ...general, ...practice])];
   }
   function answerString(q=current, z=zeroCount){
     return q ? q.base + '0'.repeat(z) : '';
@@ -1610,6 +1628,10 @@ function setupArchive(questions, scenes, getStats, showArea) {
       source.hidden = !current.source;
       if(current.source) source.href = current.source;
       else source.removeAttribute('href');
+      const broadcast = $('#answerBroadcast');
+      broadcast.hidden = !current.broadcast;
+      if(current.broadcast) broadcast.href = current.broadcast;
+      else broadcast.removeAttribute('href');
       card.hidden=false;
       $('#answerNext').focus({preventScroll:true});
       // 正誤表示をしっかり見せてから潜航する（判定直後には深度を変えない）
