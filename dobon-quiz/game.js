@@ -3,7 +3,7 @@ const ROUND_MS=80000;
 const tiers=['簡単','ふつう','難しい'];
 const priors=[.38,.74,.86,.43,.92,.45,.62,.34,.7,.56,.82,.9,.39,.65,.46,.78,...extraQuestions.map(q=>q[2]),...addedRatings];
 let stats=[],seen=new Set(),level=0,index,round,phase='menu',count,remaining,deadline,interval,audio;
-const bgm=new window.AsobiBgm('dobon',()=>audio);
+const bgm=new window.DobonRecordedBgm(()=>audio,()=>Math.max(0,deadline-performance.now()));
 let bgmMuted=false;
 try{bgmMuted=localStorage.getItem('asobiroom.dobon.bgm-muted')==='true'}catch{}
 bgm.setEnabled(!bgmMuted);
@@ -101,7 +101,7 @@ function start(){
  const words=q[2].split(' '),buttons=words.map((word,j)=>{const b=document.createElement('button'),note=document.createElement('span');note.className='note';b.className='tile';b.dataset.word=word;b.append(note,word);b.onclick=()=>select(b,j);return b});
  for(let i=buttons.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[buttons[i],buttons[j]]=[buttons[j],buttons[i]]}
  const logo=document.createElement('div');logo.className='brandcell';logo.innerHTML='<span class="room-brand"><img src="asobiroom.svg" alt="" width="27" height="27"><span>asobiroom</span></span>ドボン！';el('choices').replaceChildren(...buttons,logo);
- count=0;remaining=ROUND_MS;deadline=performance.now()+remaining;phase='play';bgm.setUrgent(false);bgm.start();displayRate();progress();clock();interval=setInterval(tick,80);
+ bgm.stop();count=0;remaining=ROUND_MS;deadline=performance.now()+remaining;phase='play';bgm.setUrgent(false);bgm.start();displayRate();progress();clock();interval=setInterval(tick,80);
 }
 tiers.forEach((name,i)=>{const b=document.createElement('button');b.textContent=name;b.onclick=()=>{level=i;start()};el('levels').append(b)});
 updateLevels();
